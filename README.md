@@ -1,7 +1,7 @@
 # Edwin
 A framework for building and analysing Equivalence Set Graphs.
 
-### Publication
+### Publications
 
 For citing Edwin in academic papers please use:
 
