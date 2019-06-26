@@ -18,6 +18,7 @@
     <owl:Ontology rdf:about="https://w3id.org/edwin/ontology/">
         <owl:imports rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
         <owl:imports rdf:resource="http://www.w3.org/ns/dcat"/>
+        <dc:description rdf:resource="https://raw.githubusercontent.com/luigi-asprino/edwin/master/ontology/0.01/esg_schema.png"/>
     </owl:Ontology>
     
 
