@@ -1,0 +1,620 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://w3id.org/edwin/ontology/"
+     xml:base="https://w3id.org/edwin/ontology/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:dcat="http://www.w3.org/ns/dcat#"
+     xmlns:foaf="http://xmlns.com/foaf/0.1/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:vann="http://purl.org/vocab/vann/"
+     xmlns:swrla="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:schema="http://schema.org/">
+    <owl:Ontology rdf:about="https://w3id.org/edwin/ontology/">
+        <owl:imports rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+        <owl:imports rdf:resource="http://www.w3.org/ns/dcat"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleEnabled -->
+
+    <owl:AnnotationProperty rdf:about="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleEnabled"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/adjacentTo -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/edwin/ontology/adjacentTo">
+        <rdfs:domain rdf:resource="https://w3id.org/edwin/ontology/Node"/>
+        <rdfs:range rdf:resource="https://w3id.org/edwin/ontology/Node"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/classOfObservedEntities -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/edwin/ontology/classOfObservedEntities">
+        <rdfs:domain rdf:resource="https://w3id.org/edwin/ontology/EquivalenceSetGraph"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/computedFrom -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/edwin/ontology/computedFrom">
+        <rdfs:domain rdf:resource="https://w3id.org/edwin/ontology/EquivalenceSetGraph"/>
+        <rdfs:range rdf:resource="http://www.w3.org/ns/dcat#Dataset"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/contains -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/edwin/ontology/contains">
+        <rdfs:domain rdf:resource="https://w3id.org/edwin/ontology/Node"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/hasNode -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/edwin/ontology/hasNode">
+        <rdfs:domain rdf:resource="https://w3id.org/edwin/ontology/EquivalenceSetGraph"/>
+        <rdfs:range rdf:resource="https://w3id.org/edwin/ontology/Node"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/isSpecializedBy -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/edwin/ontology/isSpecializedBy">
+        <rdfs:subPropertyOf rdf:resource="https://w3id.org/edwin/ontology/adjacentTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/observesEquivalenceProperty -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/edwin/ontology/observesEquivalenceProperty">
+        <rdfs:subPropertyOf rdf:resource="https://w3id.org/edwin/ontology/observesProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/observesProperty -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/edwin/ontology/observesProperty">
+        <rdfs:domain rdf:resource="https://w3id.org/edwin/ontology/EquivalenceSetGraph"/>
+        <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/observesSpecializationProperty -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/edwin/ontology/observesSpecializationProperty">
+        <rdfs:subPropertyOf rdf:resource="https://w3id.org/edwin/ontology/observesProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/specializes -->
+
+    <owl:ObjectProperty rdf:about="https://w3id.org/edwin/ontology/specializes">
+        <rdfs:subPropertyOf rdf:resource="https://w3id.org/edwin/ontology/adjacentTo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/nodeId -->
+
+    <owl:DatatypeProperty rdf:about="https://w3id.org/edwin/ontology/nodeId">
+        <rdfs:domain rdf:resource="https://w3id.org/edwin/ontology/Node"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/EquivalenceSetGraph -->
+
+    <owl:Class rdf:about="https://w3id.org/edwin/ontology/EquivalenceSetGraph">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://w3id.org/edwin/ontology/computedFrom"/>
+                <owl:someValuesFrom rdf:resource="http://www.w3.org/ns/dcat#Dataset"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://w3id.org/edwin/ontology/hasNode"/>
+                <owl:allValuesFrom rdf:resource="https://w3id.org/edwin/ontology/Node"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://w3id.org/edwin/ontology/observesSpecializationProperty"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://w3id.org/edwin/ontology/classOfObservedEntities"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://w3id.org/edwin/ontology/observesEquivalenceProperty"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- https://w3id.org/edwin/ontology/Node -->
+
+    <owl:Class rdf:about="https://w3id.org/edwin/ontology/Node"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Rules
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/g">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/c">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/n">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/e">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#type">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/peq">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/e1">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/e2">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/n1">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/n2">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/psub">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrla:isRuleEnabled>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"></rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">equivalence sets</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/hasNode"/>
+                        <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/g"/>
+                        <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/n"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/observesEquivalenceProperty"/>
+                                <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/g"/>
+                                <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/peq"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/contains"/>
+                                        <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/n"/>
+                                        <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/e1"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/contains"/>
+                                                <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/n"/>
+                                                <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/e2"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                        <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#add"/>
+                        <swrl:arguments rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://w3id.org/edwin/ontology/e1"/>
+                            <rdf:Description rdf:about="https://w3id.org/edwin/ontology/peq"/>
+                            <rdf:Description rdf:about="https://w3id.org/edwin/ontology/e2"/>
+                        </swrl:arguments>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                                <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#add"/>
+                                <swrl:arguments rdf:parseType="Collection">
+                                    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/e2"/>
+                                    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/peq"/>
+                                    <rdf:Description rdf:about="https://w3id.org/edwin/ontology/e1"/>
+                                </swrl:arguments>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrla:isRuleEnabled>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"></rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">generalization</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/hasNode"/>
+                        <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/g"/>
+                        <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/n1"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/hasNode"/>
+                                <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/g"/>
+                                <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/n2"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/observesSpecializationProperty"/>
+                                        <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/g"/>
+                                        <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/psub"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/contains"/>
+                                                <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/n1"/>
+                                                <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/e1"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                        <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/contains"/>
+                                                        <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/n2"/>
+                                                        <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/e2"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                        <rdf:first>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/isSpecializedBy"/>
+                                                                <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/n1"/>
+                                                                <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/n2"/>
+                                                            </rdf:Description>
+                                                        </rdf:first>
+                                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                        <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#add"/>
+                        <swrl:arguments rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://w3id.org/edwin/ontology/e2"/>
+                            <rdf:Description rdf:about="https://w3id.org/edwin/ontology/psub"/>
+                            <rdf:Description rdf:about="https://w3id.org/edwin/ontology/e1"/>
+                        </swrl:arguments>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrla:isRuleEnabled>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"></rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">specialization</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/hasNode"/>
+                        <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/g"/>
+                        <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/n1"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/hasNode"/>
+                                <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/g"/>
+                                <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/n2"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/observesSpecializationProperty"/>
+                                        <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/g"/>
+                                        <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/psub"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/contains"/>
+                                                <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/n1"/>
+                                                <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/e1"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                        <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/contains"/>
+                                                        <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/n2"/>
+                                                        <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/e2"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                        <rdf:first>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/specializes"/>
+                                                                <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/n1"/>
+                                                                <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/n2"/>
+                                                            </rdf:Description>
+                                                        </rdf:first>
+                                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                        <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#add"/>
+                        <swrl:arguments rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://w3id.org/edwin/ontology/e1"/>
+                            <rdf:Description rdf:about="https://w3id.org/edwin/ontology/psub"/>
+                            <rdf:Description rdf:about="https://w3id.org/edwin/ontology/e2"/>
+                        </swrl:arguments>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrla:isRuleEnabled>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"></rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">type</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/classOfObservedEntities"/>
+                        <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/g"/>
+                        <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/c"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/hasNode"/>
+                                <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/g"/>
+                                <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/n"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="https://w3id.org/edwin/ontology/contains"/>
+                                        <swrl:argument1 rdf:resource="https://w3id.org/edwin/ontology/n"/>
+                                        <swrl:argument2 rdf:resource="https://w3id.org/edwin/ontology/e"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+                        <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#add"/>
+                        <swrl:arguments rdf:parseType="Collection">
+                            <rdf:Description rdf:about="https://w3id.org/edwin/ontology/e"/>
+                            <rdf:Description rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                            <rdf:Description rdf:about="https://w3id.org/edwin/ontology/c"/>
+                        </swrl:arguments>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
