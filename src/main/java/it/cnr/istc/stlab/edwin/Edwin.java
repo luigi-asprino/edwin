@@ -1,6 +1,7 @@
 package it.cnr.istc.stlab.edwin;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
@@ -47,35 +48,15 @@ public class Edwin {
 
 			new File(config.getString("esgFolder")).mkdirs();
 
-//			EquivalenceSetGraphBuilder esgb = EquivalenceSetGraphBuilder.getInstance(config.getString("hdtFilePath"));
-//			EquivalenceSetGraph esg = esgb.build(parameters);
-
-			EquivalenceSetGraph esg_classes = new EquivalenceSetGraph(parameters.getEsgFolder());
-
-			System.out.println("\n\nSubclasses of rdf:Property");
-			System.out.println(esg_classes.getEquivalentOrSubsumedEntities("http://www.w3.org/1999/02/22-rdf-syntax-ns#Property").size());
+			EquivalenceSetGraphBuilder esgb = EquivalenceSetGraphBuilder.getInstance(config.getString("hdtFilePath"));
+			EquivalenceSetGraph esg = esgb.build(parameters);
 			
-			System.out.println("\n\nSubclasses of rdfs:Class");
-			System.out.println(esg_classes.getEquivalentOrSubsumedEntities("http://www.w3.org/2000/01/rdf-schema#Class").size());
+			esg.printSimpleStats();
+			esg.toFile();
 			
-			
-			EquivalenceSetGraph esg_properties = new EquivalenceSetGraph(config.getString("esgPropertiesFolder"));
-			
-			System.out.println("\n\nSubclasses of rdf:type");
-			System.out.println(esg_properties.getEquivalentOrSubsumedEntities("http://www.w3.org/1999/02/22-rdf-syntax-ns#type").size());
-			
-			System.out.println("\n\nSubclasses of rdfs:domain");
-			System.out.println(esg_properties.getEquivalentOrSubsumedEntities("http://www.w3.org/2000/01/rdf-schema#domain").size());
-
-			System.out.println("\n\nSubclasses of rdfs:domain ");
-			System.out.println(esg_properties.getEquivalentOrSubsumedEntities("http://www.w3.org/2000/01/rdf-schema#range").size());
-
-//			esg_classes.printSimpleStats();
 
 		} catch (ConfigurationException e) {
 			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
 		} catch (RocksDBException e) {
 			e.printStackTrace();
 		} catch (InstantiationException e) {
@@ -83,6 +64,9 @@ public class Edwin {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
