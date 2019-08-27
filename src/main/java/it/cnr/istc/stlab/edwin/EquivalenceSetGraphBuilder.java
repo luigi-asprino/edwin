@@ -81,6 +81,11 @@ public class EquivalenceSetGraphBuilder {
 		}
 
 		esg = new EquivalenceSetGraph(p.getEsgFolder());
+		
+		esg.setEquivalencePropertyToObserve(p.getEquivalencePropertyToObserve());
+		esg.setSpecializationPropertyToObserve(p.getSpecializationPropertyToObserve());
+		esg.setEquivalencePropertyForProperties(p.getEquivalencePropertiesForProperties());
+		esg.setSpecializationPropertyForProperties(p.getSpecializationPropertyForProperties());
 
 		equivalencePropertiesToProcess = new HashSet<>();
 		equivalencePropertiesToProcess.add(p.getEquivalencePropertyToObserve());

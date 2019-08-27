@@ -24,23 +24,15 @@
 	</build>
 
 	<properties>
-		<junit.version>3.8.1</junit.version>
 		<apachecommons.version>2.1.1</apachecommons.version>
+		<apachejena.version>3.12.0</apachejena.version>
 		<commons-beanutils.version>1.9.3</commons-beanutils.version>
-		<sl4j.version>1.7.7</sl4j.version>
 		<rocksmap.version>0.0.1</rocksmap.version>
 		<rdfhdtapi.version>2.1-SNAPSHOT</rdfhdtapi.version>
+		<sl4j.version>1.7.7</sl4j.version>
 	</properties>
 
 	<dependencies>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-
 
 		<!-- Commons configuration -->
 		<dependency>
@@ -72,13 +64,39 @@
 			<artifactId>rocksmap</artifactId>
 			<version>${rocksmap.version}</version>
 		</dependency>
-		
+
 		<!-- RDF-HDT API -->
 		<dependency>
 			<groupId>org.rdfhdt</groupId>
 			<artifactId>hdt-java-core</artifactId>
 			<version>${rdfhdtapi.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.jena</groupId>
+					<artifactId>jena-arq</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.jena</groupId>
+					<artifactId>jena-base</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.jena</groupId>
+					<artifactId>jena-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+
+
+		<!-- Apache Jena -->
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>apache-jena-libs</artifactId>
+			<type>pom</type>
+			<version>${apachejena.version}</version>
+		</dependency>
+		
+		
+
 
 
 	</dependencies>

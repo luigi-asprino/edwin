@@ -6,13 +6,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.jena.riot.system.IRIResolver;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +57,9 @@ public final class EquivalenceSetGraph {
 	}
 
 	private void setPropertyFile(String property, String file) {
-		if (!new File(esgFolder + file).exists()) {
+		if (!new File(esgFolder + "/" + file).exists()) {
 			try {
-				FileOutputStream fos = new FileOutputStream(new File(esgFolder + file));
+				FileOutputStream fos = new FileOutputStream(new File(esgFolder + "/" + file));
 				fos.write(property.getBytes());
 				fos.close();
 			} catch (FileNotFoundException e) {
@@ -67,8 +71,8 @@ public final class EquivalenceSetGraph {
 	}
 
 	private String getPropertyFile(String file) throws IOException {
-		if (new File(esgFolder + file).exists()) {
-			BufferedReader br = new BufferedReader(new FileReader(new File(file)));
+		if (new File(esgFolder + "/" + file).exists()) {
+			BufferedReader br = new BufferedReader(new FileReader(new File(esgFolder + "/" + file)));
 			String result = br.readLine();
 			br.close();
 			return result;
@@ -298,36 +302,76 @@ public final class EquivalenceSetGraph {
 	public void toRDF(String file, String base, String esgName) throws IOException {
 		FileOutputStream fos = new FileOutputStream(new File(file));
 
+		logger.info("Triplifying ESG Graph");
+
 		String esgUri = base + esgName;
 
 		fos.write(
 				getTripleString(esgUri, RDF.type.getURI(), EquivalenceSetGraphOntology.EQUIVALENCESETGRAPH).getBytes());
 		fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.observesEquivalenceProperty,
-				this.equivalencePropertyToObserve).getBytes());
+				this.getEquivalencePropertyToObserve()).getBytes());
 		fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.observesSpecializationProperty,
-				this.specializationPropertyToObserve).getBytes());
+				this.getSpecializationPropertyToObserve()).getBytes());
 		fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.equivalencePropertyForPropertiesUsed,
-				this.equivalencePropertyForProperties).getBytes());
+				this.getEquivalencePropertyForProperties()).getBytes());
 		fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.specializationPropertyForPropertiesUsed,
-				this.specializationPropertyForProperties).getBytes());
+				this.getSpecializationPropertyForProperties()).getBytes());
 
 		Iterator<Entry<String, Long>> itID = ID.iterator();
 		while (itID.hasNext()) {
 			Entry<String, Long> entry = itID.next();
-			fos.write(getTripleString(base + entry.getKey(), RDF.type.getURI(), EquivalenceSetGraphOntology.NODE)
+			fos.write(getTripleString(base + entry.getValue(), RDF.type.getURI(), EquivalenceSetGraphOntology.NODE)
 					.getBytes());
 			fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.HASNODE, base + entry.getValue()).getBytes());
-			fos.write(getTripleString(base + entry.getValue(), EquivalenceSetGraphOntology.CONTAINS, entry.getKey())
-					.getBytes());
+
+			if (!IRIResolver.checkIRI(entry.getKey())) {
+				fos.write(getTripleString(base + entry.getValue(), EquivalenceSetGraphOntology.CONTAINS, entry.getKey())
+						.getBytes());
+			} else {
+				String newUri = base + URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8.toString());
+				String malformedURITriple = "<" + newUri + "> <" + RDFS.comment.getURI()
+						+ "> \"Percent encoding of the original malformed URI "
+						+ entry.getKey().replaceAll("\"", "\\\\\"") + " \" .\n";
+				fos.write(getTripleString(base + entry.getValue(), EquivalenceSetGraphOntology.CONTAINS, newUri)
+						.getBytes());
+				fos.write(malformedURITriple.getBytes());
+			}
+
 		}
 
 		Iterator<Entry<Long, Collection<String>>> itIS = IS.iterator();
 		while (itIS.hasNext()) {
 			Entry<Long, Collection<String>> entry = itIS.next();
+
+			Collection<Long> superNodes = H.get(entry.getKey());
+			Set<String> superEntities = new HashSet<>();
+
+			if (superNodes != null) {
+				for (Long superNode : superNodes) {
+					superEntities.addAll(IS.get(superNode));
+				}
+			}
+
 			for (String s1 : entry.getValue()) {
+
+				if (IRIResolver.checkIRI(s1)) {
+					s1 = base + URLEncoder.encode(s1, StandardCharsets.UTF_8.toString());
+				}
+				
 				for (String s2 : entry.getValue()) {
+
+
+					if (IRIResolver.checkIRI(s2)) {
+						s2 = base + URLEncoder.encode(s2, StandardCharsets.UTF_8.toString());
+					}
+
 					fos.write(getTripleString(s1, this.equivalencePropertyToObserve, s2).getBytes());
 					fos.write(getTripleString(s2, this.equivalencePropertyToObserve, s1).getBytes());
+
+				}
+
+				for (String superEntity : superEntities) {
+					fos.write(getTripleString(s1, this.specializationPropertyToObserve, superEntity).getBytes());
 				}
 			}
 		}
@@ -340,9 +384,12 @@ public final class EquivalenceSetGraph {
 						.getBytes());
 				fos.write(getTripleString(base + l, EquivalenceSetGraphOntology.isSpecializedBy, base + entry.getKey())
 						.getBytes());
+
 			}
 
 		}
+
+		logger.info("Triplification completed");
 
 		fos.close();
 	}
