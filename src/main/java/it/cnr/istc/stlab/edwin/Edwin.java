@@ -1,6 +1,5 @@
 package it.cnr.istc.stlab.edwin;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.configuration2.Configuration;
@@ -44,8 +43,8 @@ public class Edwin {
 		}
 	}
 
-	private static void computeESG(Configuration config) throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException, IOException, RocksDBException {
+	private static EquivalenceSetGraph computeESG(Configuration config) throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException, IOException, RocksDBException {
 
 		EquivalenceSetGraphBuilderParameters parameters = EquivalenceSetGraphBuilderParameters.getParameters(config);
 
@@ -58,17 +57,19 @@ public class Edwin {
 		esg.toFile();
 		esg.toRDF(parameters.getEsgFolder() + "/esg.nt", "https://w3id.org/edwin/", "properties");
 
+		return esg;
+
 	}
-	
-	public static void computeESG(String configFile) {
+
+	public static EquivalenceSetGraph computeESG(String configFile) {
 		try {
 
 			logger.info("Edwin v0.0.1");
-			
+
 			Configurations configs = new Configurations();
 			Configuration config = configs.properties(configFile);
 
-			computeESG(config);
+			return computeESG(config);
 
 		} catch (ConfigurationException e) {
 			e.printStackTrace();
@@ -83,6 +84,8 @@ public class Edwin {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		return null;
 	}
 
 }
