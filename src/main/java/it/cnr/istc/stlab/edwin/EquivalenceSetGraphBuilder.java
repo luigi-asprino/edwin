@@ -17,7 +17,7 @@ public class EquivalenceSetGraphBuilder {
 
 	private String hdtFilePath;
 	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilder.class);
-	private long lastIdentitySetId = 0;
+	private long lastIdentitySetId = 0, numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples = 0L;
 	private static EquivalenceSetGraphBuilder instance;
 	private Set<String> equivalencePropertiesToProcess, equivalencePropertiesProcessed,
 			specializationPropertiesToProcess, specializationPropertiesProcessed;
@@ -50,7 +50,8 @@ public class EquivalenceSetGraphBuilder {
 			// TODO check if semantics for building the graph is compliant with semantics of
 			// SpecializationPropertyForProperties and EquivalencePropertiesForProperties
 
-			// Getting implicit equivalent or subproperties of properties to observe
+			// Getting properties that are implicitly equivalent to or subsumed by the
+			// properties to observe
 			logger.info("Adding properties equivalent or subsumed to: ", p.getEquivalencePropertyToObserve());
 			EquivalenceSetGraph esgProperties = new EquivalenceSetGraph(parameters.getEsgPropertiesFolder());
 			Set<String> equivalenceProperties = esgProperties
@@ -81,7 +82,7 @@ public class EquivalenceSetGraphBuilder {
 		}
 
 		esg = new EquivalenceSetGraph(p.getEsgFolder());
-		
+
 		esg.setEquivalencePropertyToObserve(p.getEquivalencePropertyToObserve());
 		esg.setSpecializationPropertyToObserve(p.getSpecializationPropertyToObserve());
 		esg.setEquivalencePropertyForProperties(p.getEquivalencePropertiesForProperties());
@@ -113,9 +114,80 @@ public class EquivalenceSetGraphBuilder {
 		// by other observed entities)
 		if (parameters.getObservedEntitiesSelector() != null) {
 			parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalenceSetGraph(esg, hdt);
+			if (updatePropertySetsUsignGraph) {
+				parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(esg,
+						esg, hdt);
+			} else {
+				if (parameters.getEsgPropertiesFolder() != null) {
+					EquivalenceSetGraph esgProperties = new EquivalenceSetGraph(parameters.getEsgPropertiesFolder());
+					parameters.getObservedEntitiesSelector()
+							.addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(esg, esgProperties, hdt);
+				}
+			}
+
+			if (parameters.getEsgClassesFolder() != null) {
+				EquivalenceSetGraph esgClasses = new EquivalenceSetGraph(parameters.getEsgClassesFolder());
+				parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(esg,
+						esgClasses, hdt);
+			}
 		}
 
+		// compute extensional size of the equivalence sets
+		if (parameters.getExtensionalSizeEstimator() != null) {
+
+			// Computing extensional size of the observed entities
+			parameters.getExtensionalSizeEstimator().estimateObservedEntitiesSize(esg, hdt);
+
+			if (updatePropertySetsUsignGraph) {
+				parameters.getExtensionalSizeEstimator().estimateObservedEntitiesSizeUsingESGForProperties(esg, esg,
+						hdt);
+			} else {
+				if (parameters.getEsgPropertiesFolder() != null) {
+					EquivalenceSetGraph esgProperties = new EquivalenceSetGraph(parameters.getEsgPropertiesFolder());
+					parameters.getExtensionalSizeEstimator().estimateObservedEntitiesSizeUsingESGForProperties(esg,
+							esgProperties, hdt);
+				}
+			}
+
+			// Computing extensional direct size of the equivalence sets
+			parameters.getExtensionalSizeEstimator().estimateEquivalenceSetDirectExtensionalSize(esg);
+
+			// Computing extensional indirect size of the equivalence sets
+			parameters.getExtensionalSizeEstimator().estimateEquivalenceSetIndirectExtensionalSize(esg);
+
+		}
+
+		// compute stats
+		computeStats();
+
 		return esg;
+	}
+
+	private void computeStats() throws IOException {
+
+		// save equivalence and specialization properties
+		esg.getStats().equivalencePropertiesUsed = equivalencePropertiesProcessed;
+		esg.getStats().specializationPropertiesUsed = specializationPropertiesProcessed;
+
+		// compute stats
+		esg.getStats().numberOfEquivalenceTriples = numberOfEquivalenceTriples;
+		esg.getStats().numberOfSpecializationTriples = numberOfSpecializationTriples;
+
+		esg.getStats().oe = esg.ID.keySet().size();
+		esg.getStats().es = esg.IS.keySet().size();
+		
+		EquivalenceSetGraphAnalyser.countBlankNodes(esg);
+		EquivalenceSetGraphAnalyser.countEdges(esg);
+		EquivalenceSetGraphAnalyser.computeHeight(esg);
+		EquivalenceSetGraphAnalyser.countIsoltatedEquivalenceSets(esg);
+		EquivalenceSetGraphAnalyser.countTopLevelEquivalenceSetsAndAssessEmptyNodes(esg);
+		EquivalenceSetGraphAnalyser.computeDistributionOfExtensionalSizeOfEquivalenceSets(esg);
+		EquivalenceSetGraphAnalyser.countObservedEntitiesWithEmptyExtesion(esg);
+		EquivalenceSetGraphAnalyser.countEquivalenceSetsWithEmptyExtension(esg);
+
+		// save esg statistics
+		esg.saveStats();
+
 	}
 
 	private void computeEquivalentSets() throws IOException {
@@ -131,6 +203,8 @@ public class EquivalenceSetGraphBuilder {
 				IteratorTripleString it = hdt.search("", p_eq, "");
 				logger.info("Number of explicit statements {}", it.estimatedNumResults());
 				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = it.estimatedNumResults();
+				numberOfEquivalenceTriples += it.estimatedNumResults();
+
 				while (it.hasNext()) {
 
 					if (numberOfStatementsProcessed % 10000 == 0) {
@@ -316,6 +390,7 @@ public class EquivalenceSetGraphBuilder {
 				logger.info("Computing Specialization Relations using {}", propertyToProcess);
 				IteratorTripleString it = hdt.search("", propertyToProcess, "");
 				logger.info("Number of explicit statements {}", it.estimatedNumResults());
+				numberOfSpecializationTriples += it.estimatedNumResults();
 				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = it.estimatedNumResults();
 				while (it.hasNext()) {
 					if (numberOfStatementsProcessed % 10000 == 0) {

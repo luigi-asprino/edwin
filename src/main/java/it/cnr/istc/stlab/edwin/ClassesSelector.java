@@ -10,7 +10,7 @@ import org.rdfhdt.hdt.triples.TripleString;
 
 public class ClassesSelector implements ObservedEntitiesSelector {
 
-	public void addSpareEntitiesToEquivalentSetGraph(EquivalenceSetGraph esg_classes,
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(EquivalenceSetGraph esg,
 			EquivalenceSetGraph esg_properties, HDT hdt) {
 
 		long id = esg_properties.getMaxId();
@@ -20,9 +20,8 @@ public class ClassesSelector implements ObservedEntitiesSelector {
 				.getEquivalentOrSubsumedEntities("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 		Set<String> classClasses = new HashSet<>();
 		classClasses.add("http://www.w3.org/2000/01/rdf-schema#Class");
-		if (esg_classes != null) {
-			classClasses
-					.addAll(esg_classes.getEquivalentOrSubsumedEntities("http://www.w3.org/2000/01/rdf-schema#Class"));
+		if (esg != null) {
+			classClasses.addAll(esg.getEquivalentOrSubsumedEntities("http://www.w3.org/2000/01/rdf-schema#Class"));
 		}
 		for (String typePredicate : typePredicates) {
 			for (String classClass : classClasses) {
@@ -30,9 +29,18 @@ public class ClassesSelector implements ObservedEntitiesSelector {
 					IteratorTripleString its = hdt.search("", typePredicate, classClass);
 					while (its.hasNext()) {
 						TripleString ts = its.next();
-						if (!esg_classes.ID.containsKey(ts.getSubject().toString())) {
-							esg_classes.ID.put(ts.getSubject().toString(), ++id);
-							esg_classes.IS.put(id, ts.getSubject().toString());
+						if (!esg.ID.containsKey(ts.getSubject().toString())) {
+							esg.ID.put(ts.getSubject().toString(), ++id);
+							esg.IS.put(id, ts.getSubject().toString());
+						}
+					}
+
+					IteratorTripleString its_type = hdt.search("", typePredicate, "");
+					while (its_type.hasNext()) {
+						TripleString ts = its.next();
+						if (!esg.ID.containsKey(ts.getObject().toString())) {
+							esg.ID.put(ts.getObject().toString(), ++id);
+							esg.IS.put(id, ts.getObject().toString());
 						}
 					}
 				} catch (NotFoundException e) {
@@ -55,9 +63,9 @@ public class ClassesSelector implements ObservedEntitiesSelector {
 						IteratorTripleString its2 = hdt.search("", ts.getSubject(), "");
 						while (its2.hasNext()) {
 							TripleString ts2 = its2.next();
-							if (!esg_classes.ID.containsKey(ts2.getSubject().toString())) {
-								esg_classes.ID.put(ts2.getSubject().toString(), ++id);
-								esg_classes.IS.put(id, ts2.getSubject().toString());
+							if (!esg.ID.containsKey(ts2.getSubject().toString())) {
+								esg.ID.put(ts2.getSubject().toString(), ++id);
+								esg.IS.put(id, ts2.getSubject().toString());
 							}
 						}
 					}
@@ -96,6 +104,12 @@ public class ClassesSelector implements ObservedEntitiesSelector {
 
 	@Override
 	public void addSpareEntitiesToEquivalenceSetGraph(EquivalenceSetGraph esg_classes, HDT hdt) {
+
+	}
+
+	@Override
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(EquivalenceSetGraph esg,
+			EquivalenceSetGraph esg_classes, HDT hdt) {
 
 	}
 

@@ -6,8 +6,6 @@ import java.io.IOException;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.jena.rdfconnection.RDFConnection;
-import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +27,7 @@ public class Edwin {
 			Configurations configs = new Configurations();
 			Configuration config = configs.properties(configFile);
 
-			boolean computeESG = false, testRDF = true;
-
-			if (computeESG)
-				computeESG(config);
-
-			if (testRDF)
-				testRDF(config);
+			computeESG(config);
 
 		} catch (ConfigurationException e) {
 			e.printStackTrace();
@@ -52,22 +44,9 @@ public class Edwin {
 		}
 	}
 
-	private static void testRDF(Configuration config) throws RocksDBException, IOException {
-
-		EquivalenceSetGraph esg = EquivalenceSetGraphLoader
-				.loadEquivalenceSetGraphFromFolder(config.getString("esgFolder"));
-		esg.toRDF(config.getString("esgFolder") + "/esg.nt", "https://w3id.org/edwin/", "properties");
-
-		logger.info("Loading triplified ESG");
-		try (RDFConnection conn = RDFConnectionFactory.connectFuseki("http://localhost:3030/esg/")) {
-			conn.load(config.getString("esgFolder") + "/esg.nt");
-		}
-		logger.info("Triplified ESG loaded!");
-
-	}
-
 	private static void computeESG(Configuration config) throws InstantiationException, IllegalAccessException,
 			ClassNotFoundException, IOException, RocksDBException {
+
 		EquivalenceSetGraphBuilderParameters parameters = new EquivalenceSetGraphBuilderParameters();
 
 		parameters.setEquivalencePropertyToObserve(config.getString("equivalencePropertyToObserve"));
@@ -80,11 +59,23 @@ public class Edwin {
 		parameters.addNotSpecializationProperties(config.getString("notSpecializationProperties").split(","));
 
 		parameters.setEsgFolder(config.getString("esgFolder"));
-		parameters.setEsgPropertiesFolder(config.getString("esgPropertiesFolder"));
+
+		if (config.containsKey("esgPropertiesFolder")) {
+			parameters.setEsgPropertiesFolder(config.getString("esgPropertiesFolder"));
+		}
+
+		if (config.containsKey("esgClassesFolder")) {
+			parameters.setEsgPropertiesFolder(config.getString("esgClassesFolder"));
+		}
 
 		if (config.containsKey("observedEntitiesSelector")) {
 			parameters.setObservedEntitiesSelector((ObservedEntitiesSelector) Class
 					.forName(config.getString("observedEntitiesSelector")).newInstance());
+		}
+
+		if (config.containsKey("extensionalSizeEstimator")) {
+			parameters.setExtensionalSizeEstimator((ExtensionalSizeEstimator) Class
+					.forName(config.getString("extensionalSizeEstimator")).newInstance());
 		}
 
 		new File(config.getString("esgFolder")).mkdirs();
@@ -93,8 +84,10 @@ public class Edwin {
 		EquivalenceSetGraph esg = esgb.build(parameters);
 
 		esg.printSimpleStats();
+		esg.getStats().toTSVFile(config.getString("esgFolder") + "/stats.tsv");
+		esg.toEdgeListNodeList(config.getString("esgFolder"));
 		esg.toFile();
-		esg.toRDF(config.getString("esgFolder") + "esg.rdf", "https://w3id.org/edwin/", "properties");
+		esg.toRDF(config.getString("esgFolder") + "/esg.nt", "https://w3id.org/edwin/", "properties");
 
 	}
 

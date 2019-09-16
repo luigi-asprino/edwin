@@ -2,7 +2,7 @@ package it.cnr.istc.stlab.edwin;
 
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Map.Entry;
 
 import org.rdfhdt.hdt.exceptions.NotFoundException;
 import org.rdfhdt.hdt.hdt.HDT;
@@ -15,11 +15,11 @@ public class PropertySizeEstimator implements ExtensionalSizeEstimator {
 
 	@Override
 	public void estimateObservedEntitiesSize(EquivalenceSetGraph esg, HDT hdt) {
-		logger.info("Computing size of observed properties");
+		logger.info("Computing extensional size of observed properties");
 
 		long processed = 0;
 		long toProcess = esg.numberOfObservedEntities();
-		Iterator<Map.Entry<String, Long>> it = esg.ID.iterator();
+		Iterator<Entry<String, Long>> it = esg.ID.iterator();
 		long start = System.currentTimeMillis();
 		long current = System.currentTimeMillis();
 		long elapsed = 0L;
@@ -31,7 +31,8 @@ public class PropertySizeEstimator implements ExtensionalSizeEstimator {
 				long end = System.currentTimeMillis() + ((long) (timePerProperty * (toProcess - processed)));
 				logger.info("Processed {}/{} end: {}", processed, toProcess, new Date(end));
 			}
-			Map.Entry<String, Long> entry = it.next();
+			processed++;
+			Entry<String, Long> entry = it.next();
 			long size = 0L;
 			try {
 				size = hdt.search("", entry.getKey(), "").estimatedNumResults();
@@ -40,6 +41,14 @@ public class PropertySizeEstimator implements ExtensionalSizeEstimator {
 			}
 			esg.oe_size.put(entry.getKey(), size);
 		}
+
+		logger.info("Extensional size of observed properties computed!");
+
+		
+	}
+
+	public void estimateObservedEntitiesSizeUsingESGForProperties(EquivalenceSetGraph esg,
+			EquivalenceSetGraph esg_properties, HDT hdt) {
 
 	}
 

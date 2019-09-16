@@ -32,6 +32,7 @@ public final class EquivalenceSetGraph {
 	RocksMultiMap<Long, String> IS;
 	RocksMultiMap<Long, Long> H, H_inverse, C, C_inverse;
 	RocksMap<String, Long> oe_size;
+	RocksMap<Long, Long> DES, IES;
 	private String esgFolder, equivalencePropertyForProperties, equivalencePropertyToObserve,
 			specializationPropertyToObserve, specializationPropertyForProperties;
 	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraph.class);
@@ -39,6 +40,10 @@ public final class EquivalenceSetGraph {
 			specializationPropertyToObserveFile = "specializationPropertyObserved",
 			equivalencePropertyForPropertiesFile = "equivalencePropertyForProperties",
 			specializationPropertyForPropertiesFile = "specializationPropertyForProperties";
+
+	private static final long PROGRESS_COUNT = 10000;
+
+	private EquivalenceSetGraphStats stats = new EquivalenceSetGraphStats();
 
 	EquivalenceSetGraph(String esgFolder) throws RocksDBException {
 		this.esgFolder = esgFolder;
@@ -53,6 +58,9 @@ public final class EquivalenceSetGraph {
 		C_inverse = new RocksMultiMap<>(esgFolder + "/C_inverse", new LongRocksTransformer(),
 				new LongRocksTransformer());
 		oe_size = new RocksMap<>(esgFolder + "/OE_size", new StringRocksTransformer(), new LongRocksTransformer());
+
+		DES = new RocksMap<>(esgFolder + "/DES", new LongRocksTransformer(), new LongRocksTransformer());
+		IES = new RocksMap<>(esgFolder + "/IES", new LongRocksTransformer(), new LongRocksTransformer());
 
 	}
 
@@ -177,6 +185,8 @@ public final class EquivalenceSetGraph {
 		H_inverse.toFile();
 		C.toFile();
 		C_inverse.toFile();
+		DES.toFile();
+		IES.toFile();
 	}
 
 	public void printSimpleStats() {
@@ -348,7 +358,13 @@ public final class EquivalenceSetGraph {
 
 			if (superNodes != null) {
 				for (Long superNode : superNodes) {
-					superEntities.addAll(IS.get(superNode));
+
+					for (String s2 : IS.get(superNode)) {
+						if (IRIResolver.checkIRI(s2)) {
+							s2 = base + URLEncoder.encode(s2, StandardCharsets.UTF_8.toString());
+						}
+						superEntities.add(s2);
+					}
 				}
 			}
 
@@ -357,9 +373,8 @@ public final class EquivalenceSetGraph {
 				if (IRIResolver.checkIRI(s1)) {
 					s1 = base + URLEncoder.encode(s1, StandardCharsets.UTF_8.toString());
 				}
-				
-				for (String s2 : entry.getValue()) {
 
+				for (String s2 : entry.getValue()) {
 
 					if (IRIResolver.checkIRI(s2)) {
 						s2 = base + URLEncoder.encode(s2, StandardCharsets.UTF_8.toString());
@@ -406,6 +421,62 @@ public final class EquivalenceSetGraph {
 		sb.append("> .\n");
 
 		return sb.toString();
+	}
+
+	public EquivalenceSetGraphStats getStats() {
+		return stats;
+	}
+
+	public void setStats(EquivalenceSetGraphStats stats) {
+		this.stats = stats;
+	}
+
+	public void saveStats() throws IOException {
+		FileOutputStream fos = new FileOutputStream(new File(esgFolder + "/stats"));
+		fos.write(stats.getTextualFileFormat().getBytes());
+		fos.close();
+	}
+
+	public void toEdgeListNodeList(String folderOut) throws IOException {
+
+		logger.info("Export ESG as Edge List and Node List");
+
+		new File(folderOut).mkdirs();
+
+		FileOutputStream fos_nodelist = new FileOutputStream(new File(folderOut + "/nodelist.tsv"));
+		Iterator<Entry<Long, Collection<String>>> it_nodes = IS.iterator();
+		long numberOfNodes = IS.keySet().size(), c = 0;
+
+		while (it_nodes.hasNext()) {
+			if (c > 0 && c % PROGRESS_COUNT == 0) {
+				logger.info("Exported {}/{} nodes", c, numberOfNodes);
+			}
+			c++;
+			Entry<Long, Collection<String>> entry = it_nodes.next();
+			String line = String.format("%d\n", entry.getKey());
+			fos_nodelist.write(line.getBytes());
+		}
+		fos_nodelist.flush();
+		fos_nodelist.close();
+
+		FileOutputStream fos_edgelist = new FileOutputStream(new File(folderOut + "/edgelist.tsv"));
+		Iterator<Entry<Long, Collection<Long>>> it = H.iterator();
+		c = 0;
+
+		while (it.hasNext()) {
+			if (c > 0 && c % PROGRESS_COUNT == 0) {
+				logger.info("Exported {} edges", c);
+			}
+			c++;
+			Entry<Long, Collection<Long>> entry = it.next();
+			for (Long t : entry.getValue()) {
+				String line = String.format("%d\t%d\n", entry.getKey(), t);
+				fos_edgelist.write(line.getBytes());
+			}
+		}
+		fos_edgelist.flush();
+		fos_edgelist.close();
+
 	}
 
 }

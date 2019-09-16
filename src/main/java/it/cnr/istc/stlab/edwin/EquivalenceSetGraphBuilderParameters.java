@@ -9,12 +9,12 @@ public class EquivalenceSetGraphBuilderParameters {
 	private String esgFolder;
 
 	private String equivalencePropertyToObserve, specializationPropertyToObserve, specializationPropertyForProperties,
-			equivalencePropertiesForProperties, esgPropertiesFolder;
-	
+			equivalencePropertiesForProperties, esgPropertiesFolder, esgClassesFolder;
+
 	private Set<String> notEquivalenceProperties = new HashSet<>();
 	private Set<String> notSpecializationProperties = new HashSet<>();
 	private ObservedEntitiesSelector observedEntitiesSelector;
-
+	private ExtensionalSizeEstimator extensionalSizeEstimator;
 
 	public String getEsgPropertiesFolder() {
 		return esgPropertiesFolder;
@@ -24,7 +24,6 @@ public class EquivalenceSetGraphBuilderParameters {
 		this.esgPropertiesFolder = esgPropertiesFolder;
 	}
 
-	
 	public String getEsgFolder() {
 		return esgFolder;
 	}
@@ -113,14 +112,31 @@ public class EquivalenceSetGraphBuilderParameters {
 		this.equivalencePropertiesForProperties = equivalencePropertiesForProperties;
 	}
 
+	public String getEsgClassesFolder() {
+		return esgClassesFolder;
+	}
+
+	public void setEsgClassesFolder(String esgClassesFolder) {
+		this.esgClassesFolder = esgClassesFolder;
+	}
+
 	@Override
 	public String toString() {
 		return "EquivalenceSetGraphBuilderParameters [esgFolder=" + esgFolder + ", equivalencePropertyToObserve="
 				+ equivalencePropertyToObserve + ", specializationPropertyToObserve=" + specializationPropertyToObserve
 				+ ", specializationPropertyForProperties=" + specializationPropertyForProperties
 				+ ", equivalencePropertiesForProperties=" + equivalencePropertiesForProperties
+				+ ", esgPropertiesFolder=" + esgPropertiesFolder + ", esgClassesFolder=" + esgClassesFolder
 				+ ", notEquivalenceProperties=" + notEquivalenceProperties + ", notSpecializationProperties="
 				+ notSpecializationProperties + ", observedEntitiesSelector=" + observedEntitiesSelector + "]";
+	}
+
+	public ExtensionalSizeEstimator getExtensionalSizeEstimator() {
+		return extensionalSizeEstimator;
+	}
+
+	public void setExtensionalSizeEstimator(ExtensionalSizeEstimator extensionalSizeEstimator) {
+		this.extensionalSizeEstimator = extensionalSizeEstimator;
 	}
 
 }

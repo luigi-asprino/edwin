@@ -42,7 +42,7 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 
 	}
 
-	public void addSpareEntitiesToEquivalentSetGraph(EquivalenceSetGraph esg_properties,
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(EquivalenceSetGraph esg_properties,
 			EquivalenceSetGraph esg_classes, HDT hdt) {
 
 		long id = esg_properties.getMaxId();
@@ -135,6 +135,13 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(EquivalenceSetGraph esg,
+			EquivalenceSetGraph esg_properties, HDT hdt) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
