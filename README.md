@@ -67,7 +67,7 @@ esgPropertiesFolder=/path/to/ESG/for/properties
 esgClassesFolder=/path/to/ESG/for/classes
 
 # MANDATORY: The path where the ESG will be stored
-esgFolder=/Users/lgu/Desktop/ESGs/properties_1
+esgFolder=/path/to/esgFolder
 ```
 
 ### Publications
