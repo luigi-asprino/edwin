@@ -1,5 +1,6 @@
 package it.cnr.istc.stlab.edwin;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -40,6 +41,8 @@ public class EquivalenceSetGraphBuilder {
 	public EquivalenceSetGraph build(EquivalenceSetGraphBuilderParameters p) throws RocksDBException, IOException {
 
 		parameters = p;
+
+		new File(parameters.getEsgFolder()).mkdirs();
 
 		boolean updatePropertySetsUsignGraph = p.getEquivalencePropertyToObserve()
 				.equals(p.getEquivalencePropertiesForProperties())
@@ -175,7 +178,7 @@ public class EquivalenceSetGraphBuilder {
 
 		esg.getStats().oe = esg.ID.keySet().size();
 		esg.getStats().es = esg.IS.keySet().size();
-		
+
 		EquivalenceSetGraphAnalyser.countBlankNodes(esg);
 		EquivalenceSetGraphAnalyser.countEdges(esg);
 		EquivalenceSetGraphAnalyser.computeHeight(esg);

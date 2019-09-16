@@ -7,6 +7,10 @@ A framework for building and analysing Equivalence Set Graphs.
 Before running Edwin, make sure that [RocksMap](https://github.com/luigi-asprino/rocks-map) is correctly installed on your machine.
 
 
+#### Usage
+
+In order to compute an Equivalence Set Graph from a RDF-HDT file 
+
 ### Publications
 
 For citing Edwin in academic papers please use:

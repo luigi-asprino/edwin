@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.configuration2.Configuration;
+
 public class EquivalenceSetGraphBuilderParameters {
 
 	private String esgFolder;
@@ -137,6 +139,41 @@ public class EquivalenceSetGraphBuilderParameters {
 
 	public void setExtensionalSizeEstimator(ExtensionalSizeEstimator extensionalSizeEstimator) {
 		this.extensionalSizeEstimator = extensionalSizeEstimator;
+	}
+	
+	public static EquivalenceSetGraphBuilderParameters getParameters(Configuration config) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		EquivalenceSetGraphBuilderParameters parameters = new EquivalenceSetGraphBuilderParameters();
+
+		parameters.setEquivalencePropertyToObserve(config.getString("equivalencePropertyToObserve"));
+		parameters.setEquivalencePropertiesForProperties(config.getString("equivalencePropertyForProperties"));
+
+		parameters.setSpecializationPropertyToObserve(config.getString("specializationPropertyToObserve"));
+		parameters.setSpecializationPropertyForProperties(config.getString("specializationPropertyForProperties"));
+
+		parameters.addNotEquivalenceProperties(config.getString("notEquivalenceProperties").split(","));
+		parameters.addNotSpecializationProperties(config.getString("notSpecializationProperties").split(","));
+
+		parameters.setEsgFolder(config.getString("esgFolder"));
+
+		if (config.containsKey("esgPropertiesFolder")) {
+			parameters.setEsgPropertiesFolder(config.getString("esgPropertiesFolder"));
+		}
+
+		if (config.containsKey("esgClassesFolder")) {
+			parameters.setEsgPropertiesFolder(config.getString("esgClassesFolder"));
+		}
+
+		if (config.containsKey("observedEntitiesSelector")) {
+			parameters.setObservedEntitiesSelector((ObservedEntitiesSelector) Class
+					.forName(config.getString("observedEntitiesSelector")).newInstance());
+		}
+
+		if (config.containsKey("extensionalSizeEstimator")) {
+			parameters.setExtensionalSizeEstimator((ExtensionalSizeEstimator) Class
+					.forName(config.getString("extensionalSizeEstimator")).newInstance());
+		}
+		
+		return parameters;
 	}
 
 }
