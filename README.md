@@ -62,7 +62,7 @@ observedEntitiesSelector=it.cnr.istc.stlab.edwin.PropertiesSelector
 # OPTIONAL: A class that implements a set of criteria for estimating the extensional size of the observed entities
 extensionalSizeEstimator=it.cnr.istc.stlab.edwin.PropertySizeEstimator
 
-# OPTIONAL: A precomputed ESG for properties and for classes (these ESGs might be useful for methods for selecting observed entities and estimatica extensional size)
+# OPTIONAL: A precomputed ESG for properties and for classes (these ESGs might be useful for methods for selecting observed entities and estimate their extensional size)
 esgPropertiesFolder=/path/to/ESG/for/properties
 esgClassesFolder=/path/to/ESG/for/classes
 
