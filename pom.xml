@@ -31,7 +31,6 @@
 		<rocksmap.version>0.0.1</rocksmap.version>
 		<rdfhdtapi.version>2.1-SNAPSHOT</rdfhdtapi.version>
 		<sl4j.version>1.7.7</sl4j.version>
-		<webgraph.version>3.6.2</webgraph.version>
 	</properties>
 
 	<dependencies>
@@ -105,14 +104,6 @@
 			<version>${apachejena.version}</version>
 		</dependency>
 
-
-		<!-- WebGraph -->
-
-		<dependency>
-			<groupId>it.unimi.dsi</groupId>
-			<artifactId>webgraph</artifactId>
-			<version>${webgraph.version}</version>
-		</dependency>
 
 
 
