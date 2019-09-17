@@ -70,6 +70,10 @@ esgClassesFolder=/path/to/ESG/for/classes
 esgFolder=/path/to/esgFolder
 ```
 
+#### Output
+
+
+
 ### Publications
 
 For citing Edwin in academic papers please use:
