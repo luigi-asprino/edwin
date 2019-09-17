@@ -38,22 +38,22 @@ Edwin.computeESG("/path/to/configuration/file");
 # MANDATORY: Path to RDF-HDT file to analyse
 hdtFilePath=/Volumes/L2TB/LOD_a_lot/LOD_a_lot_v1.hdt
 
-# MANDATORY: URI of the equivalence property to observe
+# MANDATORY: URI of the equivalence property to observe (cf. [1])
 equivalencePropertyToObserve=http://www.w3.org/2002/07/owl#equivalentProperty
 
-# MANDATORY: URI of the equivalence property to use for retrieving equivalence relations among properties
+# MANDATORY: URI of the equivalence property to use for retrieving equivalence relations among properties  (cf. [1])
 equivalencePropertyForProperties=http://www.w3.org/2002/07/owl#equivalentProperty
 
-# OPTIONAL: A list of properties to not be considered as equivalence properties
+# OPTIONAL: A list of properties to not be considered as equivalence properties (cf. [1])
 notEquivalenceProperties=http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.w3.org/2000/01/rdf-schema#subClassOf,http://www.w3.org/2002/07/owl#equivalentClass
 
-# MANDATORY: URI of the specialization property to observe
+# MANDATORY: URI of the specialization property to observe (cf. [1])
 specializationPropertyToObserve=http://www.w3.org/2000/01/rdf-schema#subPropertyOf
 
-# MANDATORY: URI of the specialization property to use for retrieving specialization relations among properties
+# MANDATORY: URI of the specialization property to use for retrieving specialization relations among properties (cf. [1])
 specializationPropertyForProperties=http://www.w3.org/2000/01/rdf-schema#subPropertyOf
 
-# OPTIONAL: A list of properties to not be considered as specialization properties
+# OPTIONAL: A list of properties to not be considered as specialization properties (cf. [1])
 notSpecializationProperties=http://www.w3.org/1999/02/22-rdf-syntax-ns#type,http://www.w3.org/2000/01/rdf-schema#subClassOf,http://www.w3.org/2002/07/owl#equivalentClass
 
 # OPTIONAL: A class that implements a set of criteria for selecting entities to observe
@@ -72,15 +72,24 @@ esgFolder=/path/to/esgFolder
 
 #### Output
 
+In esgFolder you can find:
+
+1. The computed ESG is stored in a number of key-value maps and can be loaded  from Java as follows:
+```
+EquivalenceSetGraph esg = EquivalenceSetGraphLoader.loadEquivalenceSetGraphFromFolder("/path/to/esgFolder");
+```
+2. A TSV file (stats.tsv) that summarizes a set of statistics computed on the ESG.
+3. Two TSV files (nodelist.tsv and edgelist.tsv) that allow to analyse the structural features of the graph using [SNAP](http://snap.stanford.edu/snappy/index.html). An analysis of the connected components of the ESG is performed by the script ``src/main/python/compute_graph_stats.py``. This script takes as input the folder where the nodelist.tsv and edgelist.tsv are stored (which is /path/to/esgFolder by default) and the path where to store the connected components of the graph.
+4. The triplification of the ESG following the [Edwin Ontology](https://w3id.org/edwin/ontology/) (cf. [2]).
 
 
 ### Publications
 
 For citing Edwin in academic papers please use:
 
-* Luigi Asprino, Wouter Beek, Paolo Ciancarini, Frank van Harmelen and Valentina Presutti. Observing LOD using Equivalent Set Graphs: it is mostly flat and sparsely linked. In: Proceedings of the 18th International Semantic Web Conference (ISWC 2019). (to appear). [Preprint](http://arxiv.org/abs/1906.08097)
+[1] Luigi Asprino, Wouter Beek, Paolo Ciancarini, Frank van Harmelen and Valentina Presutti. Observing LOD using Equivalent Set Graphs: it is mostly flat and sparsely linked. In: Proceedings of the 18th International Semantic Web Conference (ISWC 2019). (to appear). [Preprint](http://arxiv.org/abs/1906.08097)
 
-* Luigi Asprino, Wouter Beek, Paolo Ciancarini, Frank van Harmelen and Valentina Presutti. Triplifying Equivalence Set Graphs. In: Proceedings of the ISWC 2019 Posters & Demonstrations, Industry, and Outrageous Ideas Tracks co-located with 18th International Semantic Web Conference (ISWC 2019) 
+[2] Luigi Asprino, Wouter Beek, Paolo Ciancarini, Frank van Harmelen and Valentina Presutti. Triplifying Equivalence Set Graphs. In: Proceedings of the ISWC 2019 Posters & Demonstrations, Industry, and Outrageous Ideas Tracks co-located with 18th International Semantic Web Conference (ISWC 2019) 
 
 
 #### This framework is named in honor of the American astronomer [Edwin Powell Hubble](https://en.wikipedia.org/wiki/Edwin_Hubble)
