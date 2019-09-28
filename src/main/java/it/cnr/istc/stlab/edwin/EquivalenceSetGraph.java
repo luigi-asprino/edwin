@@ -258,6 +258,8 @@ public final class EquivalenceSetGraph {
 
 	private static void createClosure(RocksMultiMap<Long, Long> hierarchy, RocksMultiMap<Long, Long> closure)
 			throws IOException {
+		
+		logger.info("Compute Closure");
 
 		Set<Long> keys = hierarchy.keySet();
 		int processed = 0;
@@ -274,6 +276,8 @@ public final class EquivalenceSetGraph {
 		}
 		closure.toFile();
 		closure.close();
+		
+		logger.info("Closure Computed!");
 	}
 
 	private static Collection<Long> visitHierarchy(RocksMultiMap<Long, Long> closure,

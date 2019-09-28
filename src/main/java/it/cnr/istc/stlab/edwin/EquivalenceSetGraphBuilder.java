@@ -20,8 +20,8 @@ public class EquivalenceSetGraphBuilder {
 	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilder.class);
 	private long lastIdentitySetId = 0, numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples = 0L;
 	private static EquivalenceSetGraphBuilder instance;
-	private Set<String> equivalencePropertiesToProcess, equivalencePropertiesProcessed,
-			specializationPropertiesToProcess, specializationPropertiesProcessed;
+	private Set<String> equivalencePropertiesToProcess = new HashSet<>(), equivalencePropertiesProcessed= new HashSet<>(),
+			specializationPropertiesToProcess= new HashSet<>(), specializationPropertiesProcessed= new HashSet<>();
 	private EquivalenceSetGraph esg;
 	private static HDT hdt;
 	private EquivalenceSetGraphBuilderParameters parameters;
@@ -55,7 +55,7 @@ public class EquivalenceSetGraphBuilder {
 
 			// Getting properties that are implicitly equivalent to or subsumed by the
 			// properties to observe
-			logger.info("Adding properties equivalent or subsumed to: ", p.getEquivalencePropertyToObserve());
+			logger.info("Adding properties equivalent or subsumed to: {}", p.getEquivalencePropertyToObserve());
 			EquivalenceSetGraph esgProperties = new EquivalenceSetGraph(parameters.getEsgPropertiesFolder());
 			Set<String> equivalenceProperties = esgProperties
 					.getEquivalentOrSubsumedEntities(p.getEquivalencePropertyToObserve());
@@ -91,13 +91,9 @@ public class EquivalenceSetGraphBuilder {
 		esg.setEquivalencePropertyForProperties(p.getEquivalencePropertiesForProperties());
 		esg.setSpecializationPropertyForProperties(p.getSpecializationPropertyForProperties());
 
-		equivalencePropertiesToProcess = new HashSet<>();
 		equivalencePropertiesToProcess.add(p.getEquivalencePropertyToObserve());
-		equivalencePropertiesProcessed = new HashSet<>();
 
-		specializationPropertiesToProcess = new HashSet<>();
 		specializationPropertiesToProcess.add(p.getSpecializationPropertyToObserve());
-		specializationPropertiesProcessed = new HashSet<>();
 
 		long cycle = 0;
 
@@ -111,11 +107,13 @@ public class EquivalenceSetGraphBuilder {
 		}
 
 		// compute specialization closure
+		logger.info("Compute Specialization Closure");
 		esg.computeSpecializationClosure();
 
 		// add spare entities (observed entities that are not equivalent to or subsumed
 		// by other observed entities)
 		if (parameters.getObservedEntitiesSelector() != null) {
+			logger.info("Adding spare entities");
 			parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalenceSetGraph(esg, hdt);
 			if (updatePropertySetsUsignGraph) {
 				parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(esg,

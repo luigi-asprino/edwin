@@ -8,7 +8,7 @@ import org.apache.commons.configuration2.Configuration;
 
 public class EquivalenceSetGraphBuilderParameters {
 
-	private String esgFolder;
+	private String esgFolder, esgName, esgBaseURI;
 
 	private String equivalencePropertyToObserve, specializationPropertyToObserve, specializationPropertyForProperties,
 			equivalencePropertiesForProperties, esgPropertiesFolder, esgClassesFolder;
@@ -122,17 +122,6 @@ public class EquivalenceSetGraphBuilderParameters {
 		this.esgClassesFolder = esgClassesFolder;
 	}
 
-	@Override
-	public String toString() {
-		return "EquivalenceSetGraphBuilderParameters [esgFolder=" + esgFolder + ", equivalencePropertyToObserve="
-				+ equivalencePropertyToObserve + ", specializationPropertyToObserve=" + specializationPropertyToObserve
-				+ ", specializationPropertyForProperties=" + specializationPropertyForProperties
-				+ ", equivalencePropertiesForProperties=" + equivalencePropertiesForProperties
-				+ ", esgPropertiesFolder=" + esgPropertiesFolder + ", esgClassesFolder=" + esgClassesFolder
-				+ ", notEquivalenceProperties=" + notEquivalenceProperties + ", notSpecializationProperties="
-				+ notSpecializationProperties + ", observedEntitiesSelector=" + observedEntitiesSelector + "]";
-	}
-
 	public ExtensionalSizeEstimator getExtensionalSizeEstimator() {
 		return extensionalSizeEstimator;
 	}
@@ -140,8 +129,9 @@ public class EquivalenceSetGraphBuilderParameters {
 	public void setExtensionalSizeEstimator(ExtensionalSizeEstimator extensionalSizeEstimator) {
 		this.extensionalSizeEstimator = extensionalSizeEstimator;
 	}
-	
-	public static EquivalenceSetGraphBuilderParameters getParameters(Configuration config) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+
+	public static EquivalenceSetGraphBuilderParameters getParameters(Configuration config)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		EquivalenceSetGraphBuilderParameters parameters = new EquivalenceSetGraphBuilderParameters();
 
 		parameters.setEquivalencePropertyToObserve(config.getString("equivalencePropertyToObserve"));
@@ -150,8 +140,12 @@ public class EquivalenceSetGraphBuilderParameters {
 		parameters.setSpecializationPropertyToObserve(config.getString("specializationPropertyToObserve"));
 		parameters.setSpecializationPropertyForProperties(config.getString("specializationPropertyForProperties"));
 
-		parameters.addNotEquivalenceProperties(config.getString("notEquivalenceProperties").split(","));
-		parameters.addNotSpecializationProperties(config.getString("notSpecializationProperties").split(","));
+		if (config.containsKey("notEquivalenceProperties")) {
+			parameters.addNotEquivalenceProperties(config.getString("notEquivalenceProperties").split(","));
+		}
+		if (config.containsKey("notSpecializationProperties")) {
+			parameters.addNotSpecializationProperties(config.getString("notSpecializationProperties").split(","));
+		}
 
 		parameters.setEsgFolder(config.getString("esgFolder"));
 
@@ -172,8 +166,45 @@ public class EquivalenceSetGraphBuilderParameters {
 			parameters.setExtensionalSizeEstimator((ExtensionalSizeEstimator) Class
 					.forName(config.getString("extensionalSizeEstimator")).newInstance());
 		}
-		
+
+		if (config.containsKey("esgName")) {
+			parameters.setEsgName(config.getString("esgName"));
+		}
+
+		if (config.containsKey("esgBaseURI")) {
+			parameters.setEsgBaseURI(config.getString("esgBaseURI"));
+		}
+
 		return parameters;
+	}
+
+	public String getEsgName() {
+		return esgName;
+	}
+
+	public void setEsgName(String esgName) {
+		this.esgName = esgName;
+	}
+
+	public String getEsgBaseURI() {
+		return esgBaseURI;
+	}
+
+	public void setEsgBaseURI(String esgBaseURI) {
+		this.esgBaseURI = esgBaseURI;
+	}
+
+	@Override
+	public String toString() {
+		return "EquivalenceSetGraphBuilderParameters [esgFolder=" + esgFolder + ", esgName=" + esgName + ", esgBaseURI="
+				+ esgBaseURI + ", equivalencePropertyToObserve=" + equivalencePropertyToObserve
+				+ ", specializationPropertyToObserve=" + specializationPropertyToObserve
+				+ ", specializationPropertyForProperties=" + specializationPropertyForProperties
+				+ ", equivalencePropertiesForProperties=" + equivalencePropertiesForProperties
+				+ ", esgPropertiesFolder=" + esgPropertiesFolder + ", esgClassesFolder=" + esgClassesFolder
+				+ ", notEquivalenceProperties=" + notEquivalenceProperties + ", notSpecializationProperties="
+				+ notSpecializationProperties + ", observedEntitiesSelector=" + observedEntitiesSelector
+				+ ", extensionalSizeEstimator=" + extensionalSizeEstimator + "]";
 	}
 
 }

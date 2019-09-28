@@ -48,6 +48,8 @@ public class Edwin {
 
 		EquivalenceSetGraphBuilderParameters parameters = EquivalenceSetGraphBuilderParameters.getParameters(config);
 
+		logger.info(parameters.toString());
+
 		EquivalenceSetGraphBuilder esgb = EquivalenceSetGraphBuilder.getInstance(config.getString("hdtFilePath"));
 		EquivalenceSetGraph esg = esgb.build(parameters);
 
@@ -55,7 +57,7 @@ public class Edwin {
 		esg.getStats().toTSVFile(parameters.getEsgFolder() + "/stats.tsv");
 		esg.toEdgeListNodeList(parameters.getEsgFolder());
 		esg.toFile();
-		esg.toRDF(parameters.getEsgFolder() + "/esg.nt", "https://w3id.org/edwin/", "properties");
+		esg.toRDF(parameters.getEsgFolder() + "/esg.nt", parameters.getEsgBaseURI(), parameters.getEsgName());
 
 		return esg;
 
