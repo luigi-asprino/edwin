@@ -18,7 +18,7 @@ public class ClassSelector implements ObservedEntitiesSelector {
 
 		logger.info("Adding spare entities to ESG using ESG for properties.");
 
-		long id = esg_properties.getMaxId();
+		long id = esg.getMaxId();
 
 		// A class is an entity that belongs to rdfs:Class
 		logger.info("Applying heuristics:  A class is the object of a type statement");
@@ -29,25 +29,43 @@ public class ClassSelector implements ObservedEntitiesSelector {
 		logger.info("Number of properties equivalent to or subsumed by rdf:type: {}", typePredicates.size());
 
 		int typePredicatesProcessed = 0;
+		int spareEntitiesAdded = 0;
 
 		for (String typePredicate : typePredicates) {
-			logger.info("Type predicate procesed {}/{}", typePredicatesProcessed, typePredicates.size());
+			logger.info("Type predicate procesed {}/{}: {}", typePredicatesProcessed, typePredicates.size(),
+					typePredicate);
 			try {
 
 				IteratorTripleString its_type = hdt.search("", typePredicate, "");
+				long toProcess = its_type.estimatedNumResults();
+				logger.info("Number of triples {}", toProcess);
+				int processedTriples = 0;
+				String lastClass = null;
 				while (its_type.hasNext()) {
+					if (processedTriples > 0 && processedTriples % 1000000 == 0) {
+						logger.info("Triples processed {}/{}", processedTriples, toProcess);
+					}
+					processedTriples++;
 					TripleString ts = its_type.next();
-					if (!esg.ID.containsKey(ts.getObject().toString())) {
-						esg.ID.put(ts.getObject().toString(), ++id);
-						esg.IS.put(id, ts.getObject().toString());
+					if (!ts.getObject().toString().equals(lastClass)) {
+						if (!esg.ID.containsKey(ts.getObject().toString())) {
+							esg.ID.put(ts.getObject().toString(), ++id);
+							esg.IS.put(id, ts.getObject().toString());
+							spareEntitiesAdded++;
+						}
+						lastClass = ts.getObject().toString();
+					} else {
+						continue;
 					}
 				}
 			} catch (NotFoundException e) {
 				e.printStackTrace();
 			}
 
+			typePredicatesProcessed++;
 		}
-		typePredicatesProcessed++;
+		
+		logger.info("Spare entities added {}", spareEntitiesAdded);
 	}
 
 	@Override

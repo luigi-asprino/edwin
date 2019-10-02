@@ -39,8 +39,15 @@ public interface ExtensionalSizeEstimator {
 
 		logger.info("Computing Indirect Extensional Size for Equivalence Set Graph");
 
+		long processed = 0;
+		long toProcess = esg.IS.keySet().size();
+
 		Iterator<Entry<Long, Collection<String>>> it = esg.IS.iterator();
 		while (it.hasNext()) {
+			if (processed % 10000 == 0) {
+				logger.info("Processed {}/{} equivalence sets", processed, toProcess);
+			}
+
 			Entry<Long, Collection<String>> entry = it.next();
 			long size = esg.DES.get(entry.getKey());
 
@@ -53,6 +60,7 @@ public interface ExtensionalSizeEstimator {
 			}
 
 			esg.IES.put(entry.getKey(), size);
+			processed++;
 		}
 
 		logger.info("Indirect Extensional Size for Equivalence Set Graph Computed");

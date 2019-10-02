@@ -258,7 +258,7 @@ public final class EquivalenceSetGraph {
 
 	private static void createClosure(RocksMultiMap<Long, Long> hierarchy, RocksMultiMap<Long, Long> closure)
 			throws IOException {
-		
+
 		logger.info("Compute Closure");
 
 		Set<Long> keys = hierarchy.keySet();
@@ -276,7 +276,7 @@ public final class EquivalenceSetGraph {
 		}
 		closure.toFile();
 		closure.close();
-		
+
 		logger.info("Closure Computed!");
 	}
 
@@ -318,6 +318,7 @@ public final class EquivalenceSetGraph {
 
 		logger.info("Triplifying ESG Graph");
 
+		logger.info("Adding metadata to graph");
 		String esgUri = base + esgName;
 
 		fos.write(
@@ -331,12 +332,16 @@ public final class EquivalenceSetGraph {
 		fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.specializationPropertyForPropertiesUsed,
 				this.getSpecializationPropertyForProperties()).getBytes());
 
+		logger.info("Triplifying Observed Entities (esgs:contains)");
 		Iterator<Entry<String, Long>> itID = ID.iterator();
+		long toProcess = ID.keySet().size();
+		long processed = 0;
 		while (itID.hasNext()) {
+			if (processed > 0 && processed % 10000 == 0) {
+				logger.info("{}/{}", processed, toProcess);
+			}
+			processed++;
 			Entry<String, Long> entry = itID.next();
-			fos.write(getTripleString(base + entry.getValue(), RDF.type.getURI(), EquivalenceSetGraphOntology.NODE)
-					.getBytes());
-			fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.HASNODE, base + entry.getValue()).getBytes());
 
 			if (!IRIResolver.checkIRI(entry.getKey())) {
 				fos.write(getTripleString(base + entry.getValue(), EquivalenceSetGraphOntology.CONTAINS, entry.getKey())
@@ -352,10 +357,22 @@ public final class EquivalenceSetGraph {
 			}
 
 		}
+		logger.info("Observed Entities Triplified");
 
+		logger.info("Triplifying Equivalence Sets");
 		Iterator<Entry<Long, Collection<String>>> itIS = IS.iterator();
+		toProcess = IS.keySet().size();
+		processed = 0;
 		while (itIS.hasNext()) {
+			if (processed > 0 && processed % 10000 == 0) {
+				logger.info("{}/{}", processed, toProcess);
+			}
+			processed++;
 			Entry<Long, Collection<String>> entry = itIS.next();
+
+			fos.write(getTripleString(base + entry.getKey(), RDF.type.getURI(), EquivalenceSetGraphOntology.NODE)
+					.getBytes());
+			fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.HASNODE, base + entry.getKey()).getBytes());
 
 			Collection<Long> superNodes = H.get(entry.getKey());
 			Set<String> superEntities = new HashSet<>();
@@ -394,9 +411,18 @@ public final class EquivalenceSetGraph {
 				}
 			}
 		}
-
+		
+		logger.info("Equivalence Sets Triplified!");
+		
+		logger.info("Triplifying specialization relation among equivalence sets");
+		toProcess = H.keySet().size();
+		processed = 0;
 		Iterator<Entry<Long, Collection<Long>>> itH = H.iterator();
 		while (itH.hasNext()) {
+			if (processed > 0 && processed % 10000 == 0) {
+				logger.info("{}/{}", processed, toProcess);
+			}
+			processed++;
 			Entry<Long, Collection<Long>> entry = itH.next();
 			for (Long l : entry.getValue()) {
 				fos.write(getTripleString(base + entry.getKey(), EquivalenceSetGraphOntology.specializes, base + l)
@@ -407,7 +433,7 @@ public final class EquivalenceSetGraph {
 			}
 
 		}
-
+		logger.info("Specialization relation among equivalence sets Triplified");
 		logger.info("Triplification completed");
 
 		fos.close();

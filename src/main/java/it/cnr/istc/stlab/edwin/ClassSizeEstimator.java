@@ -22,7 +22,7 @@ public class ClassSizeEstimator implements ExtensionalSizeEstimator {
 	public void estimateObservedEntitiesSizeUsingESGForProperties(EquivalenceSetGraph esg_classes, EquivalenceSetGraph esg_properties,
 			HDT hdt) {
 
-		logger.info("Computing extensional size of observed for properties");
+		logger.info("Computing extensional size of classes");
 
 		Set<String> typePredicates = esg_properties
 				.getEquivalentOrSubsumedEntities("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
@@ -54,6 +54,7 @@ public class ClassSizeEstimator implements ExtensionalSizeEstimator {
 			}
 
 			esg_classes.oe_size.put(entry.getKey(), size);
+			processed++;
 		}
 
 	}

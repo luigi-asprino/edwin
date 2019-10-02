@@ -47,6 +47,12 @@ public class EquivalenceSetGraphBuilder {
 		boolean updatePropertySetsUsignGraph = p.getEquivalencePropertyToObserve()
 				.equals(p.getEquivalencePropertiesForProperties())
 				&& p.getSpecializationPropertyToObserve().equals(p.getSpecializationPropertyForProperties());
+		
+		EquivalenceSetGraph esgProperties = null;
+		
+		if(parameters.getEsgPropertiesFolder()!=null) {
+			esgProperties = new EquivalenceSetGraph(parameters.getEsgPropertiesFolder());
+		}
 
 		if (!updatePropertySetsUsignGraph && parameters.getEsgPropertiesFolder() != null) {
 
@@ -56,7 +62,6 @@ public class EquivalenceSetGraphBuilder {
 			// Getting properties that are implicitly equivalent to or subsumed by the
 			// properties to observe
 			logger.info("Adding properties equivalent or subsumed to: {}", p.getEquivalencePropertyToObserve());
-			EquivalenceSetGraph esgProperties = new EquivalenceSetGraph(parameters.getEsgPropertiesFolder());
 			Set<String> equivalenceProperties = esgProperties
 					.getEquivalentOrSubsumedEntities(p.getEquivalencePropertyToObserve());
 			logger.info("Retrieved  {}", equivalenceProperties.size());
@@ -120,7 +125,6 @@ public class EquivalenceSetGraphBuilder {
 						esg, hdt);
 			} else {
 				if (parameters.getEsgPropertiesFolder() != null) {
-					EquivalenceSetGraph esgProperties = new EquivalenceSetGraph(parameters.getEsgPropertiesFolder());
 					parameters.getObservedEntitiesSelector()
 							.addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(esg, esgProperties, hdt);
 				}
@@ -144,7 +148,6 @@ public class EquivalenceSetGraphBuilder {
 						hdt);
 			} else {
 				if (parameters.getEsgPropertiesFolder() != null) {
-					EquivalenceSetGraph esgProperties = new EquivalenceSetGraph(parameters.getEsgPropertiesFolder());
 					parameters.getExtensionalSizeEstimator().estimateObservedEntitiesSizeUsingESGForProperties(esg,
 							esgProperties, hdt);
 				}
