@@ -314,6 +314,10 @@ public final class EquivalenceSetGraph {
 	}
 
 	public void toRDF(String file, String base, String esgName) throws IOException {
+		toRDF(file, base, esgName, false);
+	}
+
+	public void toRDF(String file, String base, String esgName, boolean applyRules) throws IOException {
 		FileOutputStream fos = new FileOutputStream(new File(file));
 
 		logger.info("Triplifying ESG Graph");
@@ -374,46 +378,49 @@ public final class EquivalenceSetGraph {
 					.getBytes());
 			fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.HASNODE, base + entry.getKey()).getBytes());
 
-			Collection<Long> superNodes = H.get(entry.getKey());
-			Set<String> superEntities = new HashSet<>();
+			if (applyRules) {
 
-			if (superNodes != null) {
-				for (Long superNode : superNodes) {
+				Collection<Long> superNodes = H.get(entry.getKey());
+				Set<String> superEntities = new HashSet<>();
 
-					for (String s2 : IS.get(superNode)) {
+				if (superNodes != null) {
+					for (Long superNode : superNodes) {
+
+						for (String s2 : IS.get(superNode)) {
+							if (IRIResolver.checkIRI(s2)) {
+								s2 = base + URLEncoder.encode(s2, StandardCharsets.UTF_8.toString());
+							}
+							superEntities.add(s2);
+						}
+					}
+				}
+
+				for (String s1 : entry.getValue()) {
+
+					if (IRIResolver.checkIRI(s1)) {
+						s1 = base + URLEncoder.encode(s1, StandardCharsets.UTF_8.toString());
+					}
+
+					for (String s2 : entry.getValue()) {
+
 						if (IRIResolver.checkIRI(s2)) {
 							s2 = base + URLEncoder.encode(s2, StandardCharsets.UTF_8.toString());
 						}
-						superEntities.add(s2);
-					}
-				}
-			}
 
-			for (String s1 : entry.getValue()) {
+						fos.write(getTripleString(s1, this.equivalencePropertyToObserve, s2).getBytes());
+						fos.write(getTripleString(s2, this.equivalencePropertyToObserve, s1).getBytes());
 
-				if (IRIResolver.checkIRI(s1)) {
-					s1 = base + URLEncoder.encode(s1, StandardCharsets.UTF_8.toString());
-				}
-
-				for (String s2 : entry.getValue()) {
-
-					if (IRIResolver.checkIRI(s2)) {
-						s2 = base + URLEncoder.encode(s2, StandardCharsets.UTF_8.toString());
 					}
 
-					fos.write(getTripleString(s1, this.equivalencePropertyToObserve, s2).getBytes());
-					fos.write(getTripleString(s2, this.equivalencePropertyToObserve, s1).getBytes());
-
-				}
-
-				for (String superEntity : superEntities) {
-					fos.write(getTripleString(s1, this.specializationPropertyToObserve, superEntity).getBytes());
+					for (String superEntity : superEntities) {
+						fos.write(getTripleString(s1, this.specializationPropertyToObserve, superEntity).getBytes());
+					}
 				}
 			}
 		}
-		
+
 		logger.info("Equivalence Sets Triplified!");
-		
+
 		logger.info("Triplifying specialization relation among equivalence sets");
 		toProcess = H.keySet().size();
 		processed = 0;
