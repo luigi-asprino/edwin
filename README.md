@@ -91,5 +91,12 @@ For citing Edwin in academic papers please use:
 
 [2] Luigi Asprino, Wouter Beek, Paolo Ciancarini, Frank van Harmelen and Valentina Presutti. Triplifying Equivalence Set Graphs. In: Proceedings of the ISWC 2019 Posters & Demonstrations, Industry, and Outrageous Ideas Tracks co-located with 18th International Semantic Web Conference (ISWC 2019) 
 
+# Author
+
+* [Luigi Asprino](http://luigiasprino.it)
+
+# License 
+
+[Apache 2.0](https://github.com/luigi-asprino/edwin/blob/master/LICENSE)
 
 #### This framework is named in honor of the American astronomer [Edwin Powell Hubble](https://en.wikipedia.org/wiki/Edwin_Hubble)
