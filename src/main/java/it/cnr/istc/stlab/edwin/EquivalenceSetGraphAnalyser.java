@@ -1,7 +1,10 @@
 package it.cnr.istc.stlab.edwin;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -113,6 +116,47 @@ public class EquivalenceSetGraphAnalyser {
 		esg.getStats().es0 = result;
 		esg.getStats().es0bns = result - result_without_bn;
 
+	}
+
+	public static void exportIESDistributionAsTSV(EquivalenceSetGraph esg, String filepathTSV, double untilPercentage)
+			throws IOException {
+		logger.info("Exporting IES distribution as TSV {}", filepathTSV);
+
+		Map<Long, Long> result = new HashMap<>();
+		Iterator<Entry<Long, Long>> it = esg.IES.iterator();
+		while (it.hasNext()) {
+			Entry<Long, Long> e = it.next();
+			Long s = result.get(e.getValue());
+			if (s == null) {
+				result.put(e.getValue(), 1L);
+			} else {
+				result.put(e.getValue(), result.get(e.getValue()) + 1);
+			}
+
+		}
+
+		long max = Collections.max(result.keySet());
+		logger.info("IES(0): {}", result.get(0L));
+		logger.info("Max IES: {} IES({}):{}", max, max, result.get(max));
+		long totalNumberOfES = esg.IS.keySet().size();
+		long numberOfESsWithSmallerThanCurrentSize = 0;
+
+		FileOutputStream fos = new FileOutputStream(new File(filepathTSV));
+		for (long s = 0; s <= max; s++) {
+			Long n = result.get(s);
+			if (n != null) {
+				fos.write((s + "\t" + n + "\n").getBytes());
+				numberOfESsWithSmallerThanCurrentSize += n;
+				if (((double) numberOfESsWithSmallerThanCurrentSize / (double) totalNumberOfES) > untilPercentage) {
+					logger.info("Size at {}:{}", untilPercentage, s);
+					break;
+				}
+			} else {
+				fos.write((s + "\t0\n").getBytes());
+			}
+		}
+		fos.close();
+		logger.info("IES distribution exported");
 	}
 
 	public static void countEdges(EquivalenceSetGraph esg) throws IOException {

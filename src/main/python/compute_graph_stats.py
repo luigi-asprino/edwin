@@ -43,14 +43,19 @@ def loadGraph(folder):
     return G
 
 
-def computeNumberOfWeaklyConnectedComponentsPerSize(graph, outFile):
+def computeNumberOfWeaklyConnectedComponentsPerSize(graph, outFile, fill):
     logger.info("Computing Number of Weakly Connected Components Per Component Size")
     fw_cc = open(outFile, 'w')
     CntV = snap.TIntPrV()
     snap.GetWccSzCnt(graph, CntV)
     fw_cc.write('Size of WCC\tNumber of WCCs\n')
+    last = 0
     for p in CntV:
+        if(fill & p.GetVal1() - last > 1):
+            for i in range(last + 1, p.GetVal1()):
+                fw_cc.write(str(i) + '\t' + str(0) + '\n')
         fw_cc.write(str(p.GetVal1()) + '\t' + str(p.GetVal2()) + '\n')
+        last = p.GetVal1()
     logger.info("Number of Weakly Connected Components Per Component Size!")
     logger.info("Number of Weakly Connected Components Per Component Size Exported to " + outFile)
 
@@ -68,14 +73,19 @@ def computeWeaklyConnectedComponents(graph, outFile):
     logger.info("Weakly Connected Components Exported to " + outFile)
 
             
-def computeNumberOfStronglyConnectedComponentsPerSize(graph, outFile):
+def computeNumberOfStronglyConnectedComponentsPerSize(graph, outFile, fill):
     logger.info("Computing Strongly Connected Components Per Component Size")
     fw_cc = open(outFile, 'w')
     CntV = snap.TIntPrV()
     fw_cc.write('Size of SCC\tNumber of SCCs\n')
     snap.GetSccSzCnt(graph, CntV)
+    last = 0
     for p in CntV:
+        if(fill & p.GetVal1() - last > 1):
+            for i in range(last + 1, p.GetVal1()):
+                fw_cc.write(str(i) + '\t' + str(0) + '\n')
         fw_cc.write(str(p.GetVal1()) + '\t' + str(p.GetVal2()) + '\n')
+        last = p.GetVal1()
     logger.info("Number of Strongly Connected Components Per Component Size!")
     logger.info("Number of Strongly Connected Components Per Component Size Exported to " + outFile)
 
@@ -96,11 +106,13 @@ def computeStronglyConnectedComponents(graph, outFile):
 if __name__ == '__main__':
     
     esg_folder = sys.argv[1]
-    stats_foder = sys.argv[2]
-     
+    stats_foder = sys.argv[1]
+    if len(sys.argv) > 2:
+        stats_foder = sys.argv[2]
+        
     graph = loadGraph(esg_folder)
     computeStronglyConnectedComponents(graph, stats_foder + "/strongly_connected_components")
-    computeNumberOfStronglyConnectedComponentsPerSize(graph, stats_foder + "/number_of_strongly_connected_components_per_size.tsv")
+    computeNumberOfStronglyConnectedComponentsPerSize(graph, stats_foder + "/number_of_strongly_connected_components_per_size.tsv", False)
     computeWeaklyConnectedComponents(graph, stats_foder + "/weakly_connected_components")
-    computeNumberOfWeaklyConnectedComponentsPerSize(graph, stats_foder + "/number_of_weakly_connected_components_per_size.tsv")
+    computeNumberOfWeaklyConnectedComponentsPerSize(graph, stats_foder + "/number_of_weakly_connected_components_per_size.tsv", False)
    
