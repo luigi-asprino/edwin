@@ -7,6 +7,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,9 +17,24 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.system.IRIResolver;
+import org.apache.jena.riot.system.StreamRDF;
+import org.apache.jena.riot.system.StreamRDFLib;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFWriter;
+import org.eclipse.rdf4j.rio.Rio;
+import org.rdfhdt.hdt.hdt.HDTManager;
+import org.rdfhdt.hdt.options.HDTSpecification;
+import org.rdfhdt.hdt.rdf.TripleWriter;
+import org.rdfhdt.hdt.triples.TripleString;
 import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +141,30 @@ public final class EquivalenceSetGraph {
 		}
 
 		return r;
+	}
+
+	public Collection<String> getEquivalentEntities(String iri) {
+		Collection<String> result = new HashSet<>();
+		Long id = ID.get(iri);
+		if (id != null) {
+			return IS.get(id);
+		}
+		return result;
+	}
+
+	public long getIndirectSizeOfEntity(String iri) {
+		Long id = ID.get(iri);
+		if (id != null) {
+			return IES.get(id);
+		}
+		return 0;
+	}
+
+	public long getSizeOfEntity(String iri) {
+		if (oe_size.containsKey(iri)) {
+			return oe_size.get(iri);
+		}
+		return 0;
 	}
 
 	public String getSpecializationPropertyToObserve() {
@@ -318,23 +360,22 @@ public final class EquivalenceSetGraph {
 	}
 
 	public void toRDF(String file, String base, String esgName, boolean applyRules) throws IOException {
-		FileOutputStream fos = new FileOutputStream(new File(file));
+		StreamRDF s = StreamRDFLib.writer(new FileOutputStream(new File(file)));
 
 		logger.info("Triplifying ESG Graph");
 
 		logger.info("Adding metadata to graph");
 		String esgUri = base + esgName;
 
-		fos.write(
-				getTripleString(esgUri, RDF.type.getURI(), EquivalenceSetGraphOntology.EQUIVALENCESETGRAPH).getBytes());
-		fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.observesEquivalenceProperty,
-				this.getEquivalencePropertyToObserve()).getBytes());
-		fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.observesSpecializationProperty,
-				this.getSpecializationPropertyToObserve()).getBytes());
-		fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.equivalencePropertyForPropertiesUsed,
-				this.getEquivalencePropertyForProperties()).getBytes());
-		fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.specializationPropertyForPropertiesUsed,
-				this.getSpecializationPropertyForProperties()).getBytes());
+		s.triple(getTriple(esgUri, RDF.type.getURI(), EquivalenceSetGraphOntology.EQUIVALENCESETGRAPH));
+		s.triple(getTriple(esgUri, EquivalenceSetGraphOntology.observesEquivalenceProperty,
+				this.getEquivalencePropertyToObserve()));
+		s.triple(getTriple(esgUri, EquivalenceSetGraphOntology.observesSpecializationProperty,
+				this.getSpecializationPropertyToObserve()));
+		s.triple(getTriple(esgUri, EquivalenceSetGraphOntology.equivalencePropertyForPropertiesUsed,
+				this.getEquivalencePropertyForProperties()));
+		s.triple(getTriple(esgUri, EquivalenceSetGraphOntology.specializationPropertyForPropertiesUsed,
+				this.getSpecializationPropertyForProperties()));
 
 		logger.info("Triplifying Observed Entities (esgs:contains)");
 		Iterator<Entry<String, Long>> itID = ID.iterator();
@@ -347,17 +388,15 @@ public final class EquivalenceSetGraph {
 			processed++;
 			Entry<String, Long> entry = itID.next();
 
-			if (!IRIResolver.checkIRI(entry.getKey())) {
-				fos.write(getTripleString(base + entry.getValue(), EquivalenceSetGraphOntology.CONTAINS, entry.getKey())
-						.getBytes());
+			if (!checkIRI(entry.getKey())) {
+				s.triple(getTriple(base + entry.getValue(), EquivalenceSetGraphOntology.CONTAINS, entry.getKey()));
 			} else {
-				String newUri = base + URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8.toString());
-				String malformedURITriple = "<" + newUri + "> <" + RDFS.comment.getURI()
-						+ "> \"Percent encoding of the original malformed URI "
-						+ entry.getKey().replaceAll("\"", "\\\\\"") + " \" .\n";
-				fos.write(getTripleString(base + entry.getValue(), EquivalenceSetGraphOntology.CONTAINS, newUri)
-						.getBytes());
-				fos.write(malformedURITriple.getBytes());
+
+				String newUri = base + DigestUtils.md5Hex(entry.getKey());
+
+				s.triple(getTriple(base + entry.getValue(), EquivalenceSetGraphOntology.CONTAINS, newUri));
+				s.triple(new Triple(NodeFactory.createURI(newUri), RDFS.comment.asNode(),
+						NodeFactory.createLiteral("Percent encoding of the original malformed URI " + entry.getKey())));
 			}
 
 		}
@@ -374,9 +413,8 @@ public final class EquivalenceSetGraph {
 			processed++;
 			Entry<Long, Collection<String>> entry = itIS.next();
 
-			fos.write(getTripleString(base + entry.getKey(), RDF.type.getURI(), EquivalenceSetGraphOntology.NODE)
-					.getBytes());
-			fos.write(getTripleString(esgUri, EquivalenceSetGraphOntology.HASNODE, base + entry.getKey()).getBytes());
+			s.triple(getTriple(base + entry.getKey(), RDF.type.getURI(), EquivalenceSetGraphOntology.NODE));
+			s.triple(getTriple(esgUri, EquivalenceSetGraphOntology.HASNODE, base + entry.getKey()));
 
 			if (applyRules) {
 
@@ -387,8 +425,9 @@ public final class EquivalenceSetGraph {
 					for (Long superNode : superNodes) {
 
 						for (String s2 : IS.get(superNode)) {
-							if (IRIResolver.checkIRI(s2)) {
-								s2 = base + URLEncoder.encode(s2, StandardCharsets.UTF_8.toString());
+							if (checkIRI(s2)) {
+								s2 = base + DigestUtils.md5Hex(s2);
+								;
 							}
 							superEntities.add(s2);
 						}
@@ -397,23 +436,25 @@ public final class EquivalenceSetGraph {
 
 				for (String s1 : entry.getValue()) {
 
-					if (IRIResolver.checkIRI(s1)) {
-						s1 = base + URLEncoder.encode(s1, StandardCharsets.UTF_8.toString());
+					if (checkIRI(s1)) {
+						s1 = base + DigestUtils.md5Hex(s1);
+						;
 					}
 
 					for (String s2 : entry.getValue()) {
 
-						if (IRIResolver.checkIRI(s2)) {
-							s2 = base + URLEncoder.encode(s2, StandardCharsets.UTF_8.toString());
+						if (checkIRI(s2)) {
+							s2 = base + DigestUtils.md5Hex(s2);
+							;
 						}
 
-						fos.write(getTripleString(s1, this.equivalencePropertyToObserve, s2).getBytes());
-						fos.write(getTripleString(s2, this.equivalencePropertyToObserve, s1).getBytes());
+						s.triple(getTriple(s1, this.equivalencePropertyToObserve, s2));
+						s.triple(getTriple(s2, this.equivalencePropertyToObserve, s1));
 
 					}
 
 					for (String superEntity : superEntities) {
-						fos.write(getTripleString(s1, this.specializationPropertyToObserve, superEntity).getBytes());
+						s.triple(getTriple(s1, this.specializationPropertyToObserve, superEntity));
 					}
 				}
 			}
@@ -432,32 +473,318 @@ public final class EquivalenceSetGraph {
 			processed++;
 			Entry<Long, Collection<Long>> entry = itH.next();
 			for (Long l : entry.getValue()) {
-				fos.write(getTripleString(base + entry.getKey(), EquivalenceSetGraphOntology.specializes, base + l)
-						.getBytes());
-				fos.write(getTripleString(base + l, EquivalenceSetGraphOntology.isSpecializedBy, base + entry.getKey())
-						.getBytes());
+				s.triple(getTriple(base + entry.getKey(), EquivalenceSetGraphOntology.specializes, base + l));
+				s.triple(getTriple(base + l, EquivalenceSetGraphOntology.isSpecializedBy, base + entry.getKey()));
 
 			}
 
 		}
+		s.finish();
 		logger.info("Specialization relation among equivalence sets Triplified");
 		logger.info("Triplification completed");
 
-		fos.close();
 	}
 
-	private static String getTripleString(String subject, String predicate, String object) {
-		StringBuilder sb = new StringBuilder();
+	public void toRDF4J(String file, String base, String esgName, boolean applyRules) throws IOException {
 
-		sb.append("<");
-		sb.append(subject);
-		sb.append("> <");
-		sb.append(predicate);
-		sb.append("> <");
-		sb.append(object);
-		sb.append("> .\n");
+		RDFWriter rw = Rio.createWriter(RDFFormat.RDFXML, new FileOutputStream(new File(file)));
+		ValueFactory factory = SimpleValueFactory.getInstance();
+		rw.startRDF();
+		logger.info("Triplifying ESG Graph");
+		logger.info("Adding metadata to graph");
+		String esgUri = base + esgName;
 
-		return sb.toString();
+		rw.handleStatement(
+				getStatement(factory, esgUri, RDF.type.getURI(), EquivalenceSetGraphOntology.EQUIVALENCESETGRAPH));
+		rw.handleStatement(getStatement(factory, esgUri, EquivalenceSetGraphOntology.observesEquivalenceProperty,
+				this.getEquivalencePropertyToObserve()));
+		rw.handleStatement(getStatement(factory, esgUri, EquivalenceSetGraphOntology.observesSpecializationProperty,
+				this.getSpecializationPropertyToObserve()));
+		rw.handleStatement(
+				getStatement(factory, esgUri, EquivalenceSetGraphOntology.equivalencePropertyForPropertiesUsed,
+						this.getEquivalencePropertyForProperties()));
+		rw.handleStatement(
+				getStatement(factory, esgUri, EquivalenceSetGraphOntology.specializationPropertyForPropertiesUsed,
+						this.getSpecializationPropertyForProperties()));
+
+		logger.info("Triplifying Observed Entities (esgs:contains)");
+		Iterator<Entry<String, Long>> itID = ID.iterator();
+		long toProcess = ID.keySet().size();
+		long processed = 0;
+		while (itID.hasNext()) {
+			if (processed > 0 && processed % 10000 == 0) {
+				logger.info("{}/{}", processed, toProcess);
+			}
+			processed++;
+			Entry<String, Long> entry = itID.next();
+
+			if (!checkIRI(entry.getKey())) {
+				rw.handleStatement(getStatement(factory, base + entry.getValue(), EquivalenceSetGraphOntology.CONTAINS,
+						entry.getKey()));
+			} else {
+
+				String newUri = base + URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8.toString());
+
+				rw.handleStatement(
+						getStatement(factory, base + entry.getValue(), EquivalenceSetGraphOntology.CONTAINS, newUri));
+				rw.handleStatement(factory.createStatement(factory.createIRI(newUri),
+						factory.createIRI(RDFS.comment.getURI()),
+						factory.createLiteral("Percent encoding of the original malformed URI " + entry.getKey())));
+			}
+
+		}
+		logger.info("Observed Entities Triplified");
+
+		logger.info("Triplifying Equivalence Sets");
+		Iterator<Entry<Long, Collection<String>>> itIS = IS.iterator();
+		toProcess = IS.keySet().size();
+		processed = 0;
+		while (itIS.hasNext()) {
+			if (processed > 0 && processed % 10000 == 0) {
+				logger.info("{}/{}", processed, toProcess);
+			}
+			processed++;
+			Entry<Long, Collection<String>> entry = itIS.next();
+
+			rw.handleStatement(
+					getStatement(factory, base + entry.getKey(), RDF.type.getURI(), EquivalenceSetGraphOntology.NODE));
+			rw.handleStatement(
+					getStatement(factory, esgUri, EquivalenceSetGraphOntology.HASNODE, base + entry.getKey()));
+
+			if (applyRules) {
+
+				Collection<Long> superNodes = H.get(entry.getKey());
+				Set<String> superEntities = new HashSet<>();
+
+				if (superNodes != null) {
+					for (Long superNode : superNodes) {
+
+						for (String s2 : IS.get(superNode)) {
+							if (checkIRI(s2)) {
+								s2 = base + URLEncoder.encode(s2, StandardCharsets.UTF_8.toString());
+							}
+							superEntities.add(s2);
+						}
+					}
+				}
+
+				for (String s1 : entry.getValue()) {
+
+					if (checkIRI(s1)) {
+						s1 = base + URLEncoder.encode(s1, StandardCharsets.UTF_8.toString());
+					}
+
+					for (String s2 : entry.getValue()) {
+
+						if (checkIRI(s2)) {
+							s2 = base + URLEncoder.encode(s2, StandardCharsets.UTF_8.toString());
+						}
+
+						rw.handleStatement(getStatement(factory, s1, this.equivalencePropertyToObserve, s2));
+						rw.handleStatement(getStatement(factory, s2, this.equivalencePropertyToObserve, s1));
+
+					}
+
+					for (String superEntity : superEntities) {
+						rw.handleStatement(
+								getStatement(factory, s1, this.specializationPropertyToObserve, superEntity));
+					}
+				}
+			}
+		}
+
+		logger.info("Equivalence Sets Triplified!");
+
+		logger.info("Triplifying specialization relation among equivalence sets");
+		toProcess = H.keySet().size();
+		processed = 0;
+		Iterator<Entry<Long, Collection<Long>>> itH = H.iterator();
+		while (itH.hasNext()) {
+			if (processed > 0 && processed % 10000 == 0) {
+				logger.info("{}/{}", processed, toProcess);
+			}
+			processed++;
+			Entry<Long, Collection<Long>> entry = itH.next();
+			for (Long l : entry.getValue()) {
+				rw.handleStatement(getStatement(factory, base + entry.getKey(), EquivalenceSetGraphOntology.specializes,
+						base + l));
+				rw.handleStatement(getStatement(factory, base + l, EquivalenceSetGraphOntology.isSpecializedBy,
+						base + entry.getKey()));
+
+			}
+
+		}
+		rw.endRDF();
+		logger.info("Specialization relation among equivalence sets Triplified");
+		logger.info("Triplification completed");
+
+	}
+
+	public static boolean isValidASCII(final byte[] bytes) {
+
+		try {
+			Charset.availableCharsets().get("US-ASCII").newDecoder().decode(ByteBuffer.wrap(bytes));
+
+		} catch (CharacterCodingException e) {
+
+			return false;
+		}
+
+		return true;
+	}
+
+	static boolean checkIRI(String iri) {
+
+		return IRIResolver.checkIRI(iri) || iri.indexOf(':') < 0 || !iri.startsWith("http")
+				|| !isValidASCII(iri.getBytes());
+	}
+
+	public void toHDT(String file, String base, String esgName, boolean applyRules) throws Exception {
+		logger.info("Triplifying ESG Graph");
+		logger.info("Adding metadata to graph");
+		String esgUri = base + esgName;
+		try (TripleWriter writer = HDTManager.getHDTWriter(file, base, new HDTSpecification())) {
+
+			writer.addTriple(
+					new TripleString(esgUri, RDF.type.getURI(), EquivalenceSetGraphOntology.EQUIVALENCESETGRAPH));
+			writer.addTriple(new TripleString(esgUri, EquivalenceSetGraphOntology.observesEquivalenceProperty,
+					this.getEquivalencePropertyToObserve()));
+			writer.addTriple(new TripleString(esgUri, EquivalenceSetGraphOntology.observesSpecializationProperty,
+					this.getSpecializationPropertyToObserve()));
+			writer.addTriple(new TripleString(esgUri, EquivalenceSetGraphOntology.equivalencePropertyForPropertiesUsed,
+					this.getEquivalencePropertyForProperties()));
+			writer.addTriple(
+					new TripleString(esgUri, EquivalenceSetGraphOntology.specializationPropertyForPropertiesUsed,
+							this.getSpecializationPropertyForProperties()));
+		}
+		long toProcess = ID.keySet().size();
+		long processed = 0;
+		try (TripleWriter writer = HDTManager.getHDTWriter(file, base, new HDTSpecification())) {
+			logger.info("Triplifying Observed Entities (esgs:contains)");
+			Iterator<Entry<String, Long>> itID = ID.iterator();
+			while (itID.hasNext()) {
+				if (processed > 0 && processed % 10000 == 0) {
+					logger.info("{}/{}", processed, toProcess);
+				}
+				processed++;
+				Entry<String, Long> entry = itID.next();
+
+				writer.addTriple(new TripleString(base + entry.getValue(), EquivalenceSetGraphOntology.CONTAINS,
+						entry.getKey()));
+
+			}
+			logger.info("Observed Entities Triplified");
+
+		}
+
+		logger.info("Triplifying Equivalence Sets");
+		Iterator<Entry<Long, Collection<String>>> itIS = IS.iterator();
+		toProcess = IS.keySet().size();
+		processed = 0;
+		while (itIS.hasNext()) {
+			if (processed > 0 && processed % 10000 == 0) {
+				logger.info("{}/{}", processed, toProcess);
+			}
+
+			try (TripleWriter writer = HDTManager.getHDTWriter(file, base, new HDTSpecification())) {
+				processed++;
+				Entry<Long, Collection<String>> entry = itIS.next();
+
+				writer.addTriple(
+						new TripleString(base + entry.getKey(), RDF.type.getURI(), EquivalenceSetGraphOntology.NODE));
+				writer.addTriple(new TripleString(esgUri, EquivalenceSetGraphOntology.HASNODE, base + entry.getKey()));
+
+				if (applyRules) {
+
+					Collection<Long> superNodes = H.get(entry.getKey());
+					Set<String> superEntities = new HashSet<>();
+
+					if (superNodes != null) {
+						for (Long superNode : superNodes) {
+
+							for (String s2 : IS.get(superNode)) {
+								superEntities.add(s2);
+							}
+						}
+					}
+
+					for (String s1 : entry.getValue()) {
+
+						for (String s2 : entry.getValue()) {
+
+							if (IRIResolver.checkIRI(s2)) {
+								s2 = base + URLEncoder.encode(s2, StandardCharsets.UTF_8.toString());
+							}
+
+							writer.addTriple(new TripleString(s1, this.equivalencePropertyToObserve, s2));
+							writer.addTriple(new TripleString(s2, this.equivalencePropertyToObserve, s1));
+
+						}
+
+						for (String superEntity : superEntities) {
+							writer.addTriple(new TripleString(s1, this.specializationPropertyToObserve, superEntity));
+						}
+					}
+				}
+			}
+		}
+
+		try (TripleWriter writer = HDTManager.getHDTWriter(file, base, new HDTSpecification())) {
+
+			logger.info("Triplifying specialization relation among equivalence sets");
+			toProcess = H.keySet().size();
+			processed = 0;
+			Iterator<Entry<Long, Collection<Long>>> itH = H.iterator();
+			while (itH.hasNext()) {
+				if (processed > 0 && processed % 10000 == 0) {
+					logger.info("{}/{}", processed, toProcess);
+				}
+				processed++;
+				Entry<Long, Collection<Long>> entry = itH.next();
+				for (Long l : entry.getValue()) {
+					writer.addTriple(
+							new TripleString(base + entry.getKey(), EquivalenceSetGraphOntology.specializes, base + l));
+
+					writer.addTriple(new TripleString(base + l, EquivalenceSetGraphOntology.isSpecializedBy,
+							base + entry.getKey()));
+
+				}
+
+			}
+			logger.info("Specialization relation among equivalence sets Triplified");
+			logger.info("Triplification completed");
+
+			logger.info("Equivalence Sets Triplified!");
+
+		}
+
+	}
+
+//	private static String getTripleString(String subject, String predicate, String object) {
+//		StringBuilder sb = new StringBuilder();
+//
+//		sb.append("<");
+//		sb.append(subject);
+//		sb.append("> <");
+//		sb.append(predicate);
+//		sb.append("> <");
+//		sb.append(object);
+//		sb.append("> .\n");
+//
+//		return sb.toString();
+//	}
+
+	private static Triple getTriple(String subject, String predicate, String object) {
+
+		return new Triple(NodeFactory.createURI(subject), NodeFactory.createURI(predicate),
+				NodeFactory.createURI(object));
+	}
+
+	private static Statement getStatement(ValueFactory factory, String s, String p, String o) {
+		if (checkIRI(s) || checkIRI(p) || checkIRI(o)) {
+			throw new RuntimeException("Invalid");
+		}
+		return factory.createStatement(factory.createIRI(s), factory.createIRI(p), factory.createIRI(o));
 	}
 
 	public EquivalenceSetGraphStats getStats() {
@@ -515,6 +842,5 @@ public final class EquivalenceSetGraph {
 		fos_edgelist.close();
 
 	}
-
 
 }
