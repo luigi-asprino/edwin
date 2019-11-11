@@ -3,11 +3,13 @@ package it.cnr.istc.stlab.edwin;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class EquivalenceSetGraphStats {
@@ -26,10 +28,10 @@ public class EquivalenceSetGraphStats {
 			nsubp_label = "Number of Specialization Properties Used", es_label = "Number of Equivalence Sets",
 			oe_label = "Number of Observed Entities", oe_bn_label = "Number of Observed Entities without BNs",
 			r_label = "Ratio between ES and OE", bns_label = "Number of Blank Nodes",
-			r_bn_label = "Ratio between ES and OE without blank nodes", edges_label = "Number of Egdges",
+			r_bn_label = "Ratio between ES and OE without blank nodes", edges_label = "Number of Edges",
 			es_bn = "Number of Equivalence Sets without BNs", h_max_label = "Max Height",
 			heightDistribution_label = "Height Distribution", in_label = "Number of Isolated Equivalence Sets",
-			tl_label = "Top Level Equivalence Sets",
+			hd_label = "hd", tl_label = "Top Level Equivalence Sets",
 			tlWithoutBNs_label = "Top Level Equivalence Sets Without Blank Nodes",
 			oeInTL_label = "Number of Observed Entities in Top Level Equivalence Sets",
 			oeInTLWithoutBNs_label = "Number of Observed Entities Without Blank Nodes in Top Level Equivalence Sets",
@@ -43,7 +45,8 @@ public class EquivalenceSetGraphStats {
 			tl0_label = "Top Level Equivalence Sets With Empty Extension",
 			tl0bns_label = "Top Level Equivalence Sets With Empty Extension Without Blank Nodes",
 			oeInTl0_label = "Number of Observed Entities in TL0",
-			tl0WithoutBNs_label = "Number of Observed Entities Without BNs in TL0", ies_n = "IES(n)";
+			tl0WithoutBNs_label = "Number of Observed Entities Without BNs in TL0", ies_n = "IES(n)",
+			density = "Density";
 
 	EquivalenceSetGraphStats() {
 
@@ -72,8 +75,21 @@ public class EquivalenceSetGraphStats {
 		stats.put(r_label, transformDouble((double) ((double) es / (double) oe)));
 		stats.put(r_bn_label, transformDouble((double) ((double) (es - es_with_bns) / (double) (oe - bns))));
 		stats.put(edges_label, e);
+		stats.put(density, ((double) e / ((double) (es * (es - 1)))));
 		stats.put(h_max_label, h_max);
 		stats.put(heightDistribution_label, heightDistribution);
+		// hd
+		long max = Collections.max(heightDistribution.keySet());
+		JSONArray hd = new JSONArray();
+		for (long i = 0; i <= max; i++) {
+			JSONObject point = new JSONObject();
+			if (heightDistribution.containsKey(i)) {
+				point.put("x", i);
+				point.put("y", ((double) heightDistribution.get(i) / (double) es));
+				hd.put(point);
+			}
+		}
+		stats.put(hd_label, hd);
 		stats.put(in_label, in);
 		stats.put(tl_label, tl);
 		stats.put(tlWithoutBNs_label, tlWithoutBNs);

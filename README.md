@@ -83,6 +83,10 @@ EquivalenceSetGraph esg = EquivalenceSetGraphLoader.loadEquivalenceSetGraphFromF
 4. The triplification of the ESG following the [Edwin Ontology](https://w3id.org/edwin/ontology/) (cf. [2]).
 
 
+### Computed Equivalence Set Graphs
+
+A number of Computed Equivalence Set Graphs are available for download from this [page](ComputedESGs.md). 
+
 ### Publications
 
 For citing Edwin in academic papers please use:

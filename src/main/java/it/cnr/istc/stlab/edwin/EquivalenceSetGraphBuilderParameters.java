@@ -13,6 +13,11 @@ public class EquivalenceSetGraphBuilderParameters {
 	private String equivalencePropertyToObserve, specializationPropertyToObserve, specializationPropertyForProperties,
 			equivalencePropertiesForProperties, esgPropertiesFolder, esgClassesFolder;
 
+	private EquivalenceSetGraph esgProperties;
+
+	private boolean computeClosure = true;
+	private boolean computeStats = true;
+
 	private Set<String> notEquivalenceProperties = new HashSet<>();
 	private Set<String> notSpecializationProperties = new HashSet<>();
 	private ObservedEntitiesSelector observedEntitiesSelector;
@@ -205,6 +210,30 @@ public class EquivalenceSetGraphBuilderParameters {
 				+ ", notEquivalenceProperties=" + notEquivalenceProperties + ", notSpecializationProperties="
 				+ notSpecializationProperties + ", observedEntitiesSelector=" + observedEntitiesSelector
 				+ ", extensionalSizeEstimator=" + extensionalSizeEstimator + "]";
+	}
+
+	public boolean isComputeClosure() {
+		return computeClosure;
+	}
+
+	public void setComputeClosure(boolean computeClosure) {
+		this.computeClosure = computeClosure;
+	}
+
+	public boolean isComputeStats() {
+		return computeStats;
+	}
+
+	public void setComputeStats(boolean computeStats) {
+		this.computeStats = computeStats;
+	}
+
+	public EquivalenceSetGraph getEsgProperties() {
+		return esgProperties;
+	}
+
+	public void setEsgProperties(EquivalenceSetGraph esgProperties) {
+		this.esgProperties = esgProperties;
 	}
 
 }

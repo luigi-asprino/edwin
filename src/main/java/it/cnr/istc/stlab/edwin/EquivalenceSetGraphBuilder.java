@@ -18,10 +18,13 @@ public class EquivalenceSetGraphBuilder {
 
 	private String hdtFilePath;
 	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilder.class);
-	private long lastIdentitySetId = 0, numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples = 0L;
+	private long lastIdentitySetId = 0;
+	// private long numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples =
+	// 0L;
 	private static EquivalenceSetGraphBuilder instance;
-	private Set<String> equivalencePropertiesToProcess = new HashSet<>(), equivalencePropertiesProcessed= new HashSet<>(),
-			specializationPropertiesToProcess= new HashSet<>(), specializationPropertiesProcessed= new HashSet<>();
+	private Set<String> equivalencePropertiesToProcess = new HashSet<>(),
+			equivalencePropertiesProcessed = new HashSet<>(), specializationPropertiesToProcess = new HashSet<>(),
+			specializationPropertiesProcessed = new HashSet<>();
 	private EquivalenceSetGraph esg;
 	private static HDT hdt;
 	private EquivalenceSetGraphBuilderParameters parameters;
@@ -44,17 +47,28 @@ public class EquivalenceSetGraphBuilder {
 
 		new File(parameters.getEsgFolder()).mkdirs();
 
+		logger.trace("peq {}", parameters.getEquivalencePropertyToObserve());
+		logger.trace("psub {}", parameters.getSpecializationPropertyToObserve());
+		logger.trace("pe {}", parameters.getEquivalencePropertiesForProperties());
+		logger.trace("ps {}", parameters.getSpecializationPropertyForProperties());
+
 		boolean updatePropertySetsUsignGraph = p.getEquivalencePropertyToObserve()
 				.equals(p.getEquivalencePropertiesForProperties())
 				&& p.getSpecializationPropertyToObserve().equals(p.getSpecializationPropertyForProperties());
-		
+
 		EquivalenceSetGraph esgProperties = null;
-		
-		if(parameters.getEsgPropertiesFolder()!=null) {
+
+		if (parameters.getEsgPropertiesFolder() != null) {
 			esgProperties = new EquivalenceSetGraph(parameters.getEsgPropertiesFolder());
+			updatePropertySetsUsignGraph = false;
 		}
 
-		if (!updatePropertySetsUsignGraph && parameters.getEsgPropertiesFolder() != null) {
+		if (esgProperties == null && parameters.getEsgProperties() != null) {
+			esgProperties = parameters.getEsgProperties();
+			updatePropertySetsUsignGraph = false;
+		}
+
+		if (!updatePropertySetsUsignGraph && esgProperties != null) {
 
 			// TODO check if semantics for building the graph is compliant with semantics of
 			// SpecializationPropertyForProperties and EquivalencePropertiesForProperties
@@ -81,7 +95,7 @@ public class EquivalenceSetGraphBuilder {
 			specializationPropertiesToProcess.addAll(specializationProperties);
 			logger.info("Number of specialization properties to process {}", specializationPropertiesToProcess.size());
 
-		} else if (!updatePropertySetsUsignGraph && parameters.getEsgPropertiesFolder() == null) {
+		} else if (!updatePropertySetsUsignGraph && esgProperties == null) {
 			logger.error(
 					"Equivalence Set Graph for properties {} and {} has not been computed. Compute the Equivalence Set Graph for these properties and provide its path as esgPropertiesFolder parameter!");
 			throw new RuntimeException(
@@ -112,8 +126,10 @@ public class EquivalenceSetGraphBuilder {
 		}
 
 		// compute specialization closure
-		logger.info("Compute Specialization Closure");
-		esg.computeSpecializationClosure();
+		if (parameters.isComputeClosure()) {
+			logger.info("Compute Specialization Closure");
+			esg.computeSpecializationClosure();
+		}
 
 		// add spare entities (observed entities that are not equivalent to or subsumed
 		// by other observed entities)
@@ -161,21 +177,33 @@ public class EquivalenceSetGraphBuilder {
 
 		}
 
-		// compute stats
-		computeStats();
+		if (parameters.isComputeStats()) {
+			// compute stats
+			if (updatePropertySetsUsignGraph) {
+				logger.info("Using ESG");
+				computeStats(esg);
+			} else {
+				logger.info("Using ESG properties");
+				computeStats(esgProperties);
+			}
+		}
 
 		return esg;
 	}
 
-	private void computeStats() throws IOException {
+	private void computeStats(EquivalenceSetGraph esgProperties) throws IOException {
 
 		// save equivalence and specialization properties
-		esg.getStats().equivalencePropertiesUsed = equivalencePropertiesProcessed;
-		esg.getStats().specializationPropertiesUsed = specializationPropertiesProcessed;
+//		esg.getStats().equivalencePropertiesUsed = new HashSet<>(equivalencePropertiesProcessed);
+//		esg.getStats().equivalencePropertiesUsed.removeAll(parameters.getNotEquivalenceProperties());
+//		esg.getStats().specializationPropertiesUsed = new HashSet<>(specializationPropertiesProcessed);
+//		esg.getStats().specializationPropertiesUsed.removeAll(parameters.getNotSpecializationProperties());
 
 		// compute stats
-		esg.getStats().numberOfEquivalenceTriples = numberOfEquivalenceTriples;
-		esg.getStats().numberOfSpecializationTriples = numberOfSpecializationTriples;
+		esg.getStats().numberOfEquivalenceTriples = esgProperties
+				.getIndirectSizeOfEntity(parameters.getEquivalencePropertyToObserve());
+		esg.getStats().numberOfSpecializationTriples = esgProperties
+				.getIndirectSizeOfEntity(parameters.getSpecializationPropertyToObserve());
 
 		esg.getStats().oe = esg.ID.keySet().size();
 		esg.getStats().es = esg.IS.keySet().size();
@@ -201,13 +229,14 @@ public class EquivalenceSetGraphBuilder {
 			String p_eq = equivalencePropertiesToProcess.iterator().next();
 			equivalencePropertiesToProcess.remove(p_eq);
 			equivalencePropertiesProcessed.add(p_eq);
+			esg.getStats().equivalencePropertiesUsed.add(p_eq);
 
 			try {
 				logger.info("Computing Equivalence Sets using {}", p_eq);
 				IteratorTripleString it = hdt.search("", p_eq, "");
 				logger.info("Number of explicit statements {}", it.estimatedNumResults());
 				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = it.estimatedNumResults();
-				numberOfEquivalenceTriples += it.estimatedNumResults();
+//				numberOfEquivalenceTriples += it.estimatedNumResults();
 
 				while (it.hasNext()) {
 
@@ -390,11 +419,13 @@ public class EquivalenceSetGraphBuilder {
 			this.specializationPropertiesToProcess.remove(propertyToProcess);
 			this.specializationPropertiesProcessed.add(propertyToProcess);
 
+			esg.getStats().specializationPropertiesUsed.add(propertyToProcess);
+
 			try {
 				logger.info("Computing Specialization Relations using {}", propertyToProcess);
 				IteratorTripleString it = hdt.search("", propertyToProcess, "");
 				logger.info("Number of explicit statements {}", it.estimatedNumResults());
-				numberOfSpecializationTriples += it.estimatedNumResults();
+//				numberOfSpecializationTriples += it.estimatedNumResults();
 				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = it.estimatedNumResults();
 				while (it.hasNext()) {
 					if (numberOfStatementsProcessed % 10000 == 0) {

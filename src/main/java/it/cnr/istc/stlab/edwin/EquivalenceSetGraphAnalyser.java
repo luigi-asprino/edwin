@@ -16,6 +16,8 @@ import org.apache.jena.ext.com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.cnr.istc.stlab.rocksmap.RocksMultiMap;
+
 public class EquivalenceSetGraphAnalyser {
 
 	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilder.class);
@@ -210,7 +212,7 @@ public class EquivalenceSetGraphAnalyser {
 				processed++;
 				Long key = iterator.next();
 
-				if (!heightMap.containsKey(key)) {
+				if (!heightMap.containsKey(key) || !checkHeightMap(heightMap, esg.H_inverse)) {
 					stop = false;
 
 					Collection<Long> subIS = esg.H_inverse.get(key);
@@ -300,6 +302,29 @@ public class EquivalenceSetGraphAnalyser {
 
 	}
 
+	private static boolean checkHeightMap(Map<Long, Long> m, RocksMultiMap<Long, Long> H_inverse) {
+		for (Long l : H_inverse.keySet()) {
+
+			if (m.get(l) == null)
+				return false;
+
+			Collection<Long> subs = H_inverse.get(l);
+			long max = 0;
+			for (Long ll : subs) {
+				if (ll == null) {
+					return false;
+				} else {
+					max = Math.max(max, m.get(ll));
+				}
+			}
+
+			if (m.get(l) == max + 1) {
+				continue;
+			}
+		}
+		return true;
+	}
+
 	public static void countIsoltatedEquivalenceSets(EquivalenceSetGraph esg) throws IOException {
 		logger.info("Counting isolated Equivalence Sets");
 
@@ -324,8 +349,7 @@ public class EquivalenceSetGraphAnalyser {
 				subSup.addAll(esg.H_inverse.get(entry.getKey()));
 			}
 
-			// TODO Check
-			// subSup.remove(entry.getKey()); ??
+			subSup.remove(entry.getKey());
 
 			if (subSup.isEmpty()) {
 				isolatedIS++;
@@ -368,7 +392,7 @@ public class EquivalenceSetGraphAnalyser {
 
 				tl++;
 
-				if (esg.IES.get(entry.getKey()) == 0) {
+				if (esg.IES.containsKey(entry.getKey()) && esg.IES.get(entry.getKey()) == 0) {
 					tl0++;
 
 					for (String uri : entry.getValue()) {
@@ -393,7 +417,7 @@ public class EquivalenceSetGraphAnalyser {
 						bnInTL++;
 					}
 
-					if (esg.oe_size.get(uri) == 0) {
+					if (esg.oe_size.containsKey(uri) && esg.oe_size.get(uri) == 0) {
 						oeInTL0++;
 						if (!isBlankNode(uri)) {
 							oeInTL0WithoutBNs++;

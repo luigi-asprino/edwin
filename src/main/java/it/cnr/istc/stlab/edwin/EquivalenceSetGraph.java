@@ -229,6 +229,21 @@ public final class EquivalenceSetGraph {
 		C_inverse.toFile();
 		DES.toFile();
 		IES.toFile();
+		oe_size.close();
+	}
+
+	public void close() {
+		// FIXME When RocksDB fix its issue
+//		ID.close();
+//		DES.close();
+//		IES.close();
+//		
+//		C.close();
+//		C_inverse.close();
+//		IS.close();
+//		oe_size.close();
+//		H.close();
+//		H_inverse.close();
 	}
 
 	public void printSimpleStats() {

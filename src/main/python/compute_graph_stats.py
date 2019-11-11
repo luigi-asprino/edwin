@@ -7,6 +7,7 @@ import snap
 import codecs
 import logging
 import sys
+import json
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,12 +51,16 @@ def computeNumberOfWeaklyConnectedComponentsPerSize(graph, outFile, fill):
     snap.GetWccSzCnt(graph, CntV)
     fw_cc.write('Size of WCC\tNumber of WCCs\n')
     last = 0
+    array = []
     for p in CntV:
         if(fill & p.GetVal1() - last > 1):
             for i in range(last + 1, p.GetVal1()):
                 fw_cc.write(str(i) + '\t' + str(0) + '\n')
         fw_cc.write(str(p.GetVal1()) + '\t' + str(p.GetVal2()) + '\n')
+        array.append({"x":p.GetVal1(), "y":p.GetVal2()})
         last = p.GetVal1()
+    with open(outFile + '.json', 'w') as file:
+        json.dump(array, file)
     logger.info("Number of Weakly Connected Components Per Component Size!")
     logger.info("Number of Weakly Connected Components Per Component Size Exported to " + outFile)
 
@@ -80,12 +85,18 @@ def computeNumberOfStronglyConnectedComponentsPerSize(graph, outFile, fill):
     fw_cc.write('Size of SCC\tNumber of SCCs\n')
     snap.GetSccSzCnt(graph, CntV)
     last = 0
+    array = []
     for p in CntV:
         if(fill & p.GetVal1() - last > 1):
             for i in range(last + 1, p.GetVal1()):
                 fw_cc.write(str(i) + '\t' + str(0) + '\n')
         fw_cc.write(str(p.GetVal1()) + '\t' + str(p.GetVal2()) + '\n')
+        array.append({"x":p.GetVal1(), "y":p.GetVal2()})
         last = p.GetVal1()
+    
+    with open(outFile + '.json', 'w') as file:
+        json.dump(array, file)
+        
     logger.info("Number of Strongly Connected Components Per Component Size!")
     logger.info("Number of Strongly Connected Components Per Component Size Exported to " + outFile)
 
