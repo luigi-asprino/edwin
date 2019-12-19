@@ -4,18 +4,19 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import org.rdfhdt.hdt.hdt.HDT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import it.cnr.istc.stlab.lgu.commons.rdf.Dataset;
 
 public interface ExtensionalSizeEstimator {
 
 	public final static Logger logger = LoggerFactory.getLogger(PropertySizeEstimator.class);
 
-	public void estimateObservedEntitiesSize(EquivalenceSetGraph esg, HDT hdt);
+	public void estimateObservedEntitiesSize(EquivalenceSetGraph esg, Dataset dataset);
 
 	public void estimateObservedEntitiesSizeUsingESGForProperties(EquivalenceSetGraph esg,
-			EquivalenceSetGraph esg_properties, HDT hdt);
+			EquivalenceSetGraph esg_properties, Dataset hdt);
 
 	public default void estimateEquivalenceSetDirectExtensionalSize(EquivalenceSetGraph esg) {
 

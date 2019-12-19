@@ -4,19 +4,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.rdfhdt.hdt.exceptions.NotFoundException;
-import org.rdfhdt.hdt.hdt.HDT;
-import org.rdfhdt.hdt.triples.IteratorTripleString;
 import org.rdfhdt.hdt.triples.TripleString;
 import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.cnr.istc.stlab.lgu.commons.rdf.Dataset;
+
 public class EquivalenceSetGraphBuilder {
 
-	private String hdtFilePath;
+//	private String hdtFilePath;
 	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilder.class);
 	private long lastIdentitySetId = 0;
 	// private long numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples =
@@ -26,16 +28,19 @@ public class EquivalenceSetGraphBuilder {
 			equivalencePropertiesProcessed = new HashSet<>(), specializationPropertiesToProcess = new HashSet<>(),
 			specializationPropertiesProcessed = new HashSet<>();
 	private EquivalenceSetGraph esg;
-	private static HDT hdt;
+//	private static HDT hdt;
+	private Dataset dataset;
 	private EquivalenceSetGraphBuilderParameters parameters;
 
-	private EquivalenceSetGraphBuilder(String hdtFilePath) throws IOException {
-		this.hdtFilePath = hdtFilePath;
-		hdt = InputDataset.getInstance(hdtFilePath).getHDT();
+	private EquivalenceSetGraphBuilder(String filelist) throws IOException {
+//		this.hdtFilePath = hdtFilePath;
+
+//		hdt = InputDataset.getInstance(hdtFilePath).getHDT();
+		dataset = Dataset.getInstanceFromFileList(filelist);
 	}
 
 	public static EquivalenceSetGraphBuilder getInstance(String hdtFilePath) throws IOException {
-		if (instance == null || !instance.hdtFilePath.equals(hdtFilePath)) {
+		if (instance == null) {
 			instance = new EquivalenceSetGraphBuilder(hdtFilePath);
 		}
 		return instance;
@@ -135,21 +140,21 @@ public class EquivalenceSetGraphBuilder {
 		// by other observed entities)
 		if (parameters.getObservedEntitiesSelector() != null) {
 			logger.info("Adding spare entities");
-			parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalenceSetGraph(esg, hdt);
+			parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalenceSetGraph(esg, dataset);
 			if (updatePropertySetsUsignGraph) {
 				parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(esg,
-						esg, hdt);
+						esg, dataset);
 			} else {
 				if (parameters.getEsgPropertiesFolder() != null) {
 					parameters.getObservedEntitiesSelector()
-							.addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(esg, esgProperties, hdt);
+							.addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(esg, esgProperties, dataset);
 				}
 			}
 
 			if (parameters.getEsgClassesFolder() != null) {
 				EquivalenceSetGraph esgClasses = new EquivalenceSetGraph(parameters.getEsgClassesFolder());
 				parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(esg,
-						esgClasses, hdt);
+						esgClasses, dataset);
 			}
 		}
 
@@ -157,15 +162,15 @@ public class EquivalenceSetGraphBuilder {
 		if (parameters.getExtensionalSizeEstimator() != null) {
 
 			// Computing extensional size of the observed entities
-			parameters.getExtensionalSizeEstimator().estimateObservedEntitiesSize(esg, hdt);
+			parameters.getExtensionalSizeEstimator().estimateObservedEntitiesSize(esg, dataset);
 
 			if (updatePropertySetsUsignGraph) {
 				parameters.getExtensionalSizeEstimator().estimateObservedEntitiesSizeUsingESGForProperties(esg, esg,
-						hdt);
+						dataset);
 			} else {
 				if (parameters.getEsgPropertiesFolder() != null) {
 					parameters.getExtensionalSizeEstimator().estimateObservedEntitiesSizeUsingESGForProperties(esg,
-							esgProperties, hdt);
+							esgProperties, dataset);
 				}
 			}
 
@@ -233,9 +238,11 @@ public class EquivalenceSetGraphBuilder {
 
 			try {
 				logger.info("Computing Equivalence Sets using {}", p_eq);
-				IteratorTripleString it = hdt.search("", p_eq, "");
-				logger.info("Number of explicit statements {}", it.estimatedNumResults());
-				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = it.estimatedNumResults();
+				Iterator<TripleString> it = dataset.search("", p_eq, "");
+				// TODO estimate num of results
+//				logger.info("Number of explicit statements {}", it.estimatedNumResults());
+				long numberOfStatementsProcessed = 0;
+				// numberOfStatementsToProcess = it.estimatedNumResults();
 //				numberOfEquivalenceTriples += it.estimatedNumResults();
 
 				while (it.hasNext()) {
@@ -246,8 +253,9 @@ public class EquivalenceSetGraphBuilder {
 						runtime.gc();
 						long memory = runtime.totalMemory() - runtime.freeMemory();
 
-						logger.info("Number of statements processed {}/{}", numberOfStatementsProcessed,
-								numberOfStatementsToProcess);
+//						logger.info("Number of statements processed {}/{}", numberOfStatementsProcessed,
+//								numberOfStatementsToProcess);
+						logger.info("Number of statements processed {}", numberOfStatementsProcessed);
 						logger.info("Memory used:: {}", Utils.humanReadableByteCount(memory, true));
 					}
 
@@ -260,6 +268,8 @@ public class EquivalenceSetGraphBuilder {
 
 				}
 			} catch (NotFoundException e) {
+				e.printStackTrace();
+			} catch (CompressorException e) {
 				e.printStackTrace();
 			}
 		}
@@ -423,10 +433,12 @@ public class EquivalenceSetGraphBuilder {
 
 			try {
 				logger.info("Computing Specialization Relations using {}", propertyToProcess);
-				IteratorTripleString it = hdt.search("", propertyToProcess, "");
-				logger.info("Number of explicit statements {}", it.estimatedNumResults());
+				Iterator<TripleString> it = dataset.search("", propertyToProcess, "");
+				// TODO estimate num of results
+//				logger.info("Number of explicit statements {}", it.estimatedNumResults());
 //				numberOfSpecializationTriples += it.estimatedNumResults();
-				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = it.estimatedNumResults();
+				long numberOfStatementsProcessed = 0;
+				// numberOfStatementsToProcess = it.estimatedNumResults();
 				while (it.hasNext()) {
 					if (numberOfStatementsProcessed % 10000 == 0) {
 
@@ -436,8 +448,9 @@ public class EquivalenceSetGraphBuilder {
 						// Calculate the used memory
 						long memory = runtime.totalMemory() - runtime.freeMemory();
 
-						logger.info("Statements processed {}/{}", numberOfStatementsProcessed,
-								numberOfStatementsToProcess);
+//						logger.info("Statements processed {}/{}", numberOfStatementsProcessed,
+//								numberOfStatementsToProcess);
+						logger.info("Statements processed {}", numberOfStatementsProcessed);
 						logger.info("Memory used:: {}", Utils.humanReadableByteCount(memory, true));
 					}
 					numberOfStatementsProcessed++;
@@ -447,6 +460,8 @@ public class EquivalenceSetGraphBuilder {
 					addSubsumption(subject, object);
 				}
 			} catch (NotFoundException e) {
+				e.printStackTrace();
+			} catch (CompressorException e) {
 				e.printStackTrace();
 			}
 		}

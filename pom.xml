@@ -31,10 +31,16 @@
 		<rocksmap.version>0.0.1</rocksmap.version>
 		<rdfhdtapi.version>2.1-SNAPSHOT</rdfhdtapi.version>
 		<sl4j.version>1.7.7</sl4j.version>
-		<lgu.commons.version>0.0.4</lgu.commons.version>
+		<lgu.commons.version>0.0.6</lgu.commons.version>
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>it.cnr.istc.stlab</groupId>
+			<artifactId>lgu.commons</artifactId>
+			<version>${lgu.commons.version}</version>
+		</dependency>
 
 		<!-- Commons configuration -->
 		<dependency>

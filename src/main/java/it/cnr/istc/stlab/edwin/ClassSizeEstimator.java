@@ -1,26 +1,29 @@
 package it.cnr.istc.stlab.edwin;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.rdfhdt.hdt.exceptions.NotFoundException;
-import org.rdfhdt.hdt.hdt.HDT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import it.cnr.istc.stlab.lgu.commons.rdf.Dataset;
 
 public class ClassSizeEstimator implements ExtensionalSizeEstimator {
 
 	private static Logger logger = LoggerFactory.getLogger(ClassSizeEstimator.class);
 
 	@Override
-	public void estimateObservedEntitiesSize(EquivalenceSetGraph esg, HDT hdt) {
+	public void estimateObservedEntitiesSize(EquivalenceSetGraph esg, Dataset dataset) {
 
 	}
 
 	public void estimateObservedEntitiesSizeUsingESGForProperties(EquivalenceSetGraph esg_classes, EquivalenceSetGraph esg_properties,
-			HDT hdt) {
+			Dataset dataset) {
 
 		logger.info("Computing extensional size of classes");
 
@@ -47,8 +50,13 @@ public class ClassSizeEstimator implements ExtensionalSizeEstimator {
 			long size = 0L;
 			for (String typePredicate : typePredicates) {
 				try {
-					size += hdt.search("", typePredicate, entry.getKey()).estimatedNumResults();
+//					size += hdt.search("", typePredicate, entry.getKey()).estimatedNumResults();
+					size += dataset.estimateSearch("", typePredicate, entry.getKey());
 				} catch (NotFoundException e) {
+					e.printStackTrace();
+				} catch (CompressorException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
