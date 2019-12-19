@@ -239,10 +239,9 @@ public class EquivalenceSetGraphBuilder {
 			try {
 				logger.info("Computing Equivalence Sets using {}", p_eq);
 				Iterator<TripleString> it = dataset.search("", p_eq, "");
-				// TODO estimate num of results
-//				logger.info("Number of explicit statements {}", it.estimatedNumResults());
-				long numberOfStatementsProcessed = 0;
-				// numberOfStatementsToProcess = it.estimatedNumResults();
+				long numOfResults = dataset.estimateSearch("", p_eq, "");
+				logger.info("Number of explicit statements {}", numOfResults);
+				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = numOfResults;
 //				numberOfEquivalenceTriples += it.estimatedNumResults();
 
 				while (it.hasNext()) {
@@ -253,8 +252,8 @@ public class EquivalenceSetGraphBuilder {
 						runtime.gc();
 						long memory = runtime.totalMemory() - runtime.freeMemory();
 
-//						logger.info("Number of statements processed {}/{}", numberOfStatementsProcessed,
-//								numberOfStatementsToProcess);
+						logger.info("Number of statements processed {}/{}", numberOfStatementsProcessed,
+								numberOfStatementsToProcess);
 						logger.info("Number of statements processed {}", numberOfStatementsProcessed);
 						logger.info("Memory used:: {}", Utils.humanReadableByteCount(memory, true));
 					}
@@ -434,11 +433,10 @@ public class EquivalenceSetGraphBuilder {
 			try {
 				logger.info("Computing Specialization Relations using {}", propertyToProcess);
 				Iterator<TripleString> it = dataset.search("", propertyToProcess, "");
-				// TODO estimate num of results
-//				logger.info("Number of explicit statements {}", it.estimatedNumResults());
+				long numOfResults = dataset.estimateSearch("", propertyToProcess, "");
+				logger.info("Number of explicit statements {}", numOfResults);
 //				numberOfSpecializationTriples += it.estimatedNumResults();
-				long numberOfStatementsProcessed = 0;
-				// numberOfStatementsToProcess = it.estimatedNumResults();
+				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = numOfResults;
 				while (it.hasNext()) {
 					if (numberOfStatementsProcessed % 10000 == 0) {
 
@@ -448,8 +446,8 @@ public class EquivalenceSetGraphBuilder {
 						// Calculate the used memory
 						long memory = runtime.totalMemory() - runtime.freeMemory();
 
-//						logger.info("Statements processed {}/{}", numberOfStatementsProcessed,
-//								numberOfStatementsToProcess);
+						logger.info("Statements processed {}/{}", numberOfStatementsProcessed,
+								numberOfStatementsToProcess);
 						logger.info("Statements processed {}", numberOfStatementsProcessed);
 						logger.info("Memory used:: {}", Utils.humanReadableByteCount(memory, true));
 					}
