@@ -83,7 +83,7 @@ public final class EquivalenceSetGraph {
 	}
 
 	private void setPropertyFile(String property, String file) {
-		if (!new File(esgFolder + "/" + file).exists()) {
+		if (!new File(esgFolder + "/" + file).exists() && property != null) {
 			try {
 				FileOutputStream fos = new FileOutputStream(new File(esgFolder + "/" + file));
 				fos.write(property.getBytes());

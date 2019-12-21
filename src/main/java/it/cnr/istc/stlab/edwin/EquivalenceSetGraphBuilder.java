@@ -57,6 +57,14 @@ public class EquivalenceSetGraphBuilder {
 		logger.trace("pe {}", parameters.getEquivalencePropertiesForProperties());
 		logger.trace("ps {}", parameters.getSpecializationPropertyForProperties());
 
+		// updatePropertyToObserve is true if do not update property sets by adding
+		// possible specializations of properties to observe
+		boolean updatePropertySets = parameters.getEquivalencePropertiesForProperties() != null
+				|| parameters.getSpecializationPropertyForProperties() != null;
+
+		// updatePropertySetsUsignGraph is true if the builder has to search possible
+		// specializations of the properties
+		// to observe in the equivalence set graph that is being built
 		boolean updatePropertySetsUsignGraph = p.getEquivalencePropertyToObserve()
 				.equals(p.getEquivalencePropertiesForProperties())
 				&& p.getSpecializationPropertyToObserve().equals(p.getSpecializationPropertyForProperties());
@@ -73,7 +81,7 @@ public class EquivalenceSetGraphBuilder {
 			updatePropertySetsUsignGraph = false;
 		}
 
-		if (!updatePropertySetsUsignGraph && esgProperties != null) {
+		if (!updatePropertySetsUsignGraph && esgProperties != null && updatePropertySets) {
 
 			// TODO check if semantics for building the graph is compliant with semantics of
 			// SpecializationPropertyForProperties and EquivalencePropertiesForProperties
@@ -100,7 +108,7 @@ public class EquivalenceSetGraphBuilder {
 			specializationPropertiesToProcess.addAll(specializationProperties);
 			logger.info("Number of specialization properties to process {}", specializationPropertiesToProcess.size());
 
-		} else if (!updatePropertySetsUsignGraph && esgProperties == null) {
+		} else if (!updatePropertySetsUsignGraph && esgProperties == null && updatePropertySets) {
 			logger.error(
 					"Equivalence Set Graph for properties {} and {} has not been computed. Compute the Equivalence Set Graph for these properties and provide its path as esgPropertiesFolder parameter!");
 			throw new RuntimeException(
@@ -238,8 +246,8 @@ public class EquivalenceSetGraphBuilder {
 
 			try {
 				logger.info("Computing Equivalence Sets using {}", p_eq);
-				Iterator<TripleString> it = dataset.search("", p_eq, "");
 				long numOfResults = dataset.estimateSearch("", p_eq, "");
+				Iterator<TripleString> it = dataset.search("", p_eq, "");
 				logger.info("Number of explicit statements {}", numOfResults);
 				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = numOfResults;
 //				numberOfEquivalenceTriples += it.estimatedNumResults();
