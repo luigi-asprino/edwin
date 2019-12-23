@@ -1,5 +1,6 @@
 package it.cnr.istc.stlab.edwin;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.configuration2.Configuration;
@@ -23,6 +24,9 @@ public class Edwin {
 			if (args.length > 0) {
 				configFile = args[0];
 			}
+
+			logger.info("Configuration file {}", new File(configFile).getAbsolutePath());
+
 			Configurations configs = new Configurations();
 			Configuration config = configs.properties(configFile);
 
