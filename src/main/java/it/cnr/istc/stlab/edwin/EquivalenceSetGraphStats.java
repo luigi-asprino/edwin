@@ -115,12 +115,12 @@ public class EquivalenceSetGraphStats {
 	public void toTSVFile(String path) throws IOException {
 		FileOutputStream fos = new FileOutputStream(new File(path));
 
-//		fos.write(String.format("%s\t%d\n", neq_label, numberOfEquivalenceTriples).getBytes());
-//		fos.write(String.format("%s\t%d\n", nsub_label, numberOfSpecializationTriples).getBytes());
-//		fos.write(String.format("%s\t%d\n", neqp_label, equivalencePropertiesUsed.size()).getBytes());
-//		fos.write(String.format("%s\t%s\n", eqp_label, equivalencePropertiesUsed.toString()).getBytes());
-//		fos.write(String.format("%s\t%d\n", nsubp_label, specializationPropertiesUsed.size()).getBytes());
-//		fos.write(String.format("%s\t%s\n", subp_label, specializationPropertiesUsed.toString()).getBytes());
+		fos.write(String.format("%s\t%d\n", neq_label, numberOfEquivalenceTriples).getBytes());
+		fos.write(String.format("%s\t%d\n", nsub_label, numberOfSpecializationTriples).getBytes());
+		fos.write(String.format("%s\t%d\n", neqp_label, equivalencePropertiesUsed.size()).getBytes());
+		fos.write(String.format("%s\t%s\n", eqp_label, equivalencePropertiesUsed.toString()).getBytes());
+		fos.write(String.format("%s\t%d\n", nsubp_label, specializationPropertiesUsed.size()).getBytes());
+		fos.write(String.format("%s\t%s\n", subp_label, specializationPropertiesUsed.toString()).getBytes());
 		fos.write(String.format("%s\t%d\n", oe_label, oe).getBytes());
 		fos.write(String.format("%s\t%d\n", oe_bn_label, (oe - bns)).getBytes());
 		fos.write(String.format("%s\t%d\n", bns_label, bns).getBytes());

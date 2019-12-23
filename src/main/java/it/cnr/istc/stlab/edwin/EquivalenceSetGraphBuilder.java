@@ -18,24 +18,18 @@ import it.cnr.istc.stlab.lgu.commons.rdf.Dataset;
 
 public class EquivalenceSetGraphBuilder {
 
-//	private String hdtFilePath;
 	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilder.class);
 	private long lastIdentitySetId = 0;
-	// private long numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples =
-	// 0L;
+	private long numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples = 0L;
 	private static EquivalenceSetGraphBuilder instance;
 	private Set<String> equivalencePropertiesToProcess = new HashSet<>(),
 			equivalencePropertiesProcessed = new HashSet<>(), specializationPropertiesToProcess = new HashSet<>(),
 			specializationPropertiesProcessed = new HashSet<>();
 	private EquivalenceSetGraph esg;
-//	private static HDT hdt;
 	private Dataset dataset;
 	private EquivalenceSetGraphBuilderParameters parameters;
 
 	private EquivalenceSetGraphBuilder(String filelist) throws IOException {
-//		this.hdtFilePath = hdtFilePath;
-
-//		hdt = InputDataset.getInstance(hdtFilePath).getHDT();
 		dataset = Dataset.getInstanceFromFileList(filelist);
 	}
 
@@ -193,11 +187,7 @@ public class EquivalenceSetGraphBuilder {
 		if (parameters.isComputeStats()) {
 			// compute stats
 			if (updatePropertySetsUsignGraph) {
-				logger.info("Using ESG");
 				computeStats(esg);
-			} else {
-				logger.info("Using ESG properties");
-				computeStats(esgProperties);
 			}
 		}
 
@@ -207,16 +197,14 @@ public class EquivalenceSetGraphBuilder {
 	private void computeStats(EquivalenceSetGraph esgProperties) throws IOException {
 
 		// save equivalence and specialization properties
-//		esg.getStats().equivalencePropertiesUsed = new HashSet<>(equivalencePropertiesProcessed);
-//		esg.getStats().equivalencePropertiesUsed.removeAll(parameters.getNotEquivalenceProperties());
-//		esg.getStats().specializationPropertiesUsed = new HashSet<>(specializationPropertiesProcessed);
-//		esg.getStats().specializationPropertiesUsed.removeAll(parameters.getNotSpecializationProperties());
+		esg.getStats().equivalencePropertiesUsed = new HashSet<>(equivalencePropertiesProcessed);
+		esg.getStats().equivalencePropertiesUsed.removeAll(parameters.getNotEquivalenceProperties());
+		esg.getStats().specializationPropertiesUsed = new HashSet<>(specializationPropertiesProcessed);
+		esg.getStats().specializationPropertiesUsed.removeAll(parameters.getNotSpecializationProperties());
 
 		// compute stats
-		esg.getStats().numberOfEquivalenceTriples = esgProperties
-				.getIndirectSizeOfEntity(parameters.getEquivalencePropertyToObserve());
-		esg.getStats().numberOfSpecializationTriples = esgProperties
-				.getIndirectSizeOfEntity(parameters.getSpecializationPropertyToObserve());
+		esg.getStats().numberOfEquivalenceTriples = numberOfEquivalenceTriples;
+		esg.getStats().numberOfSpecializationTriples = numberOfSpecializationTriples;
 
 		esg.getStats().oe = esg.ID.keySet().size();
 		esg.getStats().es = esg.IS.keySet().size();
@@ -246,11 +234,13 @@ public class EquivalenceSetGraphBuilder {
 
 			try {
 				logger.info("Computing Equivalence Sets using {}", p_eq);
-				long numOfResults = dataset.estimateSearch("", p_eq, "");
+				long numOfResults = 0L;
+				if (parameters.isComputeEstimation()) {
+					numOfResults = dataset.estimateSearch("", p_eq, "");
+				}
 				Iterator<TripleString> it = dataset.search("", p_eq, "");
 				logger.info("Number of explicit statements {}", numOfResults);
 				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = numOfResults;
-//				numberOfEquivalenceTriples += it.estimatedNumResults();
 
 				while (it.hasNext()) {
 
@@ -272,6 +262,7 @@ public class EquivalenceSetGraphBuilder {
 					String subject = tripleString.getSubject().toString();
 					String object = tripleString.getObject().toString();
 					addEquivalence(subject, object);
+					numberOfEquivalenceTriples++;
 
 				}
 			} catch (NotFoundException e) {
@@ -441,9 +432,11 @@ public class EquivalenceSetGraphBuilder {
 			try {
 				logger.info("Computing Specialization Relations using {}", propertyToProcess);
 				Iterator<TripleString> it = dataset.search("", propertyToProcess, "");
-				long numOfResults = dataset.estimateSearch("", propertyToProcess, "");
+				long numOfResults = 0L;
+				if (parameters.isComputeEstimation()) {
+					numOfResults = dataset.estimateSearch("", propertyToProcess, "");
+				}
 				logger.info("Number of explicit statements {}", numOfResults);
-//				numberOfSpecializationTriples += it.estimatedNumResults();
 				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = numOfResults;
 				while (it.hasNext()) {
 					if (numberOfStatementsProcessed % 10000 == 0) {
@@ -464,6 +457,7 @@ public class EquivalenceSetGraphBuilder {
 					String subject = tripleString.getSubject().toString();
 					String object = tripleString.getObject().toString();
 					addSubsumption(subject, object);
+					numberOfSpecializationTriples++;
 				}
 			} catch (NotFoundException e) {
 				e.printStackTrace();

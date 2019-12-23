@@ -50,7 +50,7 @@ public class Edwin {
 
 		logger.info(parameters.toString());
 
-		EquivalenceSetGraphBuilder esgb = EquivalenceSetGraphBuilder.getInstance(config.getString("hdtFilePath"));
+		EquivalenceSetGraphBuilder esgb = EquivalenceSetGraphBuilder.getInstance(parameters.getDatasetPaths());
 		EquivalenceSetGraph esg = esgb.build(parameters);
 
 		esg.printSimpleStats();

@@ -11,12 +11,13 @@ public class EquivalenceSetGraphBuilderParameters {
 	private String esgFolder, esgName, esgBaseURI;
 
 	private String equivalencePropertyToObserve, specializationPropertyToObserve, specializationPropertyForProperties,
-			equivalencePropertiesForProperties, esgPropertiesFolder, esgClassesFolder;
+			equivalencePropertiesForProperties, esgPropertiesFolder, esgClassesFolder, datasetPaths;
 
 	private EquivalenceSetGraph esgProperties;
 
 	private boolean computeClosure = true;
 	private boolean computeStats = true;
+	private boolean computeEstimation = false;
 
 	private Set<String> notEquivalenceProperties = new HashSet<>();
 	private Set<String> notSpecializationProperties = new HashSet<>();
@@ -139,6 +140,8 @@ public class EquivalenceSetGraphBuilderParameters {
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		EquivalenceSetGraphBuilderParameters parameters = new EquivalenceSetGraphBuilderParameters();
 
+		parameters.setDatasetPaths(config.getString("datasetPaths"));
+
 		parameters.setEquivalencePropertyToObserve(config.getString("equivalencePropertyToObserve"));
 		parameters.setEquivalencePropertiesForProperties(config.getString("equivalencePropertyForProperties"));
 
@@ -180,6 +183,10 @@ public class EquivalenceSetGraphBuilderParameters {
 			parameters.setEsgBaseURI(config.getString("esgBaseURI"));
 		}
 
+		if (config.containsKey("computeEstimations")) {
+			parameters.setComputeEstimation(config.getBoolean("computeEstimations"));
+		}
+
 		return parameters;
 	}
 
@@ -197,19 +204,6 @@ public class EquivalenceSetGraphBuilderParameters {
 
 	public void setEsgBaseURI(String esgBaseURI) {
 		this.esgBaseURI = esgBaseURI;
-	}
-
-	@Override
-	public String toString() {
-		return "EquivalenceSetGraphBuilderParameters [esgFolder=" + esgFolder + ", esgName=" + esgName + ", esgBaseURI="
-				+ esgBaseURI + ", equivalencePropertyToObserve=" + equivalencePropertyToObserve
-				+ ", specializationPropertyToObserve=" + specializationPropertyToObserve
-				+ ", specializationPropertyForProperties=" + specializationPropertyForProperties
-				+ ", equivalencePropertiesForProperties=" + equivalencePropertiesForProperties
-				+ ", esgPropertiesFolder=" + esgPropertiesFolder + ", esgClassesFolder=" + esgClassesFolder
-				+ ", notEquivalenceProperties=" + notEquivalenceProperties + ", notSpecializationProperties="
-				+ notSpecializationProperties + ", observedEntitiesSelector=" + observedEntitiesSelector
-				+ ", extensionalSizeEstimator=" + extensionalSizeEstimator + "]";
 	}
 
 	public boolean isComputeClosure() {
@@ -234,6 +228,37 @@ public class EquivalenceSetGraphBuilderParameters {
 
 	public void setEsgProperties(EquivalenceSetGraph esgProperties) {
 		this.esgProperties = esgProperties;
+	}
+
+	public boolean isComputeEstimation() {
+		return computeEstimation;
+	}
+
+	public void setComputeEstimation(boolean computeEstimation) {
+		this.computeEstimation = computeEstimation;
+	}
+
+	@Override
+	public String toString() {
+		return "EquivalenceSetGraphBuilderParameters [esgFolder=" + esgFolder + ", esgName=" + esgName + ", esgBaseURI="
+				+ esgBaseURI + ", equivalencePropertyToObserve=" + equivalencePropertyToObserve
+				+ ", specializationPropertyToObserve=" + specializationPropertyToObserve
+				+ ", specializationPropertyForProperties=" + specializationPropertyForProperties
+				+ ", equivalencePropertiesForProperties=" + equivalencePropertiesForProperties
+				+ ", esgPropertiesFolder=" + esgPropertiesFolder + ", esgClassesFolder=" + esgClassesFolder
+				+ ", esgProperties=" + esgProperties + ", computeClosure=" + computeClosure + ", computeStats="
+				+ computeStats + ", computeEstimation=" + computeEstimation + ", notEquivalenceProperties="
+				+ notEquivalenceProperties + ", notSpecializationProperties=" + notSpecializationProperties
+				+ ", observedEntitiesSelector=" + observedEntitiesSelector + ", extensionalSizeEstimator="
+				+ extensionalSizeEstimator + "]";
+	}
+
+	public String getDatasetPaths() {
+		return datasetPaths;
+	}
+
+	public void setDatasetPaths(String datasetPaths) {
+		this.datasetPaths = datasetPaths;
 	}
 
 }
