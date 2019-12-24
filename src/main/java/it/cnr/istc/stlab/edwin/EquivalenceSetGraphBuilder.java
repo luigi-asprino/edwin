@@ -29,11 +29,11 @@ public class EquivalenceSetGraphBuilder {
 	private Dataset dataset;
 	private EquivalenceSetGraphBuilderParameters parameters;
 
-	private EquivalenceSetGraphBuilder(String... filelist) throws IOException {
+	private EquivalenceSetGraphBuilder(String[] filelist) throws IOException {
 		dataset = Dataset.getInstanceFromFileList(filelist);
 	}
 
-	public static EquivalenceSetGraphBuilder getInstance(String... hdtFilePath) throws IOException {
+	public static EquivalenceSetGraphBuilder getInstance(String[] hdtFilePath) throws IOException {
 		if (instance == null) {
 			instance = new EquivalenceSetGraphBuilder(hdtFilePath);
 		}
