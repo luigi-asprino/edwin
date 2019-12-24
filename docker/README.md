@@ -2,7 +2,7 @@
 
 To run Edwin in a docker container proceeds as follows:
 
-1. Build docker image ``edwin_test`` 
+1. Build docker image ``edwin_test``  (from the directory named ``docker``). 
 
 ```
  docker build test -t edwin_test
