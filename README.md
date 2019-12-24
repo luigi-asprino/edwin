@@ -5,7 +5,9 @@ A framework for building and analysing Equivalence Set Graphs.
 
 #### Installation
 
-Edwin can be installed using maven.
+Edwin can be installed using maven or docker.
+
+#### Maven
 
 ```
 $ git clone https://github.com/luigi-asprino/edwin.git
@@ -20,6 +22,9 @@ Once installed, you can add Edwin as a dependency of your maven project.
   <version>0.0.1</version>
 </dependency>
 ```
+### Docker
+
+* todo
 
 #### Usage
 
