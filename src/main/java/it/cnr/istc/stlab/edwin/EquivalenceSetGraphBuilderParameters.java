@@ -1,5 +1,6 @@
 package it.cnr.istc.stlab.edwin;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +12,7 @@ public class EquivalenceSetGraphBuilderParameters {
 	private String esgFolder, esgName, esgBaseURI;
 
 	private String equivalencePropertyToObserve, specializationPropertyToObserve, specializationPropertyForProperties,
-			equivalencePropertiesForProperties, esgPropertiesFolder, esgClassesFolder, datasetPaths;
+			equivalencePropertiesForProperties, esgPropertiesFolder, esgClassesFolder;
 
 	private EquivalenceSetGraph esgProperties;
 
@@ -21,6 +22,9 @@ public class EquivalenceSetGraphBuilderParameters {
 
 	private Set<String> notEquivalenceProperties = new HashSet<>();
 	private Set<String> notSpecializationProperties = new HashSet<>();
+	private Set<String> additionalEquivalencePropertiesToObserve = new HashSet<>(),
+			additionalSpecializationPropertiesToObserve = new HashSet<>();
+	private String[] datasetPaths;
 	private ObservedEntitiesSelector observedEntitiesSelector;
 	private ExtensionalSizeEstimator extensionalSizeEstimator;
 
@@ -140,7 +144,7 @@ public class EquivalenceSetGraphBuilderParameters {
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		EquivalenceSetGraphBuilderParameters parameters = new EquivalenceSetGraphBuilderParameters();
 
-		parameters.setDatasetPaths(config.getString("datasetPaths"));
+		parameters.setDatasetPaths(config.getStringArray("datasetPaths"));
 
 		parameters.setEquivalencePropertyToObserve(config.getString("equivalencePropertyToObserve"));
 		parameters.setEquivalencePropertiesForProperties(config.getString("equivalencePropertyForProperties"));
@@ -153,6 +157,16 @@ public class EquivalenceSetGraphBuilderParameters {
 		}
 		if (config.containsKey("notSpecializationProperties")) {
 			parameters.addNotSpecializationProperties(config.getString("notSpecializationProperties").split(","));
+		}
+
+		if (config.containsKey("additionalEquivalencePropertiesToObserve")) {
+			parameters.setAdditionalEquivalencePropertiesToObserve(
+					new HashSet<>(Arrays.asList(config.getString("additionalEquivalencePropertiesToObserve"))));
+		}
+
+		if (config.containsKey("additionalSpecializationPropertiesToObserve")) {
+			parameters.setAdditionalEquivalencePropertiesToObserve(
+					new HashSet<>(Arrays.asList(config.getString("additionalSpecializationPropertiesToObserve"))));
 		}
 
 		parameters.setEsgFolder(config.getString("esgFolder"));
@@ -253,12 +267,29 @@ public class EquivalenceSetGraphBuilderParameters {
 				+ extensionalSizeEstimator + "]";
 	}
 
-	public String getDatasetPaths() {
+	public String[] getDatasetPaths() {
 		return datasetPaths;
 	}
 
-	public void setDatasetPaths(String datasetPaths) {
+	public void setDatasetPaths(String[] datasetPaths) {
 		this.datasetPaths = datasetPaths;
+	}
+
+	public Set<String> getAdditionalEquivalencePropertiesToObserve() {
+		return additionalEquivalencePropertiesToObserve;
+	}
+
+	public void setAdditionalEquivalencePropertiesToObserve(Set<String> additionalEquivalencePropertiesToObserve) {
+		this.additionalEquivalencePropertiesToObserve = additionalEquivalencePropertiesToObserve;
+	}
+
+	public Set<String> getAdditionalSpecializationPropertiesToObserve() {
+		return additionalSpecializationPropertiesToObserve;
+	}
+
+	public void setAdditionalSpecializationPropertiesToObserve(
+			Set<String> additionalSpecializationPropertiesToObserve) {
+		this.additionalSpecializationPropertiesToObserve = additionalSpecializationPropertiesToObserve;
 	}
 
 }

@@ -29,11 +29,11 @@ public class EquivalenceSetGraphBuilder {
 	private Dataset dataset;
 	private EquivalenceSetGraphBuilderParameters parameters;
 
-	private EquivalenceSetGraphBuilder(String filelist) throws IOException {
+	private EquivalenceSetGraphBuilder(String... filelist) throws IOException {
 		dataset = Dataset.getInstanceFromFileList(filelist);
 	}
 
-	public static EquivalenceSetGraphBuilder getInstance(String hdtFilePath) throws IOException {
+	public static EquivalenceSetGraphBuilder getInstance(String... hdtFilePath) throws IOException {
 		if (instance == null) {
 			instance = new EquivalenceSetGraphBuilder(hdtFilePath);
 		}
@@ -117,9 +117,13 @@ public class EquivalenceSetGraphBuilder {
 		esg.setEquivalencePropertyForProperties(p.getEquivalencePropertiesForProperties());
 		esg.setSpecializationPropertyForProperties(p.getSpecializationPropertyForProperties());
 
+		// adding properties to observe
 		equivalencePropertiesToProcess.add(p.getEquivalencePropertyToObserve());
-
 		specializationPropertiesToProcess.add(p.getSpecializationPropertyToObserve());
+
+		// adding additional properties to observe
+		equivalencePropertiesToProcess.addAll(p.getAdditionalEquivalencePropertiesToObserve());
+		specializationPropertiesToProcess.addAll(p.getAdditionalSpecializationPropertiesToObserve());
 
 		long cycle = 0;
 
