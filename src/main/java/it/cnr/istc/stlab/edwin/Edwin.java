@@ -62,7 +62,7 @@ public class Edwin {
 		esg.toEdgeListNodeList(parameters.getEsgFolder());
 		esg.toFile();
 		esg.toRDF(parameters.getEsgFolder() + "/esg.nt", parameters.getEsgBaseURI(), parameters.getEsgName());
-
+		 
 		return esg;
 
 	}
