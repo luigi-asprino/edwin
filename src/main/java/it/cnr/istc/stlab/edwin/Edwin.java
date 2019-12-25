@@ -61,8 +61,10 @@ public class Edwin {
 		esg.getStats().toTSVFile(parameters.getEsgFolder() + "/stats.tsv");
 		esg.toEdgeListNodeList(parameters.getEsgFolder());
 		esg.toFile();
-		esg.toRDF(parameters.getEsgFolder() + "/esg.nt", parameters.getEsgBaseURI(), parameters.getEsgName());
-		 
+		if (parameters.isExportInRDFFormat()) {
+			esg.toRDF(parameters.getEsgFolder() + "/esg.nt", parameters.getEsgBaseURI(), parameters.getEsgName());
+		}
+
 		return esg;
 
 	}

@@ -19,6 +19,7 @@ public class EquivalenceSetGraphBuilderParameters {
 	private boolean computeClosure = true;
 	private boolean computeStats = true;
 	private boolean computeEstimation = false;
+	private boolean exportInRDFFormat = false;
 
 	private Set<String> notEquivalenceProperties = new HashSet<>();
 	private Set<String> notSpecializationProperties = new HashSet<>();
@@ -201,6 +202,10 @@ public class EquivalenceSetGraphBuilderParameters {
 			parameters.setComputeEstimation(config.getBoolean("computeEstimations"));
 		}
 
+		if (config.containsKey("exportInRDFFormat")) {
+			parameters.setExportInRDFFormat(config.getBoolean("exportInRDFFormat"));
+		}
+
 		return parameters;
 	}
 
@@ -290,6 +295,14 @@ public class EquivalenceSetGraphBuilderParameters {
 	public void setAdditionalSpecializationPropertiesToObserve(
 			Set<String> additionalSpecializationPropertiesToObserve) {
 		this.additionalSpecializationPropertiesToObserve = additionalSpecializationPropertiesToObserve;
+	}
+
+	public boolean isExportInRDFFormat() {
+		return exportInRDFFormat;
+	}
+
+	public void setExportInRDFFormat(boolean exportInRDFFormat) {
+		this.exportInRDFFormat = exportInRDFFormat;
 	}
 
 }

@@ -27,6 +27,7 @@
 		<apachecommons.version>2.1.1</apachecommons.version>
 		<apachejena.version>3.12.0</apachejena.version>
 		<commons-beanutils.version>1.9.3</commons-beanutils.version>
+		<junit.version>5.5.2</junit.version>
 		<orgjson.version>20190722</orgjson.version>
 		<rocksmap.version>0.0.1</rocksmap.version>
 		<rdfhdtapi.version>2.1.1-SNAPSHOT</rdfhdtapi.version>
@@ -35,6 +36,15 @@
 	</properties>
 
 	<dependencies>
+
+		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 
 		<dependency>
 			<groupId>it.cnr.istc.stlab</groupId>

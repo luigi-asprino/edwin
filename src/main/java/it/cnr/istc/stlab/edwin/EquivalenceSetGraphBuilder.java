@@ -119,7 +119,9 @@ public class EquivalenceSetGraphBuilder {
 
 		// adding properties to observe
 		equivalencePropertiesToProcess.add(p.getEquivalencePropertyToObserve());
-		specializationPropertiesToProcess.add(p.getSpecializationPropertyToObserve());
+		if(p.getSpecializationPropertyToObserve()!=null) {
+			specializationPropertiesToProcess.add(p.getSpecializationPropertyToObserve());
+		}
 
 		// adding additional properties to observe
 		equivalencePropertiesToProcess.addAll(p.getAdditionalEquivalencePropertiesToObserve());
@@ -275,6 +277,8 @@ public class EquivalenceSetGraphBuilder {
 				e.printStackTrace();
 			}
 		}
+
+		logger.info("Number of Equivalence Triples {}", numberOfEquivalenceTriples);
 	}
 
 	private long getIdentityNewSetId() {

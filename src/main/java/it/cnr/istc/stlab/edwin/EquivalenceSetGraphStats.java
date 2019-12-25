@@ -75,21 +75,24 @@ public class EquivalenceSetGraphStats {
 		stats.put(r_label, transformDouble((double) ((double) es / (double) oe)));
 		stats.put(r_bn_label, transformDouble((double) ((double) (es - es_with_bns) / (double) (oe - bns))));
 		stats.put(edges_label, e);
-		stats.put(density, ((double) e / ((double) (es * (es - 1)))));
+		if (e > 0)
+			stats.put(density, ((double) e / ((double) (es * (es - 1)))));
 		stats.put(h_max_label, h_max);
 		stats.put(heightDistribution_label, heightDistribution);
 		// hd
-		long max = Collections.max(heightDistribution.keySet());
-		JSONArray hd = new JSONArray();
-		for (long i = 0; i <= max; i++) {
-			JSONObject point = new JSONObject();
-			if (heightDistribution.containsKey(i)) {
-				point.put("x", i);
-				point.put("y", ((double) heightDistribution.get(i) / (double) es));
-				hd.put(point);
+		if (heightDistribution.size() > 0) {
+			long max = Collections.max(heightDistribution.keySet());
+			JSONArray hd = new JSONArray();
+			for (long i = 0; i <= max; i++) {
+				JSONObject point = new JSONObject();
+				if (heightDistribution.containsKey(i)) {
+					point.put("x", i);
+					point.put("y", ((double) heightDistribution.get(i) / (double) es));
+					hd.put(point);
+				}
 			}
+			stats.put(hd_label, hd);
 		}
-		stats.put(hd_label, hd);
 		stats.put(in_label, in);
 		stats.put(tl_label, tl);
 		stats.put(tlWithoutBNs_label, tlWithoutBNs);
