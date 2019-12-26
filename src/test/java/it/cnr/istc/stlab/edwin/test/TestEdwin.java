@@ -25,7 +25,7 @@ public class TestEdwin {
 	@Test
 	public void testEquivalenceSets() {
 		File f = new File("src/main/resources/testResources/testEquivalenceSets.properties");
-		
+
 		clean();
 
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
@@ -53,7 +53,7 @@ public class TestEdwin {
 
 		assertEquals(esg.getNumberOfEquivalenceSets(), 2);
 		assertEquals(esg.getNumberOfObservedEntities(), 6);
-		
+
 		clean();
 	}
 
@@ -61,9 +61,8 @@ public class TestEdwin {
 	public void testEquivalenceSetsWithSpecializationOfEquivalenceRelation() {
 		File f = new File(
 				"src/main/resources/testResources/testEquivalenceSetsWithSpecializationOfEquivalenceRelation.properties");
-		
-		clean();
 
+		clean();
 		EquivalenceSetGraph esgProperties = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(esgProperties.getNumberOfEquivalenceSets(), 2);
 		assertEquals(esgProperties.getEquivalentEntities("http://example.org/equal"),
@@ -72,9 +71,11 @@ public class TestEdwin {
 				Sets.newHashSet("http://example.org/equal2"));
 		assertEquals(esgProperties.getEquivalentOrSubsumedEntities("http://example.org/equal"),
 				Sets.newHashSet("http://example.org/equal2", "http://example.org/equal"));
-		
 		clean();
-
+		
+		
+		
+		
 	}
 
 }
