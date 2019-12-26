@@ -252,6 +252,14 @@ public final class EquivalenceSetGraph {
 		System.out.println("Number of equivalence sets: " + IS.keySet().size());
 	}
 
+	public int getNumberOfObservedEntities() {
+		return ID.keySet().size();
+	}
+
+	public int getNumberOfEquivalenceSets() {
+		return IS.keySet().size();
+	}
+
 	public long getMaxId() {
 		long max = 0;
 		for (Long l : IS.keySet()) {
