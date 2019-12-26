@@ -18,6 +18,8 @@ public class TestEdwin {
 		File f = new File("src/main/resources/testResources/testEquivalenceSets.properties");
 
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
+		
+		System.out.println(esg.getEquivalentEntities("http://example.org/a"));
 
 		assertEquals(esg.getEquivalentEntities("http://example.org/a"), Sets.newHashSet("http://example.org/a",
 				"http://example.org/c", "http://example.org/d", "http://example.org/e"));
