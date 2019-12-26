@@ -10,14 +10,16 @@ import org.junit.jupiter.api.Test;
 
 import it.cnr.istc.stlab.edwin.Edwin;
 import it.cnr.istc.stlab.edwin.EquivalenceSetGraph;
+import it.cnr.istc.stlab.lgu.commons.files.FileUtils;
 
 public class TestEdwin {
 
 	@Test
 	public void testEquivalenceSets() {
 		File f = new File("src/main/resources/testResources/testEquivalenceSets.properties");
-
+		
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
+		
 		
 		System.out.println(esg.getEquivalentEntities("http://example.org/a"));
 

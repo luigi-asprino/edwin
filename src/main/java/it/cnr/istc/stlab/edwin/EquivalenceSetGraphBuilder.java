@@ -119,7 +119,7 @@ public class EquivalenceSetGraphBuilder {
 
 		// adding properties to observe
 		equivalencePropertiesToProcess.add(p.getEquivalencePropertyToObserve());
-		if(p.getSpecializationPropertyToObserve()!=null) {
+		if (p.getSpecializationPropertyToObserve() != null) {
 			specializationPropertiesToProcess.add(p.getSpecializationPropertyToObserve());
 		}
 
@@ -302,6 +302,8 @@ public class EquivalenceSetGraphBuilder {
 			esg.IS.put(c, object);
 
 		} else if (esg.ID.containsKey(subject) && !esg.ID.containsKey(object)) {
+
+			logger.debug(" subj not obj");
 
 			// the subject is contained in one identity set (at least) but the object is not
 			// contained in any identity set
