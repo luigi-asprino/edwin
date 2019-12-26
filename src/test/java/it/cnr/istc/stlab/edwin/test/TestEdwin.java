@@ -17,10 +17,9 @@ public class TestEdwin {
 	@Test
 	public void testEquivalenceSets() {
 		File f = new File("src/main/resources/testResources/testEquivalenceSets.properties");
-		
+
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
-		
-		
+
 		System.out.println(esg.getEquivalentEntities("http://example.org/a"));
 
 		assertEquals(esg.getEquivalentEntities("http://example.org/a"), Sets.newHashSet("http://example.org/a",
