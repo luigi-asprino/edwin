@@ -4,19 +4,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.compress.utils.Sets;
 import org.junit.jupiter.api.Test;
 
 import it.cnr.istc.stlab.edwin.Edwin;
 import it.cnr.istc.stlab.edwin.EquivalenceSetGraph;
-import it.cnr.istc.stlab.lgu.commons.files.FileUtils;
 
 public class TestEdwin {
+
+	private static void clean() {
+		try {
+			org.apache.commons.io.FileUtils.deleteDirectory(new File("src/main/resources/testResources/ESGs"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Test
 	public void testEquivalenceSets() {
 		File f = new File("src/main/resources/testResources/testEquivalenceSets.properties");
+		
+		clean();
 
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 
@@ -43,12 +53,16 @@ public class TestEdwin {
 
 		assertEquals(esg.getNumberOfEquivalenceSets(), 2);
 		assertEquals(esg.getNumberOfObservedEntities(), 6);
+		
+		clean();
 	}
 
 	@Test
 	public void testEquivalenceSetsWithSpecializationOfEquivalenceRelation() {
 		File f = new File(
 				"src/main/resources/testResources/testEquivalenceSetsWithSpecializationOfEquivalenceRelation.properties");
+		
+		clean();
 
 		EquivalenceSetGraph esgProperties = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(esgProperties.getNumberOfEquivalenceSets(), 2);
@@ -58,6 +72,8 @@ public class TestEdwin {
 				Sets.newHashSet("http://example.org/equal2"));
 		assertEquals(esgProperties.getEquivalentOrSubsumedEntities("http://example.org/equal"),
 				Sets.newHashSet("http://example.org/equal2", "http://example.org/equal"));
+		
+		clean();
 
 	}
 
