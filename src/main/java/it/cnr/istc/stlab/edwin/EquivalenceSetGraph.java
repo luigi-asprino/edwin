@@ -229,21 +229,20 @@ public final class EquivalenceSetGraph {
 		C_inverse.toFile();
 		DES.toFile();
 		IES.toFile();
-		oe_size.close();
+		oe_size.toFile();
 	}
 
 	public void close() {
-		// FIXME When RocksDB fix its issue
-//		ID.close();
-//		DES.close();
-//		IES.close();
-//		
-//		C.close();
-//		C_inverse.close();
-//		IS.close();
-//		oe_size.close();
-//		H.close();
-//		H_inverse.close();
+		// FIXME
+		ID.close();
+		DES.close();
+		IES.close();
+		C.close();
+		C_inverse.close();
+		IS.close();
+		oe_size.close();
+		H.close();
+		H_inverse.close();
 	}
 
 	public void printSimpleStats() {
@@ -275,6 +274,9 @@ public final class EquivalenceSetGraph {
 	}
 
 	public Set<String> getEquivalentOrSubsumedEntities(String entity) {
+		if (entity == null) {
+			return new HashSet<>();
+		}
 		Set<String> result = new HashSet<>();
 		Long idRootEquivalent = ID.get(entity);
 
@@ -339,8 +341,8 @@ public final class EquivalenceSetGraph {
 				closure.putAll(k, visited);
 			}
 		}
-		closure.toFile();
-		closure.close();
+//		closure.toFile();
+//		closure.close();
 
 		logger.info("Closure Computed!");
 	}
@@ -827,7 +829,7 @@ public final class EquivalenceSetGraph {
 	public void toEdgeListNodeList(String folderOut) throws IOException {
 
 		logger.info("Export ESG as Edge List and Node List");
-
+		logger.trace("Exporting node list");
 		new File(folderOut).mkdirs();
 
 		FileOutputStream fos_nodelist = new FileOutputStream(new File(folderOut + "/nodelist.tsv"));
@@ -840,12 +842,14 @@ public final class EquivalenceSetGraph {
 			}
 			c++;
 			Entry<Long, Collection<String>> entry = it_nodes.next();
-			String line = String.format("%d\n", entry.getKey());
-			fos_nodelist.write(line.getBytes());
+			fos_nodelist.write(String.format("%d\n", entry.getKey()).getBytes());
 		}
+		logger.trace("Closing");
 		fos_nodelist.flush();
 		fos_nodelist.close();
 
+		logger.trace("Node list exported");
+		logger.trace("Exporting edge list");
 		FileOutputStream fos_edgelist = new FileOutputStream(new File(folderOut + "/edgelist.tsv"));
 		Iterator<Entry<Long, Collection<Long>>> it = H.iterator();
 		c = 0;
@@ -863,6 +867,10 @@ public final class EquivalenceSetGraph {
 		}
 		fos_edgelist.flush();
 		fos_edgelist.close();
+
+		logger.trace("Edge list exported");
+
+		logger.info("Exported");
 
 	}
 

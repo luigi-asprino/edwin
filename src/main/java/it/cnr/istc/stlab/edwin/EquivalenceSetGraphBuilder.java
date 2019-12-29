@@ -59,23 +59,35 @@ public class EquivalenceSetGraphBuilder {
 		// updatePropertySetsUsignGraph is true if the builder has to search possible
 		// specializations of the properties
 		// to observe in the equivalence set graph that is being built
-		boolean updatePropertySetsUsignGraph = p.getEquivalencePropertyToObserve()
-				.equals(p.getEquivalencePropertiesForProperties())
-				&& p.getSpecializationPropertyToObserve().equals(p.getSpecializationPropertyForProperties());
+		boolean updatePropertySetsUsingGraph = (p.getEquivalencePropertyToObserve() != null
+				&& p.getEquivalencePropertyToObserve().equals(p.getEquivalencePropertiesForProperties()))
+				&& (p.getSpecializationPropertyToObserve() != null
+						&& p.getSpecializationPropertyToObserve().equals(p.getSpecializationPropertyForProperties()));
 
 		EquivalenceSetGraph esgProperties = null;
 
 		if (parameters.getEsgPropertiesFolder() != null) {
 			esgProperties = new EquivalenceSetGraph(parameters.getEsgPropertiesFolder());
-			updatePropertySetsUsignGraph = false;
+			updatePropertySetsUsingGraph = false;
 		}
 
 		if (esgProperties == null && parameters.getEsgProperties() != null) {
 			esgProperties = parameters.getEsgProperties();
-			updatePropertySetsUsignGraph = false;
+			updatePropertySetsUsingGraph = false;
 		}
 
-		if (!updatePropertySetsUsignGraph && esgProperties != null && updatePropertySets) {
+		if (!updatePropertySetsUsingGraph && esgProperties == null && updatePropertySets) {
+			EquivalenceSetGraphBuilderParameters esgbp = new EquivalenceSetGraphBuilderParameters();
+			esgbp.setEquivalencePropertyToObserve(parameters.getEquivalencePropertiesForProperties());
+			esgbp.setSpecializationPropertyToObserve(parameters.getSpecializationPropertyForProperties());
+			esgbp.setEsgFolder(parameters.getEsgFolder() + "/esgProperties");
+			esgbp.setComputeEstimation(false);
+			esgbp.setExportInRDFFormat(false);
+			esgbp.setComputeStats(false);
+			esgProperties = this.build(esgbp);
+		}
+
+		if (!updatePropertySetsUsingGraph && esgProperties != null && updatePropertySets) {
 
 			// TODO check if semantics for building the graph is compliant with semantics of
 			// SpecializationPropertyForProperties and EquivalencePropertiesForProperties
@@ -102,13 +114,17 @@ public class EquivalenceSetGraphBuilder {
 			specializationPropertiesToProcess.addAll(specializationProperties);
 			logger.info("Number of specialization properties to process {}", specializationPropertiesToProcess.size());
 
-		} else if (!updatePropertySetsUsignGraph && esgProperties == null && updatePropertySets) {
-			logger.error(
-					"Equivalence Set Graph for properties {} and {} has not been computed. Compute the Equivalence Set Graph for these properties and provide its path as esgPropertiesFolder parameter!");
-			throw new RuntimeException(
-					"Equivalence Set Graph for properties {} and {} has not been computed. Compute the Equivalence Set Graph for these properties and provide its path as esgPropertiesFolder parameter!");
-
 		}
+
+		// else if (!updatePropertySetsUsingGraph && esgProperties == null &&
+		// updatePropertySets) {
+
+//			logger.error(
+//					"Equivalence Set Graph for properties {} and {} has not been computed. Compute the Equivalence Set Graph for these properties and provide its path as esgPropertiesFolder parameter!");
+//			throw new RuntimeException(
+//					"Equivalence Set Graph for properties {} and {} has not been computed. Compute the Equivalence Set Graph for these properties and provide its path as esgPropertiesFolder parameter!");
+
+		// }
 
 		esg = new EquivalenceSetGraph(p.getEsgFolder());
 
@@ -118,7 +134,9 @@ public class EquivalenceSetGraphBuilder {
 		esg.setSpecializationPropertyForProperties(p.getSpecializationPropertyForProperties());
 
 		// adding properties to observe
-		equivalencePropertiesToProcess.add(p.getEquivalencePropertyToObserve());
+		if (p.getEquivalencePropertyToObserve() != null) {
+			equivalencePropertiesToProcess.add(p.getEquivalencePropertyToObserve());
+		}
 		if (p.getSpecializationPropertyToObserve() != null) {
 			specializationPropertiesToProcess.add(p.getSpecializationPropertyToObserve());
 		}
@@ -133,7 +151,7 @@ public class EquivalenceSetGraphBuilder {
 			logger.info("Cycle number: {}", cycle);
 			computeEquivalentSets();
 			computeSpecializations();
-			if (updatePropertySetsUsignGraph)
+			if (updatePropertySetsUsingGraph)
 				updatePropropertySets();
 			logger.info("End cycle number: {}", cycle++);
 		}
@@ -149,7 +167,7 @@ public class EquivalenceSetGraphBuilder {
 		if (parameters.getObservedEntitiesSelector() != null) {
 			logger.info("Adding spare entities");
 			parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalenceSetGraph(esg, dataset);
-			if (updatePropertySetsUsignGraph) {
+			if (updatePropertySetsUsingGraph) {
 				parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(esg,
 						esg, dataset);
 			} else {
@@ -172,7 +190,7 @@ public class EquivalenceSetGraphBuilder {
 			// Computing extensional size of the observed entities
 			parameters.getExtensionalSizeEstimator().estimateObservedEntitiesSize(esg, dataset);
 
-			if (updatePropertySetsUsignGraph) {
+			if (updatePropertySetsUsingGraph) {
 				parameters.getExtensionalSizeEstimator().estimateObservedEntitiesSizeUsingESGForProperties(esg, esg,
 						dataset);
 			} else {
@@ -192,7 +210,7 @@ public class EquivalenceSetGraphBuilder {
 
 		if (parameters.isComputeStats()) {
 			// compute stats
-			if (updatePropertySetsUsignGraph) {
+			if (updatePropertySetsUsingGraph) {
 				computeStats(esg);
 			}
 		}
