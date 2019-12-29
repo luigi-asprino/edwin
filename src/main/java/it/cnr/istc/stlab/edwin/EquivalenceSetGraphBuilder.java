@@ -306,8 +306,11 @@ public class EquivalenceSetGraphBuilder {
 	private void addEquivalence(String subject, String object) {
 
 		logger.debug("Subject {} Object {}", subject, object);
+		Long subjectIdentitySetId = esg.ID.get(subject), objectIdentitySetId = esg.ID.get(object);
+		boolean subjectHasID = subjectIdentitySetId != null;
+		boolean objectHasID = objectIdentitySetId != null;
 
-		if (!esg.ID.containsKey(subject) && !esg.ID.containsKey(object)) {
+		if (!subjectHasID && !objectHasID) {
 			logger.debug("not subj not obj");
 
 			// The subject and the object are not contained in any identity set
@@ -319,32 +322,31 @@ public class EquivalenceSetGraphBuilder {
 			esg.IS.put(c, subject);
 			esg.IS.put(c, object);
 
-		} else if (esg.ID.containsKey(subject) && !esg.ID.containsKey(object)) {
+		} else if (subjectHasID && !objectHasID) {
 
 			logger.debug(" subj not obj");
 
 			// the subject is contained in one identity set (at least) but the object is not
 			// contained in any identity set
 			// put object in the identity set of the subject
-			long subjectIdentitySetId = esg.ID.get(subject);
+//			subjectIdentitySetId = esg.ID.get(subject);
 			esg.ID.put(object, subjectIdentitySetId);
 			esg.IS.put(subjectIdentitySetId, object);
 
-		} else if (!esg.ID.containsKey(subject) && esg.ID.containsKey(object)) {
+		} else if (!subjectHasID && objectHasID) {
 
 			// the object is contained in one identity set (at least) but the subject is not
-			long objectIdentitySetId = esg.ID.get(object);
+//			objectIdentitySetId = esg.ID.get(object);
 			esg.ID.put(subject, objectIdentitySetId);
 			esg.IS.put(objectIdentitySetId, subject);
 
-		} else if (esg.ID.containsKey(subject) && esg.ID.containsKey(object)
-				&& !esg.ID.get(subject).equals(esg.ID.get(object))) {
+		} else if (subjectHasID && objectHasID && !subjectIdentitySetId.equals(objectIdentitySetId)) {
 
 			// The subject and the object are contained in to two different identity sets
 			// The two identity sets must be merged
 
-			long subjectIdentitySetId = esg.ID.get(subject);
-			long objectIdentitySetId = esg.ID.get(object);
+//			subjectIdentitySetId = esg.ID.get(subject);
+//			objectIdentitySetId = esg.ID.get(object);
 			long newId = getIdentityNewSetId();
 
 			logger.trace("Meging {} and {} into {}", subjectIdentitySetId, objectIdentitySetId, newId);
@@ -508,7 +510,12 @@ public class EquivalenceSetGraphBuilder {
 	}
 
 	private void addSubsumption(String subject, String object) {
-		if (!esg.ID.containsKey(subject) && !esg.ID.containsKey(object)) {
+		
+		Long subjectIdentitySetId = esg.ID.get(subject), objectIdentitySetId = esg.ID.get(object);
+		boolean subjectHasID = subjectIdentitySetId != null;
+		boolean objectHasID = objectIdentitySetId != null;
+		
+		if (!subjectHasID && !objectHasID) {
 
 			// The subject and the object are not contained in any identity set
 
@@ -525,12 +532,12 @@ public class EquivalenceSetGraphBuilder {
 			// add subsumption between subject and object
 			addHierarchyRelation(idSubject, idObject);
 
-		} else if (esg.ID.containsKey(subject) && !esg.ID.containsKey(object)) {
+		} else if (subjectHasID&& !objectHasID) {
 
 			// the subject is an identity set whereas the object is not
 
 			// get the id of the identity set of the subject
-			long idSubject = esg.ID.get(subject);
+//			long idSubject = esg.ID.get(subject);
 
 			// create new identity set for the object
 			long idObject = getIdentityNewSetId();
@@ -538,9 +545,9 @@ public class EquivalenceSetGraphBuilder {
 			esg.IS.put(idObject, object);
 
 			// add subsumption between subject and object
-			addHierarchyRelation(idSubject, idObject);
+			addHierarchyRelation(subjectIdentitySetId, idObject);
 
-		} else if (!esg.ID.containsKey(subject) && esg.ID.containsKey(object)) {
+		} else if (!subjectHasID && objectHasID) {
 			// the subject is in any identity set whereas the object is one identity set
 
 			// create new identity set for the subject
@@ -549,22 +556,22 @@ public class EquivalenceSetGraphBuilder {
 			esg.IS.put(idSubject, subject);
 
 			// get the id of the identity set of the subject
-			long idObject = esg.ID.get(object);
+//			long idObject = esg.ID.get(object);
 
 			// add subsumption between subject and object
-			addHierarchyRelation(idSubject, idObject);
+			addHierarchyRelation(idSubject, objectIdentitySetId);
 
-		} else if (esg.ID.containsKey(subject) && esg.ID.containsKey(object)) {
+		} else if (subjectHasID && objectHasID) {
 			// subject and object are already in a identity set
 
 			// get the id of the identity set of the subject
-			long idSubject = esg.ID.get(subject);
+//			long idSubject = esg.ID.get(subject);
 
 			// get the id of the identity set of the subject
-			long idObject = esg.ID.get(object);
+//			long idObject = esg.ID.get(object);
 
 			// add subsumption between subject and object
-			addHierarchyRelation(idSubject, idObject);
+			addHierarchyRelation(subjectIdentitySetId, objectIdentitySetId);
 
 		}
 
