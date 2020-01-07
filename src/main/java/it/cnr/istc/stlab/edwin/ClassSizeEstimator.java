@@ -18,11 +18,11 @@ public class ClassSizeEstimator implements ExtensionalSizeEstimator {
 	private static Logger logger = LoggerFactory.getLogger(ClassSizeEstimator.class);
 
 	@Override
-	public void estimateObservedEntitiesSize(EquivalenceSetGraph esg, Dataset dataset) {
+	public void estimateObservedEntitiesSize(RocksDBBackedEquivalenceSetGraph esg, Dataset dataset) {
 
 	}
 
-	public void estimateObservedEntitiesSizeUsingESGForProperties(EquivalenceSetGraph esg_classes, EquivalenceSetGraph esg_properties,
+	public void estimateObservedEntitiesSizeUsingESGForProperties(RocksDBBackedEquivalenceSetGraph esg_classes, RocksDBBackedEquivalenceSetGraph esg_properties,
 			Dataset dataset) {
 
 		logger.info("Computing extensional size of classes");

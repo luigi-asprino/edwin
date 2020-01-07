@@ -22,14 +22,14 @@ public class EquivalenceSetGraphBuilder {
 	private long lastIdentitySetId = 0;
 	private long numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples = 0L;
 	private static EquivalenceSetGraphBuilder instance;
-	private Set<String> equivalencePropertiesToProcess = new HashSet<>(),
+	protected Set<String> equivalencePropertiesToProcess = new HashSet<>(),
 			equivalencePropertiesProcessed = new HashSet<>(), specializationPropertiesToProcess = new HashSet<>(),
 			specializationPropertiesProcessed = new HashSet<>();
-	private EquivalenceSetGraph esg;
-	private Dataset dataset;
-	private EquivalenceSetGraphBuilderParameters parameters;
+	protected RocksDBBackedEquivalenceSetGraph esg;
+	protected Dataset dataset;
+	protected EquivalenceSetGraphBuilderParameters parameters;
 
-	private EquivalenceSetGraphBuilder(String[] filelist) throws IOException {
+	protected EquivalenceSetGraphBuilder(String[] filelist) throws IOException {
 		dataset = Dataset.getInstanceFromFileList(filelist);
 	}
 
@@ -40,7 +40,7 @@ public class EquivalenceSetGraphBuilder {
 		return instance;
 	}
 
-	public EquivalenceSetGraph build(EquivalenceSetGraphBuilderParameters p) throws RocksDBException, IOException {
+	public RocksDBBackedEquivalenceSetGraph build(EquivalenceSetGraphBuilderParameters p) throws RocksDBException, IOException {
 
 		parameters = p;
 
@@ -64,10 +64,10 @@ public class EquivalenceSetGraphBuilder {
 				&& (p.getSpecializationPropertyToObserve() != null
 						&& p.getSpecializationPropertyToObserve().equals(p.getSpecializationPropertyForProperties()));
 
-		EquivalenceSetGraph esgProperties = null;
+		RocksDBBackedEquivalenceSetGraph esgProperties = null;
 
 		if (parameters.getEsgPropertiesFolder() != null) {
-			esgProperties = new EquivalenceSetGraph(parameters.getEsgPropertiesFolder());
+			esgProperties = new RocksDBBackedEquivalenceSetGraph(parameters.getEsgPropertiesFolder());
 			updatePropertySetsUsingGraph = false;
 		}
 
@@ -126,7 +126,7 @@ public class EquivalenceSetGraphBuilder {
 
 		// }
 
-		esg = new EquivalenceSetGraph(p.getEsgFolder());
+		esg = new RocksDBBackedEquivalenceSetGraph(p.getEsgFolder());
 
 		esg.setEquivalencePropertyToObserve(p.getEquivalencePropertyToObserve());
 		esg.setSpecializationPropertyToObserve(p.getSpecializationPropertyToObserve());
@@ -178,7 +178,7 @@ public class EquivalenceSetGraphBuilder {
 			}
 
 			if (parameters.getEsgClassesFolder() != null) {
-				EquivalenceSetGraph esgClasses = new EquivalenceSetGraph(parameters.getEsgClassesFolder());
+				RocksDBBackedEquivalenceSetGraph esgClasses = new RocksDBBackedEquivalenceSetGraph(parameters.getEsgClassesFolder());
 				parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(esg,
 						esgClasses, dataset);
 			}
@@ -218,7 +218,7 @@ public class EquivalenceSetGraphBuilder {
 		return esg;
 	}
 
-	private void computeStats(EquivalenceSetGraph esgProperties) throws IOException {
+	private void computeStats(RocksDBBackedEquivalenceSetGraph esgProperties) throws IOException {
 
 		// save equivalence and specialization properties
 		esg.getStats().equivalencePropertiesUsed = new HashSet<>(equivalencePropertiesProcessed);
@@ -510,11 +510,11 @@ public class EquivalenceSetGraphBuilder {
 	}
 
 	private void addSubsumption(String subject, String object) {
-		
+
 		Long subjectIdentitySetId = esg.ID.get(subject), objectIdentitySetId = esg.ID.get(object);
 		boolean subjectHasID = subjectIdentitySetId != null;
 		boolean objectHasID = objectIdentitySetId != null;
-		
+
 		if (!subjectHasID && !objectHasID) {
 
 			// The subject and the object are not contained in any identity set
@@ -532,7 +532,7 @@ public class EquivalenceSetGraphBuilder {
 			// add subsumption between subject and object
 			addHierarchyRelation(idSubject, idObject);
 
-		} else if (subjectHasID&& !objectHasID) {
+		} else if (subjectHasID && !objectHasID) {
 
 			// the subject is an identity set whereas the object is not
 

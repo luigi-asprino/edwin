@@ -14,7 +14,7 @@ public class EquivalenceSetGraphBuilderParameters {
 	private String equivalencePropertyToObserve, specializationPropertyToObserve, specializationPropertyForProperties,
 			equivalencePropertiesForProperties, esgPropertiesFolder, esgClassesFolder;
 
-	private EquivalenceSetGraph esgProperties;
+	private RocksDBBackedEquivalenceSetGraph esgProperties;
 
 	private boolean computeClosure = true;
 	private boolean computeStats = true;
@@ -241,11 +241,11 @@ public class EquivalenceSetGraphBuilderParameters {
 		this.computeStats = computeStats;
 	}
 
-	public EquivalenceSetGraph getEsgProperties() {
+	public RocksDBBackedEquivalenceSetGraph getEsgProperties() {
 		return esgProperties;
 	}
 
-	public void setEsgProperties(EquivalenceSetGraph esgProperties) {
+	public void setEsgProperties(RocksDBBackedEquivalenceSetGraph esgProperties) {
 		this.esgProperties = esgProperties;
 	}
 

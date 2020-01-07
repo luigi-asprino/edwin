@@ -44,7 +44,7 @@ import it.cnr.istc.stlab.rocksmap.RocksMultiMap;
 import it.cnr.istc.stlab.rocksmap.transformer.LongRocksTransformer;
 import it.cnr.istc.stlab.rocksmap.transformer.StringRocksTransformer;
 
-public final class EquivalenceSetGraph {
+public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph {
 
 	RocksMap<String, Long> ID;
 	RocksMultiMap<Long, String> IS;
@@ -53,7 +53,7 @@ public final class EquivalenceSetGraph {
 	RocksMap<Long, Long> DES, IES;
 	private String esgFolder, equivalencePropertyForProperties, equivalencePropertyToObserve,
 			specializationPropertyToObserve, specializationPropertyForProperties;
-	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraph.class);
+	private static Logger logger = LoggerFactory.getLogger(RocksDBBackedEquivalenceSetGraph.class);
 	private static final String equivalencePropertyToObserveFile = "equivalencePropertyObserved",
 			specializationPropertyToObserveFile = "specializationPropertyObserved",
 			equivalencePropertyForPropertiesFile = "equivalencePropertyForProperties",
@@ -63,7 +63,7 @@ public final class EquivalenceSetGraph {
 
 	private EquivalenceSetGraphStats stats = new EquivalenceSetGraphStats();
 
-	EquivalenceSetGraph(String esgFolder) throws RocksDBException {
+	RocksDBBackedEquivalenceSetGraph(String esgFolder) throws RocksDBException {
 		this.esgFolder = esgFolder;
 
 		ID = new RocksMap<>(esgFolder + "/ID", new StringRocksTransformer(), new LongRocksTransformer());
@@ -871,6 +871,60 @@ public final class EquivalenceSetGraph {
 		logger.trace("Edge list exported");
 
 		logger.info("Exported");
+
+	}
+
+	@Override
+	public boolean hasEquivalenceSet(CharSequence iri) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Collection<CharSequence> getEquivalenceSet(Long visitedSetId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long getIDOfEquivalenceSet(CharSequence iri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<Long> getEquivalenceSetSubsumedBy(Long equivalenceSetID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setEquivalencePropertyToObserve(CharSequence iri) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setSpecializationPropertyToObserve(CharSequence iri) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setEquivalencePropertyForProperties(CharSequence iri) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setSpecializationPropertyForProperties(CharSequence iri) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void addSpecialization(CharSequence s, CharSequence o) {
+		// TODO Auto-generated method stub
 
 	}
 

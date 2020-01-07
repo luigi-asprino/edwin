@@ -21,7 +21,7 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 
 	private static Logger logger = LoggerFactory.getLogger(PropertiesSelector.class);
 
-	public void addSpareEntitiesToEquivalenceSetGraph(EquivalenceSetGraph esg_properties, Dataset dataset) {
+	public void addSpareEntitiesToEquivalenceSetGraph(RocksDBBackedEquivalenceSetGraph esg_properties, Dataset dataset) {
 
 		logger.info("Adding spare properties");
 
@@ -69,8 +69,8 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 
 	}
 
-	public void addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(EquivalenceSetGraph esg_properties,
-			EquivalenceSetGraph esg_classes, Dataset dataset) {
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(RocksDBBackedEquivalenceSetGraph esg_properties,
+			RocksDBBackedEquivalenceSetGraph esg_classes, Dataset dataset) {
 
 		long id = esg_properties.getMaxId();
 
@@ -177,8 +177,8 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 	}
 
 	@Override
-	public void addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(EquivalenceSetGraph esg,
-			EquivalenceSetGraph esg_properties, Dataset hdt) {
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(RocksDBBackedEquivalenceSetGraph esg,
+			RocksDBBackedEquivalenceSetGraph esg_properties, Dataset hdt) {
 		// TODO Auto-generated method stub
 
 	}

@@ -17,7 +17,7 @@ public class PropertySizeEstimator implements ExtensionalSizeEstimator {
 	private static Logger logger = LoggerFactory.getLogger(PropertySizeEstimator.class);
 
 	@Override
-	public void estimateObservedEntitiesSize(EquivalenceSetGraph esg, Dataset dataset) {
+	public void estimateObservedEntitiesSize(RocksDBBackedEquivalenceSetGraph esg, Dataset dataset) {
 		logger.info("Computing extensional size of observed properties");
 
 		long processed = 0;
@@ -54,8 +54,8 @@ public class PropertySizeEstimator implements ExtensionalSizeEstimator {
 
 	}
 
-	public void estimateObservedEntitiesSizeUsingESGForProperties(EquivalenceSetGraph esg,
-			EquivalenceSetGraph esg_properties, Dataset hdt) {
+	public void estimateObservedEntitiesSizeUsingESGForProperties(RocksDBBackedEquivalenceSetGraph esg,
+			RocksDBBackedEquivalenceSetGraph esg_properties, Dataset hdt) {
 
 	}
 

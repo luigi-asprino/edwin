@@ -10,7 +10,7 @@ import org.apache.commons.compress.utils.Sets;
 import org.junit.Test;
 
 import it.cnr.istc.stlab.edwin.Edwin;
-import it.cnr.istc.stlab.edwin.EquivalenceSetGraph;
+import it.cnr.istc.stlab.edwin.RocksDBBackedEquivalenceSetGraph;
 
 public class TestEdwin {
 
@@ -31,7 +31,7 @@ public class TestEdwin {
 		File f = new File("src/main/resources/testResources/t1.properties");
 
 		clean();
-		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
+		RocksDBBackedEquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 
 		System.out.println(esg.getEquivalentEntities("http://example.org/a"));
 
@@ -67,7 +67,7 @@ public class TestEdwin {
 		File f = new File("src/main/resources/testResources/t2.properties");
 
 		clean();
-		EquivalenceSetGraph esgProperties = Edwin.computeESG(f.getAbsolutePath());
+		RocksDBBackedEquivalenceSetGraph esgProperties = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(esgProperties.getNumberOfEquivalenceSets(), 2);
 		assertEquals(esgProperties.getEquivalentEntities("http://example.org/equal"),
 				Sets.newHashSet("http://example.org/equal"));
@@ -86,7 +86,7 @@ public class TestEdwin {
 		File f = new File("src/main/resources/testResources/t3.properties");
 
 		clean();
-		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
+		RocksDBBackedEquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(esg.getNumberOfEquivalenceSets(), 3);
 		assertEquals(esg.getNumberOfObservedEntities(), 8);
 

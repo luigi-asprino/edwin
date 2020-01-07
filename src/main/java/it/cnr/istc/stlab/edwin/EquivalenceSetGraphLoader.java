@@ -8,8 +8,8 @@ public final class EquivalenceSetGraphLoader {
 
 	}
 
-	public static EquivalenceSetGraph loadEquivalenceSetGraphFromFolder(String folder) throws RocksDBException {
-		EquivalenceSetGraph esg = new EquivalenceSetGraph(folder);
+	public static RocksDBBackedEquivalenceSetGraph loadEquivalenceSetGraphFromFolder(String folder) throws RocksDBException {
+		RocksDBBackedEquivalenceSetGraph esg = new RocksDBBackedEquivalenceSetGraph(folder);
 		return esg;
 	}
 

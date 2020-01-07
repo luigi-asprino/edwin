@@ -16,8 +16,8 @@ public class ClassSelector implements ObservedEntitiesSelector {
 
 	private static Logger logger = LoggerFactory.getLogger(ClassSelector.class);
 
-	public void addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(EquivalenceSetGraph esg,
-			EquivalenceSetGraph esg_properties, Dataset dataset) {
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(RocksDBBackedEquivalenceSetGraph esg,
+			RocksDBBackedEquivalenceSetGraph esg_properties, Dataset dataset) {
 
 		logger.info("Adding spare entities to ESG using ESG for properties.");
 
@@ -76,13 +76,13 @@ public class ClassSelector implements ObservedEntitiesSelector {
 	}
 
 	@Override
-	public void addSpareEntitiesToEquivalenceSetGraph(EquivalenceSetGraph esg_classes, Dataset d) {
+	public void addSpareEntitiesToEquivalenceSetGraph(RocksDBBackedEquivalenceSetGraph esg_classes, Dataset d) {
 
 	}
 
 	@Override
-	public void addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(EquivalenceSetGraph esg,
-			EquivalenceSetGraph esg_classes, Dataset hdt) {
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(RocksDBBackedEquivalenceSetGraph esg,
+			RocksDBBackedEquivalenceSetGraph esg_classes, Dataset hdt) {
 
 	}
 

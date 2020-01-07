@@ -47,7 +47,7 @@ public class Edwin {
 		}
 	}
 
-	private static EquivalenceSetGraph computeESG(Configuration config) throws InstantiationException,
+	private static RocksDBBackedEquivalenceSetGraph computeESG(Configuration config) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException, IOException, RocksDBException {
 
 		EquivalenceSetGraphBuilderParameters parameters = EquivalenceSetGraphBuilderParameters.getParameters(config);
@@ -55,7 +55,7 @@ public class Edwin {
 		logger.info(parameters.toString());
 
 		EquivalenceSetGraphBuilder esgb = EquivalenceSetGraphBuilder.getInstance(parameters.getDatasetPaths());
-		EquivalenceSetGraph esg = esgb.build(parameters);
+		RocksDBBackedEquivalenceSetGraph esg = esgb.build(parameters);
 
 		esg.printSimpleStats();
 		esg.getStats().toTSVFile(parameters.getEsgFolder() + "/stats.tsv");
@@ -69,7 +69,7 @@ public class Edwin {
 
 	}
 
-	public static EquivalenceSetGraph computeESG(String configFile) {
+	public static RocksDBBackedEquivalenceSetGraph computeESG(String configFile) {
 		try {
 
 			logger.info("Edwin v0.0.1");
