@@ -25,7 +25,7 @@
 
 	<properties>
 		<apachecommons.version>2.1.1</apachecommons.version>
-		<apachejena.version>3.12.0</apachejena.version>
+		<apachejena.version>3.16.0</apachejena.version>
 		<commons-beanutils.version>1.9.3</commons-beanutils.version>
 		<orgjson.version>20190722</orgjson.version>
 		<rocksmap.version>0.0.1</rocksmap.version>
@@ -131,6 +131,12 @@
 			<groupId>org.eclipse.rdf4j</groupId>
 			<artifactId>rdf4j-rio-rdfxml</artifactId>
 			<version>3.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-fuseki-main</artifactId>
+			<version>3.16.0</version>
 		</dependency>
 
 

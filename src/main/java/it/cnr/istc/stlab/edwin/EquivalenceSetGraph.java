@@ -11,13 +11,18 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.jena.ext.com.google.common.collect.Sets;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.system.IRIResolver;
@@ -47,6 +52,7 @@ import it.cnr.istc.stlab.rocksmap.transformer.StringRocksTransformer;
 public final class EquivalenceSetGraph {
 
 	RocksMap<String, Long> ID;
+	RocksMap<Long, String> rootsToLeavesPaths;
 	RocksMultiMap<Long, String> IS;
 	RocksMultiMap<Long, Long> H, H_inverse, C, C_inverse;
 	RocksMap<String, Long> oe_size;
@@ -60,6 +66,7 @@ public final class EquivalenceSetGraph {
 			specializationPropertyForPropertiesFile = "specializationPropertyForProperties";
 
 	private static final long PROGRESS_COUNT = 10000;
+	private AtomicLong pathId = new AtomicLong(0L);
 
 	private EquivalenceSetGraphStats stats = new EquivalenceSetGraphStats();
 
@@ -68,6 +75,8 @@ public final class EquivalenceSetGraph {
 
 		ID = new RocksMap<>(esgFolder + "/ID", new StringRocksTransformer(), new LongRocksTransformer());
 		IS = new RocksMultiMap<>(esgFolder + "/IS", new LongRocksTransformer(), new StringRocksTransformer());
+		rootsToLeavesPaths = new RocksMap<>(esgFolder + "/rootsToLeavesPaths", new LongRocksTransformer(),
+				new StringRocksTransformer());
 		H = new RocksMultiMap<>(esgFolder + "/H", new LongRocksTransformer(), new LongRocksTransformer());
 		H_inverse = new RocksMultiMap<>(esgFolder + "/H_inverse", new LongRocksTransformer(),
 				new LongRocksTransformer());
@@ -80,6 +89,74 @@ public final class EquivalenceSetGraph {
 		DES = new RocksMap<>(esgFolder + "/DES", new LongRocksTransformer(), new LongRocksTransformer());
 		IES = new RocksMap<>(esgFolder + "/IES", new LongRocksTransformer(), new LongRocksTransformer());
 
+	}
+
+	public void computeRootsToLeavesPaths() {
+		// check if paths have already been computed
+		logger.info("Computing roots to leaves paths");
+		if (rootsToLeavesPaths.containsKey(0L)) {
+			logger.info("Already computed!");
+			return;
+		}
+		this.pathId = new AtomicLong(0L);
+		Set<Long> roots = getRoots();
+		AtomicLong rootsComputed = new AtomicLong(0L);
+		roots.parallelStream().forEach(root -> {
+			if (rootsComputed.get() % 1000 == 0) {
+				logger.trace("Computed paths for " + rootsComputed.get() + " roots");
+			}
+			dfs(root);
+			rootsComputed.incrementAndGet();
+		});
+	}
+	
+
+	public Iterator<Long[]> listPaths() {
+		Iterator<Map.Entry<Long, String>> it = rootsToLeavesPaths.iterator();
+		return new Iterator<Long[]>() {
+
+			@Override
+			public boolean hasNext() {
+				return it.hasNext();
+			}
+
+			@Override
+			public Long[] next() {
+				String[] pathString = it.next().getValue().split(" ");
+				Long[] result = new Long[pathString.length];
+				for (int i = 0; i < result.length; i++) {
+					result[i] = Long.parseLong(pathString[i]);
+				}
+				return result;
+			}
+		};
+	}
+
+	private void dfs(Long root) {
+		Set<Long> visited = Sets.newHashSet(root);
+		dfsRecursive(root, visited, new ArrayList<>());
+	}
+
+	private void dfsRecursive(Long current, Set<Long> visited, List<Long> currentPath) {
+		visited.add(current);
+		currentPath.add(current);
+		Set<Long> childs = this.getDirectSubNodes(current);
+		if (childs == null || childs.isEmpty()) {
+
+			StringBuilder sb = new StringBuilder();
+			for (Long node : currentPath) {
+				sb.append(node);
+				sb.append(' ');
+			}
+			rootsToLeavesPaths.put(pathId.incrementAndGet(), sb.toString().trim());
+
+		} else {
+			for (Long child : childs) {
+				if (!visited.contains(child)) {
+					dfsRecursive(child, visited, new ArrayList<>(currentPath));
+				}
+			}
+		}
 	}
 
 	private void setPropertyFile(String property, String file) {
@@ -124,6 +201,46 @@ public final class EquivalenceSetGraph {
 	public void setSpecializationPropertyForProperties(String specializationPropertyToObserve) {
 		setPropertyFile(specializationPropertyToObserve, specializationPropertyForPropertiesFile);
 		this.specializationPropertyForProperties = specializationPropertyToObserve;
+	}
+
+	public Set<String> getEquivalenceSetFromNodeId(Long nodeId) {
+		Collection<String> node = IS.get(nodeId);
+		if (node == null) {
+			return null;
+		}
+		return new HashSet<>(node);
+	}
+
+	public Long getNodeId(String uri) {
+		return ID.get(uri);
+	}
+
+	public Collection<Long> getEquivalenceSetIds() {
+		return IS.keySet();
+	}
+
+	public Set<Long> getDirectSuperNodes(Long nodeId) {
+		Collection<Long> result = H.get(nodeId);
+		if (result == null) {
+			return new HashSet<>();
+		}
+		return new HashSet<>(result);
+	}
+
+	public Set<Long> getDirectSubNodes(Long nodeId) {
+		Collection<Long> result = H_inverse.get(nodeId);
+		if (result == null) {
+			return null;
+		}
+		return new HashSet<>(result);
+	}
+
+	public Set<Long> getRoots() {
+		return Sets.difference(IS.keySet(), H.keySet());
+	}
+
+	public Set<Long> getLeaves() {
+		return Sets.difference(IS.keySet(), H_inverse.keySet());
 	}
 
 	public String getEquivalencePropertyToObserve() {
