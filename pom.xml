@@ -26,7 +26,7 @@
 	<properties>
 		<apachecommons.version>2.1.1</apachecommons.version>
 		<apachejena.version>3.16.0</apachejena.version>
-		<commons-beanutils.version>1.9.3</commons-beanutils.version>
+		<commons-beanutils.version>1.9.4</commons-beanutils.version>
 		<orgjson.version>20190722</orgjson.version>
 		<rocksmap.version>0.0.1</rocksmap.version>
 		<rdfhdtapi.version>2.1-SNAPSHOT</rdfhdtapi.version>
