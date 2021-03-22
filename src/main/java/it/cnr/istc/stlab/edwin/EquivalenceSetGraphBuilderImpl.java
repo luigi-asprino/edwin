@@ -5,44 +5,45 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.rdfhdt.hdt.exceptions.NotFoundException;
 import org.rdfhdt.hdt.triples.TripleString;
 import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.cnr.istc.stlab.lgu.commons.rdf.Dataset;
+import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
 
-public class EquivalenceSetGraphBuilder {
+public class EquivalenceSetGraphBuilderImpl {
 
-	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilder.class);
+	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilderImpl.class);
 	private long lastIdentitySetId = 0;
 	private long numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples = 0L;
-	private static EquivalenceSetGraphBuilder instance;
 	protected Set<String> equivalencePropertiesToProcess = new HashSet<>(),
 			equivalencePropertiesProcessed = new HashSet<>(), specializationPropertiesToProcess = new HashSet<>(),
 			specializationPropertiesProcessed = new HashSet<>();
 	protected RocksDBBackedEquivalenceSetGraph esg;
 	protected Dataset dataset;
 	protected EquivalenceSetGraphBuilderParameters parameters;
+	private boolean updatePropertySetsUsingGraph;
+	private RocksDBBackedEquivalenceSetGraph esgProperties;
 
-	protected EquivalenceSetGraphBuilder(String[] filelist) throws IOException {
+	public EquivalenceSetGraphBuilderImpl(String[] filelist) throws IOException {
+		dataset = Dataset.getInstanceFromFileList(Lists.newArrayList(filelist));
+	}
+
+	public EquivalenceSetGraphBuilderImpl(List<String> filelist) throws IOException {
 		dataset = Dataset.getInstanceFromFileList(filelist);
 	}
 
-	public static EquivalenceSetGraphBuilder getInstance(String[] hdtFilePath) throws IOException {
-		if (instance == null) {
-			instance = new EquivalenceSetGraphBuilder(hdtFilePath);
-		}
-		return instance;
-	}
+	private void initParameters(EquivalenceSetGraphBuilderParameters p) throws RocksDBException, IOException {
 
-	public RocksDBBackedEquivalenceSetGraph build(EquivalenceSetGraphBuilderParameters p) throws RocksDBException, IOException {
-
-		parameters = p;
+		parameters = p.clone();
+		logger.trace("Parameters before {}", parameters);
 
 		new File(parameters.getEsgFolder()).mkdirs();
 
@@ -59,24 +60,28 @@ public class EquivalenceSetGraphBuilder {
 		// updatePropertySetsUsignGraph is true if the builder has to search possible
 		// specializations of the properties
 		// to observe in the equivalence set graph that is being built
-		boolean updatePropertySetsUsingGraph = (p.getEquivalencePropertyToObserve() != null
-				&& p.getEquivalencePropertyToObserve().equals(p.getEquivalencePropertiesForProperties()))
-				&& (p.getSpecializationPropertyToObserve() != null
-						&& p.getSpecializationPropertyToObserve().equals(p.getSpecializationPropertyForProperties()));
+		updatePropertySetsUsingGraph = (parameters.getEquivalencePropertyToObserve() != null && parameters
+				.getEquivalencePropertyToObserve().equals(parameters.getEquivalencePropertiesForProperties()))
+				&& (parameters.getSpecializationPropertyToObserve() != null
+						&& parameters.getSpecializationPropertyToObserve()
+								.equals(parameters.getSpecializationPropertyForProperties()));
 
-		RocksDBBackedEquivalenceSetGraph esgProperties = null;
+		esgProperties = null;
 
 		if (parameters.getEsgPropertiesFolder() != null) {
+			logger.trace("Load ESG for properties");
 			esgProperties = new RocksDBBackedEquivalenceSetGraph(parameters.getEsgPropertiesFolder());
 			updatePropertySetsUsingGraph = false;
 		}
 
 		if (esgProperties == null && parameters.getEsgProperties() != null) {
+			logger.trace("Reuse already loaded ESG for properties");
 			esgProperties = parameters.getEsgProperties();
 			updatePropertySetsUsingGraph = false;
 		}
 
 		if (!updatePropertySetsUsingGraph && esgProperties == null && updatePropertySets) {
+			logger.trace("Build ESG for properties");
 			EquivalenceSetGraphBuilderParameters esgbp = new EquivalenceSetGraphBuilderParameters();
 			esgbp.setEquivalencePropertyToObserve(parameters.getEquivalencePropertiesForProperties());
 			esgbp.setSpecializationPropertyToObserve(parameters.getSpecializationPropertyForProperties());
@@ -84,7 +89,9 @@ public class EquivalenceSetGraphBuilder {
 			esgbp.setComputeEstimation(false);
 			esgbp.setExportInRDFFormat(false);
 			esgbp.setComputeStats(false);
-			esgProperties = this.build(esgbp);
+			EquivalenceSetGraphBuilderImpl builder = new EquivalenceSetGraphBuilderImpl(this.dataset.getFiles());
+			esgProperties = builder.build(esgbp);
+			logger.trace("ESG for properties computed");
 		}
 
 		if (!updatePropertySetsUsingGraph && esgProperties != null && updatePropertySets) {
@@ -94,63 +101,69 @@ public class EquivalenceSetGraphBuilder {
 
 			// Getting properties that are implicitly equivalent to or subsumed by the
 			// properties to observe
-			logger.info("Adding properties equivalent or subsumed to: {}", p.getEquivalencePropertyToObserve());
+			logger.info("Adding properties equivalent or subsumed to equivalence property to observe ({})",
+					parameters.getEquivalencePropertyToObserve());
 			Set<String> equivalenceProperties = esgProperties
-					.getEquivalentOrSubsumedEntities(p.getEquivalencePropertyToObserve());
-			logger.info("Retrieved  {}", equivalenceProperties.size());
+					.getEquivalentOrSubsumedEntities(parameters.getEquivalencePropertyToObserve());
 			equivalenceProperties.removeAll(parameters.getNotEquivalenceProperties());
-			logger.info("Removing ({} properties): {}", parameters.getNotEquivalenceProperties().size(),
-					parameters.getNotEquivalenceProperties());
+			logger.info("Removing not equivalent properties ({} properties): {}",
+					parameters.getNotEquivalenceProperties().size(), parameters.getNotEquivalenceProperties());
 			equivalencePropertiesToProcess.addAll(equivalenceProperties);
-			logger.info("Number of equivalence properties to process {}", equivalencePropertiesToProcess.size());
-
-			logger.info("Adding properties equivalent or subsumed to: ", p.getSpecializationPropertyToObserve());
+			logger.info("Adding properties equivalent or subsumed to: ",
+					parameters.getSpecializationPropertyToObserve());
 			Set<String> specializationProperties = esgProperties
-					.getEquivalentOrSubsumedEntities(p.getSpecializationPropertyToObserve());
+					.getEquivalentOrSubsumedEntities(parameters.getSpecializationPropertyToObserve());
 			logger.info("Retrieved {}", specializationProperties.size());
 			specializationProperties.removeAll(parameters.getNotSpecializationProperties());
 			logger.info("Removing ({} properties): {}", parameters.getNotSpecializationProperties().size(),
 					parameters.getNotSpecializationProperties());
 			specializationPropertiesToProcess.addAll(specializationProperties);
-			logger.info("Number of specialization properties to process {}", specializationPropertiesToProcess.size());
 
 		}
 
-		// else if (!updatePropertySetsUsingGraph && esgProperties == null &&
-		// updatePropertySets) {
-
-//			logger.error(
-//					"Equivalence Set Graph for properties {} and {} has not been computed. Compute the Equivalence Set Graph for these properties and provide its path as esgPropertiesFolder parameter!");
-//			throw new RuntimeException(
-//					"Equivalence Set Graph for properties {} and {} has not been computed. Compute the Equivalence Set Graph for these properties and provide its path as esgPropertiesFolder parameter!");
-
-		// }
+		logger.trace("Parameters {}", parameters);
 
 		esg = new RocksDBBackedEquivalenceSetGraph(p.getEsgFolder());
-
-		esg.setEquivalencePropertyToObserve(p.getEquivalencePropertyToObserve());
-		esg.setSpecializationPropertyToObserve(p.getSpecializationPropertyToObserve());
-		esg.setEquivalencePropertyForProperties(p.getEquivalencePropertiesForProperties());
-		esg.setSpecializationPropertyForProperties(p.getSpecializationPropertyForProperties());
+		esg.setEquivalencePropertyToObserve(parameters.getEquivalencePropertyToObserve());
+		esg.setSpecializationPropertyToObserve(parameters.getSpecializationPropertyToObserve());
+		esg.setEquivalencePropertyForProperties(parameters.getEquivalencePropertiesForProperties());
+		esg.setSpecializationPropertyForProperties(parameters.getSpecializationPropertyForProperties());
 
 		// adding properties to observe
-		if (p.getEquivalencePropertyToObserve() != null) {
-			equivalencePropertiesToProcess.add(p.getEquivalencePropertyToObserve());
+		if (parameters.getEquivalencePropertyToObserve() != null) {
+			equivalencePropertiesToProcess.add(parameters.getEquivalencePropertyToObserve());
 		}
-		if (p.getSpecializationPropertyToObserve() != null) {
-			specializationPropertiesToProcess.add(p.getSpecializationPropertyToObserve());
+		if (parameters.getSpecializationPropertyToObserve() != null) {
+			specializationPropertiesToProcess.add(parameters.getSpecializationPropertyToObserve());
 		}
 
 		// adding additional properties to observe
-		equivalencePropertiesToProcess.addAll(p.getAdditionalEquivalencePropertiesToObserve());
-		specializationPropertiesToProcess.addAll(p.getAdditionalSpecializationPropertiesToObserve());
+		equivalencePropertiesToProcess.addAll(parameters.getAdditionalEquivalencePropertiesToObserve());
+		specializationPropertiesToProcess.addAll(parameters.getAdditionalSpecializationPropertiesToObserve());
+	}
+
+	public RocksDBBackedEquivalenceSetGraph build(EquivalenceSetGraphBuilderParameters p)
+			throws RocksDBException, IOException {
+
+		initParameters(p);
 
 		long cycle = 0;
+
+		logger.info("\n\nStart Building Process\n\n");
+		logger.info("Number of equivalence properties to process {} {}", equivalencePropertiesToProcess.size(),
+				equivalencePropertiesToProcess);
+		logger.info("Number of specialization properties to process {} {}", specializationPropertiesToProcess.size(),
+				specializationPropertiesToProcess);
+		logger.info("Parameters  {} ", this.parameters.toString());
 
 		while (!equivalencePropertiesToProcess.isEmpty() || !specializationPropertiesToProcess.isEmpty()) {
 			logger.info("Cycle number: {}", cycle);
 			computeEquivalentSets();
+			if (logger.isDebugEnabled())
+				esg.print();
 			computeSpecializations();
+			if (logger.isDebugEnabled())
+				esg.print();
 			if (updatePropertySetsUsingGraph)
 				updatePropropertySets();
 			logger.info("End cycle number: {}", cycle++);
@@ -178,7 +191,8 @@ public class EquivalenceSetGraphBuilder {
 			}
 
 			if (parameters.getEsgClassesFolder() != null) {
-				RocksDBBackedEquivalenceSetGraph esgClasses = new RocksDBBackedEquivalenceSetGraph(parameters.getEsgClassesFolder());
+				RocksDBBackedEquivalenceSetGraph esgClasses = new RocksDBBackedEquivalenceSetGraph(
+						parameters.getEsgClassesFolder());
 				parameters.getObservedEntitiesSelector().addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(esg,
 						esgClasses, dataset);
 			}
@@ -261,9 +275,9 @@ public class EquivalenceSetGraphBuilder {
 				long numOfResults = 0L;
 				if (parameters.isComputeEstimation()) {
 					numOfResults = dataset.estimateSearch("", p_eq, "");
+					logger.info("Number of explicit statements {}", numOfResults);
 				}
 				Iterator<TripleString> it = dataset.search("", p_eq, "");
-				logger.info("Number of explicit statements {}", numOfResults);
 				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = numOfResults;
 
 				while (it.hasNext()) {
@@ -463,10 +477,12 @@ public class EquivalenceSetGraphBuilder {
 				logger.info("Computing Specialization Relations using {}", propertyToProcess);
 				Iterator<TripleString> it = dataset.search("", propertyToProcess, "");
 				long numOfResults = 0L;
+				logger.info("Compute estimations {}", parameters.isComputeEstimation());
 				if (parameters.isComputeEstimation()) {
+					logger.info("Computing estimations");
 					numOfResults = dataset.estimateSearch("", propertyToProcess, "");
+					logger.info("Number of explicit statements {}", numOfResults);
 				}
-				logger.info("Number of explicit statements {}", numOfResults);
 				long numberOfStatementsProcessed = 0, numberOfStatementsToProcess = numOfResults;
 				while (it.hasNext()) {
 					if (numberOfStatementsProcessed % 10000 == 0) {
@@ -497,83 +513,36 @@ public class EquivalenceSetGraphBuilder {
 		}
 	}
 
-	// add arg1 subOf arg2
-	// add arg2 superOf arg1
-	private void addHierarchyRelation(long arg1, long arg2) {
-
-		// arg1 subOf arg2
-		esg.H.put(arg1, arg2);
-
-		// arg2 superOf arg1
-		esg.H_inverse.put(arg2, arg1);
-
-	}
-
 	private void addSubsumption(String subject, String object) {
+
+		logger.trace("Processing {} subsumedBy {}", subject, object);
 
 		Long subjectIdentitySetId = esg.ID.get(subject), objectIdentitySetId = esg.ID.get(object);
 		boolean subjectHasID = subjectIdentitySetId != null;
 		boolean objectHasID = objectIdentitySetId != null;
 
-		if (!subjectHasID && !objectHasID) {
-
-			// The subject and the object are not contained in any identity set
-
-			// create new identity set for the subject
-			long idSubject = getIdentityNewSetId();
-			esg.ID.put(subject, idSubject);
-			esg.IS.put(idSubject, subject);
-
+		if (!objectHasID) {
 			// create new identity set for the object
-			long idObject = getIdentityNewSetId();
-			esg.ID.put(object, idObject);
-			esg.IS.put(idObject, object);
+			objectIdentitySetId = getIdentityNewSetId();
+			esg.ID.put(object, objectIdentitySetId);
+			esg.IS.put(objectIdentitySetId, object);
+		}
 
-			// add subsumption between subject and object
-			addHierarchyRelation(idSubject, idObject);
-
-		} else if (subjectHasID && !objectHasID) {
-
-			// the subject is an identity set whereas the object is not
-
-			// get the id of the identity set of the subject
-//			long idSubject = esg.ID.get(subject);
-
-			// create new identity set for the object
-			long idObject = getIdentityNewSetId();
-			esg.ID.put(object, idObject);
-			esg.IS.put(idObject, object);
-
-			// add subsumption between subject and object
-			addHierarchyRelation(subjectIdentitySetId, idObject);
-
-		} else if (!subjectHasID && objectHasID) {
-			// the subject is in any identity set whereas the object is one identity set
-
+		if (!subjectHasID) {
 			// create new identity set for the subject
-			long idSubject = getIdentityNewSetId();
-			esg.ID.put(subject, idSubject);
-			esg.IS.put(idSubject, subject);
-
-			// get the id of the identity set of the subject
-//			long idObject = esg.ID.get(object);
-
-			// add subsumption between subject and object
-			addHierarchyRelation(idSubject, objectIdentitySetId);
-
-		} else if (subjectHasID && objectHasID) {
-			// subject and object are already in a identity set
-
-			// get the id of the identity set of the subject
-//			long idSubject = esg.ID.get(subject);
-
-			// get the id of the identity set of the subject
-//			long idObject = esg.ID.get(object);
-
-			// add subsumption between subject and object
-			addHierarchyRelation(subjectIdentitySetId, objectIdentitySetId);
+			subjectIdentitySetId = getIdentityNewSetId();
+			esg.ID.put(subject, subjectIdentitySetId);
+			esg.IS.put(subjectIdentitySetId, subject);
 
 		}
+
+		logger.trace("Processing {} subsumedBy {}", subjectIdentitySetId, objectIdentitySetId);
+
+		// subjectIdentitySetId subOf objectIdentitySetId
+		esg.H.put(subjectIdentitySetId, objectIdentitySetId);
+
+		// objectIdentitySetId superOf subjectIdentitySetId
+		esg.H_inverse.put(objectIdentitySetId, subjectIdentitySetId);
 
 	}
 

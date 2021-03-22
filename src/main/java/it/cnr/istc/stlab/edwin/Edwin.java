@@ -2,8 +2,10 @@ package it.cnr.istc.stlab.edwin;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.ConfigurationUtils;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.rocksdb.RocksDBException;
@@ -44,17 +46,25 @@ public class Edwin {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
 		}
 	}
 
 	private static RocksDBBackedEquivalenceSetGraph computeESG(Configuration config) throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException, IOException, RocksDBException {
+			IllegalAccessException, ClassNotFoundException, IOException, RocksDBException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 
 		EquivalenceSetGraphBuilderParameters parameters = EquivalenceSetGraphBuilderParameters.getParameters(config);
 
 		logger.info(parameters.toString());
 
-		EquivalenceSetGraphBuilder esgb = EquivalenceSetGraphBuilder.getInstance(parameters.getDatasetPaths());
+		EquivalenceSetGraphBuilderImpl esgb = new EquivalenceSetGraphBuilderImpl(parameters.getDatasetPaths());
 		RocksDBBackedEquivalenceSetGraph esg = esgb.build(parameters);
 
 		esg.printSimpleStats();
@@ -76,6 +86,8 @@ public class Edwin {
 
 			Configurations configs = new Configurations();
 			Configuration config = configs.properties(configFile);
+			
+			logger.trace("Configurations {}", ConfigurationUtils.toString(config));
 
 			return computeESG(config);
 
@@ -90,6 +102,14 @@ public class Edwin {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
 			e.printStackTrace();
 		}
 

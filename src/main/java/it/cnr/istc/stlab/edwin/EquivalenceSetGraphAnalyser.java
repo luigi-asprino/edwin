@@ -20,7 +20,7 @@ import it.cnr.istc.stlab.rocksmap.RocksMultiMap;
 
 public class EquivalenceSetGraphAnalyser {
 
-	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilder.class);
+	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilderImpl.class);
 
 	public static void countBlankNodes(RocksDBBackedEquivalenceSetGraph esg) throws IOException {
 

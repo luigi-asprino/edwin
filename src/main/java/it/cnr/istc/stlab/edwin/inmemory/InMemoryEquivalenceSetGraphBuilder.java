@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import it.cnr.istc.stlab.edwin.EquivalenceSetGraphBuilderParameters;
 import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraphBuilder;
-import it.cnr.istc.stlab.lgu.commons.rdf.Dataset;
+import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
 
 public final class InMemoryEquivalenceSetGraphBuilder implements EquivalenceSetGraphBuilder {
 

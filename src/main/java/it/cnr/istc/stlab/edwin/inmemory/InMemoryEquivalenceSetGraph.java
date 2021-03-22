@@ -112,7 +112,7 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 	}
 
 	@Override
-	public Collection<CharSequence> getEquivalenceSet(Long equivalenceSetID) {
+	public Collection<String> getEquivalenceSet(Long equivalenceSetID) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -123,12 +123,24 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 	}
 
 	@Override
-	public Collection<Long> getEquivalenceSetSubsumedBy(Long equivalenceSetID) {
+	public Collection<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	Long getNewEquivalenceSetID() {
 		return nextESIDToAssing.getAndIncrement();
+	}
+
+	@Override
+	public Collection<Long> getSuperEquivalenceSets(Long equivalenceSetID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<Long> getEquivalenceSetIds() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

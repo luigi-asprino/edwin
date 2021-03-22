@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.jena.graph.NodeFactory;
@@ -274,48 +275,57 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 	}
 
 	public Set<String> getEquivalentOrSubsumedEntities(String entity) {
-		if (entity == null) {
+		if (entity == null || ID.get(entity) == null) {
 			return new HashSet<>();
 		}
-		Set<String> result = new HashSet<>();
-		Long idRootEquivalent = ID.get(entity);
-
-		if (idRootEquivalent != null) {
-			// get identity set of the entity
-			logger.trace("Equivalence set of {}:{}", entity, idRootEquivalent);
-
-			Set<Long> visited = new HashSet<>();
-			visited.add(idRootEquivalent);
-
-			Collection<Long> toVisit = H_inverse.get(idRootEquivalent);
-
-			while (toVisit != null && !toVisit.isEmpty()) {
-				// Pick one identitySetToVisit
-				long setIdToVisit = (Long) toVisit.iterator().next();
-				visited.add(setIdToVisit);
-				toVisit.remove(setIdToVisit);
-
-				if (H_inverse.containsKey(setIdToVisit)) {
-					// the current set is super of some set
-					H_inverse.get(setIdToVisit).forEach(nextToVisit -> {
-						if (!visited.contains(nextToVisit)) {
-							toVisit.add(nextToVisit);
-						}
-					});
-				}
-			}
-
-			visited.forEach(visitedSetId -> {
-				result.addAll(IS.get(visitedSetId));
+		Long idEntity = ID.get(entity);
+		Set<String> result = new HashSet<>(IS.get(idEntity));
+		Collection<Long> c = C_inverse.get(idEntity);
+		logger.trace("{} -> {}", idEntity, c);
+		if (c != null) {
+			c.forEach(l -> {
+				result.addAll(IS.get(l));
 			});
 		}
+
+//		if (idRootEquivalent != null) {
+//			// get identity set of the entity
+//			logger.trace("Equivalence set of {}:{}", entity, idRootEquivalent);
+//
+//			Set<Long> visited = new HashSet<>();
+//			visited.add(idRootEquivalent);
+//
+//			Collection<Long> toVisit = H_inverse.get(idRootEquivalent);
+//
+//			while (toVisit != null && !toVisit.isEmpty()) {
+//				// Pick one identitySetToVisit
+//				long setIdToVisit = (Long) toVisit.iterator().next();
+//				visited.add(setIdToVisit);
+//				toVisit.remove(setIdToVisit);
+//
+//				if (H_inverse.containsKey(setIdToVisit)) {
+//					// the current set is super of some set
+//					H_inverse.get(setIdToVisit).forEach(nextToVisit -> {
+//						if (!visited.contains(nextToVisit)) {
+//							toVisit.add(nextToVisit);
+//						}
+//					});
+//				}
+//			}
+//
+//			visited.forEach(visitedSetId -> {
+//				result.addAll(IS.get(visitedSetId));
+//			});
+//		}
 
 		return result;
 	}
 
 	void computeSpecializationClosure() {
 		try {
+			logger.trace("Compute closure");
 			createClosure(H, C);
+			logger.trace("Compute closure inverse");
 			createClosure(H_inverse, C_inverse);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -323,32 +333,51 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 
 	}
 
-	private static void createClosure(RocksMultiMap<Long, Long> hierarchy, RocksMultiMap<Long, Long> closure)
+	private void createClosure(RocksMultiMap<Long, Long> hierarchy, RocksMultiMap<Long, Long> closure)
 			throws IOException {
 
-		logger.info("Compute Closure");
-
 		Set<Long> keys = hierarchy.keySet();
-		int processed = 0;
-		int size = keys.size();
-		for (Long k : keys) {
-			if (processed % 10000 == 0) {
+//		int processed = 0;
+//		int size = keys.size();
+//		for (Long k : keys) {
+//			if (processed % 10000 == 0) {
+//				logger.info("Processed {}/{}", processed, size);
+//			}
+//			processed++;
+//			Collection<Long> visited = visitHierarchy(closure, hierarchy, k);
+//			if (!visited.isEmpty()) {
+//				closure.putAll(k, visited);
+//			}
+//		}
+
+		AtomicLong processed = new AtomicLong(0L);
+		final int size = keys.size();
+		logger.trace("Entries to process {}", size);
+		keys.parallelStream().forEach(k -> {
+			if (processed.get() % 10000 == 0) {
 				logger.info("Processed {}/{}", processed, size);
 			}
-			processed++;
-			Collection<Long> visited = visitHierarchy(closure, hierarchy, k);
-			if (!visited.isEmpty()) {
-				closure.putAll(k, visited);
+			logger.trace("Processing key {} {}", k, IS.get(k));
+			processed.incrementAndGet();
+
+			if (!closure.containsKey(k)) {
+//				Collection<Long> visited = visitHierarchy(closure, hierarchy, k, Sets.newHashSet(k));
+				Collection<Long> visited = visitHierarchy(closure, hierarchy, k);
+				if (!visited.isEmpty()) {
+					closure.putAll(k, visited);
+					logger.trace("Insert {} -> {}", k, visited);
+				}
 			}
-		}
+		});
+
 //		closure.toFile();
 //		closure.close();
 
 		logger.info("Closure Computed!");
 	}
 
-	private static Collection<Long> visitHierarchy(RocksMultiMap<Long, Long> closure,
-			RocksMultiMap<Long, Long> hierarchy, long root) {
+	private Collection<Long> visitHierarchy(RocksMultiMap<Long, Long> closure, RocksMultiMap<Long, Long> hierarchy,
+			long root) {
 
 		Set<Long> visited = new HashSet<>();
 
@@ -379,6 +408,41 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 
 		return visited;
 	}
+
+//	private Collection<Long> visitHierarchy(RocksMultiMap<Long, Long> closure, RocksMultiMap<Long, Long> hierarchy,
+//			long root, Set<Long> anchestors) {
+//
+//		Set<Long> visited = new HashSet<>();
+//
+//		// initialize visited with direct descendants of root
+//		Collection<Long> toVisit = hierarchy.get(root);
+//
+//		if (toVisit != null) {
+//			toVisit.forEach(setIdToVisit -> {
+//				if (closure.containsKey(setIdToVisit)) {
+//					visited.addAll(closure.get(setIdToVisit));
+//				} else {
+//					if (hierarchy.containsKey(setIdToVisit)) {
+//						if (!anchestors.contains(setIdToVisit)) {
+//							Set<Long> anchestors2 = new HashSet<>(anchestors);
+//							anchestors2.add(setIdToVisit);
+//							Collection<Long> coll = visitHierarchy(closure, hierarchy, setIdToVisit, anchestors2);
+//							visited.addAll(coll);
+//							closure.putAll(setIdToVisit, coll);
+//						} else {
+//
+//						}
+//					}
+//				}
+//			});
+//		}
+//
+////		if (!hierarchy.get(root).contains(root)) {
+////			visited.remove(root);
+////		}
+//
+//		return visited;
+//	}
 
 	public void toRDF(String file, String base, String esgName) throws IOException {
 		toRDF(file, base, esgName, false);
@@ -452,7 +516,6 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 						for (String s2 : IS.get(superNode)) {
 							if (checkIRI(s2)) {
 								s2 = base + DigestUtils.md5Hex(s2);
-								;
 							}
 							superEntities.add(s2);
 						}
@@ -876,26 +939,27 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 
 	@Override
 	public boolean hasEquivalenceSet(CharSequence iri) {
-		// TODO Auto-generated method stub
-		return false;
+		return ID.containsKey(iri);
 	}
 
 	@Override
-	public Collection<CharSequence> getEquivalenceSet(Long visitedSetId) {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<String> getEquivalenceSet(Long visitedSetId) {
+		return IS.get(visitedSetId);
 	}
 
 	@Override
 	public Long getIDOfEquivalenceSet(CharSequence iri) {
-		// TODO Auto-generated method stub
-		return null;
+		return ID.get(iri);
 	}
 
 	@Override
-	public Collection<Long> getEquivalenceSetSubsumedBy(Long equivalenceSetID) {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID) {
+		return H_inverse.get(equivalenceSetID);
+	}
+
+	@Override
+	public Collection<Long> getSuperEquivalenceSets(Long equivalenceSetID) {
+		return H.get(equivalenceSetID);
 	}
 
 	@Override
@@ -926,6 +990,11 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 	public void addSpecialization(CharSequence s, CharSequence o) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public Collection<Long> getEquivalenceSetIds() {
+		return IS.keySet();
 	}
 
 }

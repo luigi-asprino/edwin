@@ -1,6 +1,6 @@
 package it.cnr.istc.stlab.edwin;
 
-import it.cnr.istc.stlab.lgu.commons.rdf.Dataset;
+import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
 
 public interface ObservedEntitiesSelector {
 

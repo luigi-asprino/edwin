@@ -14,8 +14,9 @@ import org.rdfhdt.hdt.triples.TripleString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.cnr.istc.stlab.lgu.commons.rdf.Dataset;
-import it.cnr.istc.stlab.lgu.commons.rdf.StreamRDFUtils;
+import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
+import it.cnr.istc.stlab.lgu.commons.semanticweb.streams.StreamRDFUtils;
+
 
 public class PropertiesSelector implements ObservedEntitiesSelector {
 

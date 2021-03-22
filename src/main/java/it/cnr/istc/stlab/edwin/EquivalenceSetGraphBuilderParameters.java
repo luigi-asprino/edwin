@@ -1,5 +1,6 @@
 package it.cnr.istc.stlab.edwin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -142,7 +143,7 @@ public class EquivalenceSetGraphBuilderParameters {
 	}
 
 	public static EquivalenceSetGraphBuilderParameters getParameters(Configuration config)
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		EquivalenceSetGraphBuilderParameters parameters = new EquivalenceSetGraphBuilderParameters();
 
 		parameters.setDatasetPaths(config.getStringArray("datasetPaths"));
@@ -182,12 +183,12 @@ public class EquivalenceSetGraphBuilderParameters {
 
 		if (config.containsKey("observedEntitiesSelector")) {
 			parameters.setObservedEntitiesSelector((ObservedEntitiesSelector) Class
-					.forName(config.getString("observedEntitiesSelector")).newInstance());
+					.forName(config.getString("observedEntitiesSelector")).getConstructor().newInstance());
 		}
 
 		if (config.containsKey("extensionalSizeEstimator")) {
 			parameters.setExtensionalSizeEstimator((ExtensionalSizeEstimator) Class
-					.forName(config.getString("extensionalSizeEstimator")).newInstance());
+					.forName(config.getString("extensionalSizeEstimator")).getConstructor().newInstance());
 		}
 
 		if (config.containsKey("esgName")) {
@@ -259,17 +260,20 @@ public class EquivalenceSetGraphBuilderParameters {
 
 	@Override
 	public String toString() {
-		return "EquivalenceSetGraphBuilderParameters [esgFolder=" + esgFolder + ", esgName=" + esgName + ", esgBaseURI="
-				+ esgBaseURI + ", equivalencePropertyToObserve=" + equivalencePropertyToObserve
-				+ ", specializationPropertyToObserve=" + specializationPropertyToObserve
-				+ ", specializationPropertyForProperties=" + specializationPropertyForProperties
-				+ ", equivalencePropertiesForProperties=" + equivalencePropertiesForProperties
-				+ ", esgPropertiesFolder=" + esgPropertiesFolder + ", esgClassesFolder=" + esgClassesFolder
-				+ ", esgProperties=" + esgProperties + ", computeClosure=" + computeClosure + ", computeStats="
-				+ computeStats + ", computeEstimation=" + computeEstimation + ", notEquivalenceProperties="
-				+ notEquivalenceProperties + ", notSpecializationProperties=" + notSpecializationProperties
-				+ ", observedEntitiesSelector=" + observedEntitiesSelector + ", extensionalSizeEstimator="
-				+ extensionalSizeEstimator + "]";
+		return "EquivalenceSetGraphBuilderParameters [\n esgFolder=" + esgFolder + ",\n esgName=" + esgName
+				+ ",\n esgBaseURI=" + esgBaseURI + ",\n equivalencePropertyToObserve=" + equivalencePropertyToObserve
+				+ ",\n specializationPropertyToObserve=" + specializationPropertyToObserve
+				+ ",\n specializationPropertyForProperties=" + specializationPropertyForProperties
+				+ ",\n equivalencePropertiesForProperties=" + equivalencePropertiesForProperties
+				+ ",\n esgPropertiesFolder=" + esgPropertiesFolder + ",\n esgClassesFolder=" + esgClassesFolder
+				+ ",\n esgProperties=" + esgProperties + ",\n computeClosure=" + computeClosure + ",\n computeStats="
+				+ computeStats + ",\n computeEstimation=" + computeEstimation + ",\n exportInRDFFormat="
+				+ exportInRDFFormat + ",\n notEquivalenceProperties=" + notEquivalenceProperties
+				+ ",\n notSpecializationProperties=" + notSpecializationProperties
+				+ ",\n additionalEquivalencePropertiesToObserve=" + additionalEquivalencePropertiesToObserve
+				+ ",\n additionalSpecializationPropertiesToObserve=" + additionalSpecializationPropertiesToObserve
+				+ ",\n datasetPaths=" + Arrays.toString(datasetPaths) + ",\n observedEntitiesSelector="
+				+ observedEntitiesSelector + ",\n extensionalSizeEstimator=" + extensionalSizeEstimator + "]";
 	}
 
 	public String[] getDatasetPaths() {
@@ -303,6 +307,82 @@ public class EquivalenceSetGraphBuilderParameters {
 
 	public void setExportInRDFFormat(boolean exportInRDFFormat) {
 		this.exportInRDFFormat = exportInRDFFormat;
+	}
+
+	public EquivalenceSetGraphBuilderParameters clone() {
+		EquivalenceSetGraphBuilderParameters parameters = new EquivalenceSetGraphBuilderParameters();
+
+		if (this.datasetPaths != null) {
+			parameters.setDatasetPaths(this.datasetPaths.clone());
+		}
+
+		if (this.equivalencePropertyToObserve != null) {
+			parameters.setEquivalencePropertyToObserve(new String(this.equivalencePropertyToObserve));
+		}
+
+		if (this.equivalencePropertiesForProperties != null) {
+			parameters.setEquivalencePropertiesForProperties(new String(this.equivalencePropertiesForProperties));
+		}
+
+		if (this.specializationPropertyToObserve != null) {
+			parameters.setSpecializationPropertyToObserve(new String(this.specializationPropertyToObserve));
+		}
+
+		if (this.specializationPropertyForProperties != null) {
+			parameters.setSpecializationPropertyForProperties(new String(this.specializationPropertyForProperties));
+		}
+
+		if (this.notEquivalenceProperties != null) {
+			parameters.notEquivalenceProperties = new HashSet<>(this.notEquivalenceProperties);
+		}
+
+		if (this.notSpecializationProperties != null) {
+			parameters.notSpecializationProperties = new HashSet<>(this.notSpecializationProperties);
+		}
+
+		if (this.additionalEquivalencePropertiesToObserve != null) {
+			parameters.additionalEquivalencePropertiesToObserve = new HashSet<>(
+					this.additionalEquivalencePropertiesToObserve);
+		}
+
+		if (this.additionalSpecializationPropertiesToObserve != null) {
+			parameters.additionalSpecializationPropertiesToObserve = new HashSet<>(
+					this.additionalSpecializationPropertiesToObserve);
+		}
+
+		if (this.esgFolder != null) {
+			parameters.esgFolder = new String(this.esgFolder);
+		}
+
+		if (this.esgPropertiesFolder != null) {
+			parameters.esgPropertiesFolder = new String(this.esgPropertiesFolder);
+		}
+
+		if (this.esgClassesFolder != null) {
+			parameters.esgClassesFolder = new String(this.esgClassesFolder);
+		}
+
+		if (this.observedEntitiesSelector != null) {
+			parameters.observedEntitiesSelector = this.observedEntitiesSelector;
+		}
+
+		if (this.extensionalSizeEstimator != null) {
+			parameters.extensionalSizeEstimator = this.extensionalSizeEstimator;
+		}
+
+		if (this.esgName != null) {
+			parameters.esgName = new String(this.esgName);
+		}
+
+		if (this.esgBaseURI != null) {
+			parameters.esgBaseURI = new String(this.esgBaseURI);
+		}
+
+		parameters.computeEstimation = this.computeEstimation;
+		parameters.computeClosure = this.computeClosure;
+
+		return parameters;
+
 	}
 
 }

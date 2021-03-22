@@ -11,7 +11,8 @@ import org.rdfhdt.hdt.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.cnr.istc.stlab.lgu.commons.rdf.Dataset;
+import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
+
 
 public class ClassSizeEstimator implements ExtensionalSizeEstimator {
 

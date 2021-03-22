@@ -7,7 +7,8 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.cnr.istc.stlab.lgu.commons.rdf.Dataset;
+import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
+
 
 public interface ExtensionalSizeEstimator {
 

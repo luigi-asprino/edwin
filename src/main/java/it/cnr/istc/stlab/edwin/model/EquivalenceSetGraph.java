@@ -11,11 +11,13 @@ public interface EquivalenceSetGraph {
 
 	static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraph.class);
 
-	public Collection<CharSequence> getEquivalenceSet(Long visitedSetId);
+	public Collection<String> getEquivalenceSet(Long visitedSetId);
 
 	public Long getIDOfEquivalenceSet(CharSequence iri);
 
-	public Collection<Long> getEquivalenceSetSubsumedBy(Long equivalenceSetID);
+	public Collection<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID);
+
+	public Collection<Long> getSuperEquivalenceSets(Long equivalenceSetID);
 
 	public boolean hasEquivalenceSet(CharSequence iri);
 
@@ -37,6 +39,8 @@ public interface EquivalenceSetGraph {
 
 	public void addSpecialization(CharSequence s, CharSequence o);
 
+	public Collection<Long> getEquivalenceSetIds();
+
 	public default Set<CharSequence> getEquivalentOrSubsumedEntities(CharSequence entity) {
 		if (entity == null) {
 			return new HashSet<>();
@@ -51,7 +55,7 @@ public interface EquivalenceSetGraph {
 			Set<Long> visited = new HashSet<>();
 			visited.add(idRootEquivalent);
 
-			Collection<Long> toVisit = getEquivalenceSetSubsumedBy(idRootEquivalent);
+			Collection<Long> toVisit = getEquivalenceSetsSubsumedBy(idRootEquivalent);
 
 			while (toVisit != null && !toVisit.isEmpty()) {
 				// Pick one identitySetToVisit
@@ -59,7 +63,7 @@ public interface EquivalenceSetGraph {
 				visited.add(setIdToVisit);
 				toVisit.remove(setIdToVisit);
 
-				getEquivalenceSetSubsumedBy(setIdToVisit).forEach(nextToVisit -> {
+				getEquivalenceSetsSubsumedBy(setIdToVisit).forEach(nextToVisit -> {
 					if (!visited.contains(nextToVisit)) {
 						toVisit.add(nextToVisit);
 					}
@@ -73,6 +77,23 @@ public interface EquivalenceSetGraph {
 		}
 
 		return result;
+	}
+
+	public default void print() {
+		Collection<Long> esKeys = this.getEquivalenceSetIds();
+		System.out.println("Equivalence Sets\n---------");
+		for (Long k : esKeys) {
+			System.out.println(k + " -> " + this.getEquivalenceSet(k));
+		}
+		System.out.println("---------\nHierarchy\n---------");
+		for (Long k : esKeys) {
+			System.out.println(k + " sub Of " + this.getSuperEquivalenceSets(k));
+		}
+		System.out.println("---------\nHierarchy Inverse\n---------");
+		for (Long k : esKeys) {
+			System.out.println(k + " super Of " + this.getEquivalenceSetsSubsumedBy(k));
+		}
+		System.out.println("---------");
 	}
 
 }
