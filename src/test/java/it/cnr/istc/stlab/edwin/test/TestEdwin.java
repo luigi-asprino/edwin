@@ -36,7 +36,7 @@ public class TestEdwin {
 		clean();
 		RocksDBBackedEquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 
-		System.out.println(esg.getEquivalentEntities("http://example.org/a"));
+//		System.out.println(esg.getEquivalentEntities("http://example.org/a"));
 
 		assertEquals(esg.getEquivalentEntities("http://example.org/a"), Sets.newHashSet("http://example.org/a",
 				"http://example.org/c", "http://example.org/d", "http://example.org/e"));

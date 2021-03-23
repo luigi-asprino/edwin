@@ -365,7 +365,7 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 				Collection<Long> visited = visitHierarchy(closure, hierarchy, k);
 				if (!visited.isEmpty()) {
 					closure.putAll(k, visited);
-					logger.trace("Insert {} -> {}", k, visited);
+					//logger.trace("Insert {} -> {}", k, visited);
 				}
 			}
 		});
