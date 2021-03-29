@@ -30,11 +30,11 @@ public class ClassesSelector implements ObservedEntitiesSelector {
 		logger.info("Applying heuristics:  A class is the object of a type statement");
 
 		Set<String> typePredicates = esg_properties
-				.getEquivalentOrSubsumedEntities("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+				.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 		Set<String> classClasses = new HashSet<>();
 		classClasses.add("http://www.w3.org/2000/01/rdf-schema#Class");
 		if (esg != null) {
-			classClasses.addAll(esg.getEquivalentOrSubsumedEntities("http://www.w3.org/2000/01/rdf-schema#Class"));
+			classClasses.addAll(esg.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/2000/01/rdf-schema#Class"));
 		}
 
 		logger.info("Number of properties equivalent to or subsumed by rdf:type: {}", typePredicates.size());
@@ -94,7 +94,7 @@ public class ClassesSelector implements ObservedEntitiesSelector {
 		logger.info(
 				"Applying heuristics: A class is the subject of a triple where the property has rdfs:Class as domain.");
 		Set<String> domainredicates = esg_properties
-				.getEquivalentOrSubsumedEntities("http://www.w3.org/2000/01/rdf-schema#domain");
+				.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/2000/01/rdf-schema#domain");
 		logger.info("Number of properties equivalent to or subsumed by rdfs:domain: {}", domainredicates.size());
 		int domainPredicatesProcessed = 0;
 		for (String domainPredicate : domainredicates) {
@@ -138,7 +138,7 @@ public class ClassesSelector implements ObservedEntitiesSelector {
 		logger.info(
 				"Applying heuristics: A class is the object of a triple where the property has rdfs:Class as range.");
 		Set<String> rangePredicates = esg_properties
-				.getEquivalentOrSubsumedEntities("http://www.w3.org/2000/01/rdf-schema#range");
+				.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/2000/01/rdf-schema#range");
 		logger.info("Number of properties equivalent to or subsumed by rdfs:range: {}", rangePredicates.size());
 		int rangePredicatesProcessed = 0;
 		for (String rangePredicate : rangePredicates) {

@@ -197,7 +197,7 @@ public class EdwinTests {
 		System.out.println("http://www.w3.org/2008/05/skos#broaderTransitive");
 		System.out.println(esg.getSizeOfEntity("http://www.w3.org/2008/05/skos#broaderTransitive"));
 
-		esg.getEquivalentOrSubsumedEntities("http://www.w3.org/2008/05/skos#broaderTransitive").forEach(i -> {
+		esg.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/2008/05/skos#broaderTransitive").forEach(i -> {
 			System.out.println(i);
 			System.out.println(esg.getSizeOfEntity(i));
 		});

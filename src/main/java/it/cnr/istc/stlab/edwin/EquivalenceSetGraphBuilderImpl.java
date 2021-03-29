@@ -104,7 +104,7 @@ public class EquivalenceSetGraphBuilderImpl {
 			logger.info("Adding properties equivalent or subsumed to equivalence property to observe ({})",
 					parameters.getEquivalencePropertyToObserve());
 			Set<String> equivalenceProperties = esgProperties
-					.getEquivalentOrSubsumedEntities(parameters.getEquivalencePropertyToObserve());
+					.getEntitiesImplicityEquivalentToOrSubsumedBy(parameters.getEquivalencePropertyToObserve());
 			equivalenceProperties.removeAll(parameters.getNotEquivalenceProperties());
 			logger.info("Removing not equivalent properties ({} properties): {}",
 					parameters.getNotEquivalenceProperties().size(), parameters.getNotEquivalenceProperties());
@@ -112,7 +112,7 @@ public class EquivalenceSetGraphBuilderImpl {
 			logger.info("Adding properties equivalent or subsumed to: ",
 					parameters.getSpecializationPropertyToObserve());
 			Set<String> specializationProperties = esgProperties
-					.getEquivalentOrSubsumedEntities(parameters.getSpecializationPropertyToObserve());
+					.getEntitiesImplicityEquivalentToOrSubsumedBy(parameters.getSpecializationPropertyToObserve());
 			logger.info("Retrieved {}", specializationProperties.size());
 			specializationProperties.removeAll(parameters.getNotSpecializationProperties());
 			logger.info("Removing ({} properties): {}", parameters.getNotSpecializationProperties().size(),

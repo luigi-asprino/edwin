@@ -28,7 +28,7 @@ public class ClassSelector implements ObservedEntitiesSelector {
 		logger.info("Applying heuristics:  A class is the object of a type statement");
 
 		Set<String> typePredicates = esg_properties
-				.getEquivalentOrSubsumedEntities("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+				.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 
 		logger.info("Number of properties equivalent to or subsumed by rdf:type: {}", typePredicates.size());
 

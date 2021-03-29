@@ -48,11 +48,11 @@ public class TestEdwin {
 				"http://example.org/c", "http://example.org/d", "http://example.org/e"));
 
 		assertEquals(Sets.newHashSet("http://example.org/f", "http://example.org/f1"),
-				esg.getEquivalentOrSubsumedEntities("http://example.org/f"));
+				esg.getEntitiesImplicityEquivalentToOrSubsumedBy("http://example.org/f"));
 		assertEquals(Sets.newHashSet("http://example.org/f", "http://example.org/f1"),
-				esg.getEquivalentOrSubsumedEntities("http://example.org/f1"));
+				esg.getEntitiesImplicityEquivalentToOrSubsumedBy("http://example.org/f1"));
 
-		assertFalse(esg.getEquivalentOrSubsumedEntities("http://example.org/a").contains("http://example.org/f"));
+		assertFalse(esg.getEntitiesImplicityEquivalentToOrSubsumedBy("http://example.org/a").contains("http://example.org/f"));
 
 		assertEquals(esg.getEquivalentEntities("http://example.org/a").size(), 4);
 		assertEquals(esg.getEquivalentEntities("http://example.org/f").size(), 2);
@@ -77,7 +77,7 @@ public class TestEdwin {
 		assertEquals(esgProperties.getEquivalentEntities("http://example.org/equal2"),
 				Sets.newHashSet("http://example.org/equal2"));
 		assertEquals(Sets.newHashSet("http://example.org/equal2", "http://example.org/equal"),
-				esgProperties.getEquivalentOrSubsumedEntities("http://example.org/equal"));
+				esgProperties.getEntitiesImplicityEquivalentToOrSubsumedBy("http://example.org/equal"));
 
 		esgProperties.close();
 		clean();
@@ -129,15 +129,15 @@ public class TestEdwin {
 				Sets.newHashSet("http://example.org/f2", "http://example.org/f", "http://example.org/e",
 						"http://example.org/f1", "http://example.org/f3", "http://example.org/a",
 						"http://example.org/d", "http://example.org/c"),
-				esg.getEquivalentOrSubsumedEntities("http://example.org/f2"));
+				esg.getEntitiesImplicityEquivalentToOrSubsumedBy("http://example.org/f2"));
 
 		assertEquals(
 				Sets.newHashSet("http://example.org/f", "http://example.org/e", "http://example.org/f1",
 						"http://example.org/a", "http://example.org/d", "http://example.org/c"),
-				esg.getEquivalentOrSubsumedEntities("http://example.org/f1"));
+				esg.getEntitiesImplicityEquivalentToOrSubsumedBy("http://example.org/f1"));
 
 		assertEquals(Sets.newHashSet("http://example.org/e", "http://example.org/a", "http://example.org/d",
-				"http://example.org/c"), esg.getEquivalentOrSubsumedEntities("http://example.org/e"));
+				"http://example.org/c"), esg.getEntitiesImplicityEquivalentToOrSubsumedBy("http://example.org/e"));
 
 		esg.close();
 		clean();
@@ -162,7 +162,7 @@ public class TestEdwin {
 				"http://example.org/c");
 
 		for (String a : actual) {
-			assertEquals(actual, esg.getEquivalentOrSubsumedEntities(a));
+			assertEquals(actual, esg.getEntitiesImplicityEquivalentToOrSubsumedBy(a));
 
 		}
 

@@ -29,7 +29,7 @@ public class ClassSizeEstimator implements ExtensionalSizeEstimator {
 		logger.info("Computing extensional size of classes");
 
 		Set<String> typePredicates = esg_properties
-				.getEquivalentOrSubsumedEntities("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+				.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 
 		Iterator<Map.Entry<String, Long>> it = esg_classes.ID.iterator();
 

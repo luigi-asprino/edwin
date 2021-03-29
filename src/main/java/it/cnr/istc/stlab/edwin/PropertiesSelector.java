@@ -77,12 +77,12 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 
 		// A property is an entity that belongs to rdfs:Property
 		Set<String> typePredicates = esg_properties
-				.getEquivalentOrSubsumedEntities("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+				.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 		Set<String> propertyClasses = new HashSet<>();
 		propertyClasses.add("http://www.w3.org/1999/02/22-rdf-syntax-ns#Property");
 		if (esg_classes != null) {
 			propertyClasses.addAll(
-					esg_classes.getEquivalentOrSubsumedEntities("http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"));
+					esg_classes.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"));
 		}
 		for (String typePredicate : typePredicates) {
 			for (String property : propertyClasses) {
@@ -110,7 +110,7 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 		// rdf:Property as domain.
 		// A property is the subject of a triple having rdfs:domain as predicate
 		Set<String> domainredicates = esg_properties
-				.getEquivalentOrSubsumedEntities("http://www.w3.org/2000/01/rdf-schema#domain");
+				.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/2000/01/rdf-schema#domain");
 		for (String domainPredicate : domainredicates) {
 			for (String property : propertyClasses) {
 				try {
@@ -145,7 +145,7 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 		// rdf:Property as range.
 		// A property is the subject of a triple having rdfs:range as predicate.
 		Set<String> rangePredicates = esg_properties
-				.getEquivalentOrSubsumedEntities("http://www.w3.org/2000/01/rdf-schema#range");
+				.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/2000/01/rdf-schema#range");
 		for (String rangePredicate : rangePredicates) {
 			for (String property : propertyClasses) {
 				try {
