@@ -34,7 +34,7 @@ public class ClassSizeEstimator implements ExtensionalSizeEstimator {
 		Iterator<Map.Entry<String, Long>> it = esg_classes.ID.iterator();
 
 		long processed = 0;
-		long toProcess = esg_classes.numberOfObservedEntities();
+		long toProcess = esg_classes.getNumberOfObservedEntities();
 		long start = System.currentTimeMillis();
 		long current = System.currentTimeMillis();
 		long elapsed = 0L;

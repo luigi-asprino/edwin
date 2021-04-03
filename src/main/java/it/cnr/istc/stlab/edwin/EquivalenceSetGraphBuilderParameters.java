@@ -17,7 +17,7 @@ public class EquivalenceSetGraphBuilderParameters {
 
 	private RocksDBBackedEquivalenceSetGraph esgProperties;
 
-	private boolean computeClosure = true;
+	private boolean computeClosure = false;
 	private boolean computeStats = true;
 	private boolean computeEstimation = false;
 	private boolean exportInRDFFormat = false;

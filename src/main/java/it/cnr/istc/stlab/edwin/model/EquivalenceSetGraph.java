@@ -12,12 +12,16 @@ public interface EquivalenceSetGraph {
 	static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraph.class);
 
 	public Collection<String> getEquivalenceSet(Long visitedSetId);
+	
+	public Collection<String> getEquivalenceSet(String iri);
 
-	public Long getIDOfEquivalenceSet(CharSequence iri);
+	public Long getEquivalenceSetIdOfIRI(CharSequence iri);
 
 	public Collection<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID);
 
 	public Collection<Long> getSuperEquivalenceSets(Long equivalenceSetID);
+
+	public Set<String> getEquivalentEntities(String iri);
 
 	public boolean hasEquivalenceSet(CharSequence iri);
 
@@ -29,6 +33,8 @@ public interface EquivalenceSetGraph {
 
 	public void setSpecializationPropertyForProperties(CharSequence iri);
 
+	public Collection<Long> getTopLevelEquivalenceSets();
+
 	public CharSequence getEquivalencePropertyToObserve();
 
 	public CharSequence getSpecializationPropertyToObserve();
@@ -39,14 +45,24 @@ public interface EquivalenceSetGraph {
 
 	public void addSpecialization(CharSequence s, CharSequence o);
 
+	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure);
+	
+	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure, int maxDepth);
+
+	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity);
+
 	public Collection<Long> getEquivalenceSetIds();
+
+	public int getNumberOfObservedEntities();
+	
+	public int getNumberOfEquivalenceSets();
 
 	public default Set<CharSequence> getEquivalentOrSubsumedEntities(CharSequence entity) {
 		if (entity == null) {
 			return new HashSet<>();
 		}
 		Set<CharSequence> result = new HashSet<>();
-		Long idRootEquivalent = getIDOfEquivalenceSet(entity);
+		Long idRootEquivalent = getEquivalenceSetIdOfIRI(entity);
 
 		if (idRootEquivalent != null) {
 			// get identity set of the entity
@@ -95,5 +111,7 @@ public interface EquivalenceSetGraph {
 		}
 		System.out.println("---------");
 	}
+	
+	public void close();
 
 }

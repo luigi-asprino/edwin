@@ -313,7 +313,7 @@ public class EquivalenceSetGraphBuilderImpl {
 		logger.info("Number of Equivalence Triples {}", numberOfEquivalenceTriples);
 	}
 
-	private long getIdentityNewSetId() {
+	private synchronized long getIdentityNewSetId() {
 		return ++lastIdentitySetId;
 	}
 

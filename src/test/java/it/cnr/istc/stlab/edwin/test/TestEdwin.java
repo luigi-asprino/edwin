@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.google.common.collect.Sets;
 
 import it.cnr.istc.stlab.edwin.Edwin;
-import it.cnr.istc.stlab.edwin.RocksDBBackedEquivalenceSetGraph;
+import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 
 public class TestEdwin {
 
@@ -34,7 +34,7 @@ public class TestEdwin {
 		File f = new File("src/main/resources/testResources/t1.properties");
 
 		clean();
-		RocksDBBackedEquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
+		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 
 //		System.out.println(esg.getEquivalentEntities("http://example.org/a"));
 
@@ -70,7 +70,7 @@ public class TestEdwin {
 		File f = new File("src/main/resources/testResources/t2.properties");
 
 		clean();
-		RocksDBBackedEquivalenceSetGraph esgProperties = Edwin.computeESG(f.getAbsolutePath());
+		EquivalenceSetGraph esgProperties = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(esgProperties.getNumberOfEquivalenceSets(), 2);
 		assertEquals(esgProperties.getEquivalentEntities("http://example.org/equal"),
 				Sets.newHashSet("http://example.org/equal"));
@@ -89,7 +89,7 @@ public class TestEdwin {
 		File f = new File("src/main/resources/testResources/t3.properties");
 
 		clean();
-		RocksDBBackedEquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
+		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(3, esg.getNumberOfEquivalenceSets());
 		assertEquals(8, esg.getNumberOfObservedEntities());
 
@@ -121,7 +121,7 @@ public class TestEdwin {
 
 		clean();
 
-		RocksDBBackedEquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
+		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(3, esg.getNumberOfEquivalenceSets());
 		assertEquals(8, esg.getNumberOfObservedEntities());
 
@@ -153,7 +153,7 @@ public class TestEdwin {
 
 		clean();
 
-		RocksDBBackedEquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
+		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(3, esg.getNumberOfEquivalenceSets());
 		assertEquals(8, esg.getNumberOfObservedEntities());
 

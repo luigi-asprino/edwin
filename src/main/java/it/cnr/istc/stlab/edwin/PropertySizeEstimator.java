@@ -22,7 +22,7 @@ public class PropertySizeEstimator implements ExtensionalSizeEstimator {
 		logger.info("Computing extensional size of observed properties");
 
 		long processed = 0;
-		long toProcess = esg.numberOfObservedEntities();
+		long toProcess = esg.getNumberOfObservedEntities();
 		Iterator<Entry<String, Long>> it = esg.ID.iterator();
 		long start = System.currentTimeMillis();
 		long current = System.currentTimeMillis();

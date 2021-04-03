@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.jena.ext.com.google.common.collect.Sets;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.system.IRIResolver;
@@ -144,11 +145,11 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 		return r;
 	}
 
-	public Collection<String> getEquivalentEntities(String iri) {
-		Collection<String> result = new HashSet<>();
+	public Set<String> getEquivalentEntities(String iri) {
+		Set<String> result = new HashSet<>();
 		Long id = ID.get(iri);
 		if (id != null) {
-			return IS.get(id);
+			result.addAll(IS.get(id));
 		}
 		return result;
 	}
@@ -270,60 +271,87 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 		return max;
 	}
 
-	public long numberOfObservedEntities() {
-		return ID.keySet().size();
-	}
-
 	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity) {
 		return getEntitiesImplicityEquivalentToOrSubsumedBy(entity, false);
 	}
 
-	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure) {
+	@Override
+	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure, int maxDepth) {
 		Long idEntity;
 		if (entity == null || (idEntity = ID.get(entity)) == null) {
 			return new HashSet<>();
 		}
 
 		Set<String> result = new HashSet<>(IS.get(idEntity));
-		if (useClosure) {
-			Collection<Long> c = C_inverse.get(idEntity);
-			logger.trace("{} -> {}", idEntity, c);
-			if (c != null) {
-				c.forEach(l -> {
-					result.addAll(IS.get(l));
+
+		// get identity set of the entity
+		logger.trace("Equivalence set of {}:{}", entity, idEntity);
+
+		if (maxDepth < 0) {
+			if (useClosure) {
+				Collection<Long> c = C_inverse.get(idEntity);
+				logger.trace("{} -> {}", idEntity, c);
+				if (c != null) {
+					c.forEach(l -> {
+						result.addAll(IS.get(l));
+					});
+				}
+			} else {
+				Set<Long> visited = new HashSet<>();
+				visited.add(idEntity);
+
+				Collection<Long> toVisit = H_inverse.get(idEntity);
+
+				while (toVisit != null && !toVisit.isEmpty()) {
+					// Pick one identitySetToVisit
+					long setIdToVisit = (Long) toVisit.iterator().next();
+					visited.add(setIdToVisit);
+					toVisit.remove(setIdToVisit);
+
+					if (H_inverse.containsKey(setIdToVisit)) {
+						// the current set is super of some set
+						H_inverse.get(setIdToVisit).forEach(nextToVisit -> {
+							if (!visited.contains(nextToVisit)) {
+								toVisit.add(nextToVisit);
+							}
+						});
+					}
+				}
+
+				visited.forEach(visitedSetId -> {
+					result.addAll(IS.get(visitedSetId));
 				});
 			}
 		} else {
-			// get identity set of the entity
-			logger.trace("Equivalence set of {}:{}", entity, idEntity);
 
 			Set<Long> visited = new HashSet<>();
 			visited.add(idEntity);
-
-			Collection<Long> toVisit = H_inverse.get(idEntity);
-
-			while (toVisit != null && !toVisit.isEmpty()) {
-				// Pick one identitySetToVisit
-				long setIdToVisit = (Long) toVisit.iterator().next();
-				visited.add(setIdToVisit);
-				toVisit.remove(setIdToVisit);
-
-				if (H_inverse.containsKey(setIdToVisit)) {
-					// the current set is super of some set
-					H_inverse.get(setIdToVisit).forEach(nextToVisit -> {
-						if (!visited.contains(nextToVisit)) {
-							toVisit.add(nextToVisit);
+			Set<Long> hierarchyRetrieved = new HashSet<>();
+			for (int i = 0; i < maxDepth; i++) {
+				Set<Long> toAdd = new HashSet<>();
+				Sets.difference(visited, hierarchyRetrieved).forEach(idEquivalentSet -> {
+					if (!hierarchyRetrieved.contains(idEquivalentSet)) {
+						Collection<Long> subSets = H_inverse.get(idEquivalentSet);
+						if (subSets != null) {
+							toAdd.addAll(subSets);
 						}
-					});
-				}
+						hierarchyRetrieved.add(idEquivalentSet);
+					}
+				});
+				visited.addAll(toAdd);
 			}
 
 			visited.forEach(visitedSetId -> {
 				result.addAll(IS.get(visitedSetId));
 			});
+
 		}
 
 		return result;
+	}
+
+	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure) {
+		return getEntitiesImplicityEquivalentToOrSubsumedBy(entity, useClosure, -1);
 	}
 
 	void computeSpecializationClosure() {
@@ -903,7 +931,7 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 	}
 
 	@Override
-	public Long getIDOfEquivalenceSet(CharSequence iri) {
+	public Long getEquivalenceSetIdOfIRI(CharSequence iri) {
 		return ID.get(iri);
 	}
 
@@ -950,6 +978,22 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 	@Override
 	public Collection<Long> getEquivalenceSetIds() {
 		return IS.keySet();
+	}
+
+	@Override
+	public Collection<Long> getTopLevelEquivalenceSets() {
+		Set<Long> result = new HashSet<Long>(IS.keySet());
+		result.removeAll(H.keySet());
+		return result;
+	}
+
+	@Override
+	public Collection<String> getEquivalenceSet(String iri) {
+		Long equivalenceSetId = ID.get(iri);
+		if (equivalenceSetId == null) {
+			return null;
+		}
+		return IS.get(equivalenceSetId);
 	}
 
 }

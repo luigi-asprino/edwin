@@ -3,6 +3,7 @@ package it.cnr.istc.stlab.edwin.inmemory;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.collect.BiMap;
@@ -118,7 +119,7 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 	}
 
 	@Override
-	public Long getIDOfEquivalenceSet(CharSequence iri) {
+	public Long getEquivalenceSetIdOfIRI(CharSequence iri) {
 		return null;
 	}
 
@@ -142,5 +143,59 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 	public Collection<Long> getEquivalenceSetIds() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Collection<Long> getTopLevelEquivalenceSets() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getNumberOfObservedEntities() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getNumberOfEquivalenceSets() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Collection<String> getEquivalenceSet(String iri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure, int maxDepth) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<String> getEquivalentEntities(String iri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
 	}
 }

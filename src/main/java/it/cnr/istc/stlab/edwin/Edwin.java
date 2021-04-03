@@ -12,6 +12,8 @@ import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
+
 public class Edwin {
 
 	private static Logger logger = LoggerFactory.getLogger(Edwin.class);
@@ -57,10 +59,16 @@ public class Edwin {
 		}
 	}
 
-	private static RocksDBBackedEquivalenceSetGraph computeESG(Configuration config) throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException, IOException, RocksDBException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public static EquivalenceSetGraph computeESG(Configuration config) throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException, IOException, RocksDBException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException {
+		return computeESG(EquivalenceSetGraphBuilderParameters.getParameters(config));
+	}
 
-		EquivalenceSetGraphBuilderParameters parameters = EquivalenceSetGraphBuilderParameters.getParameters(config);
+	public static EquivalenceSetGraph computeESG(EquivalenceSetGraphBuilderParameters parameters)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException,
+			RocksDBException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException,
+			SecurityException {
 
 		logger.info(parameters.toString());
 
@@ -79,14 +87,14 @@ public class Edwin {
 
 	}
 
-	public static RocksDBBackedEquivalenceSetGraph computeESG(String configFile) {
+	public static EquivalenceSetGraph computeESG(String configFile) {
 		try {
 
 			logger.info("Edwin v0.0.1");
 
 			Configurations configs = new Configurations();
 			Configuration config = configs.properties(configFile);
-			
+
 			logger.trace("Configurations {}", ConfigurationUtils.toString(config));
 
 			return computeESG(config);
