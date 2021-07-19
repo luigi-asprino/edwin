@@ -7,8 +7,6 @@ import org.apache.jena.sparql.engine.ExecutionContext;
 import org.apache.jena.sparql.engine.QueryIterator;
 import org.apache.jena.sparql.engine.main.OpExecutor;
 import org.apache.jena.sparql.engine.main.OpExecutorFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EdwinOpExecutor extends OpExecutor {
 
@@ -19,7 +17,7 @@ public class EdwinOpExecutor extends OpExecutor {
 		}
 	};
 
-	private static final Logger logger = LoggerFactory.getLogger(EdwinOpExecutor.class);
+//	private static final Logger logger = LoggerFactory.getLogger(EdwinOpExecutor.class);
 
 	public EdwinOpExecutor(ExecutionContext execCxt) {
 		super(execCxt);
