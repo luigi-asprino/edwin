@@ -6,7 +6,7 @@ import org.rdfhdt.hdt.hdt.HDT;
 import org.rdfhdt.hdt.hdt.HDTManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+@Deprecated
 public class InputDataset {
 
 	private static Logger logger = LoggerFactory.getLogger(InputDataset.class);

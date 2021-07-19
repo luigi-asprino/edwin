@@ -1,15 +1,15 @@
 package it.cnr.istc.stlab.edwin;
 
-import org.rdfhdt.hdt.hdt.HDT;
+import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
 
 public interface ObservedEntitiesSelector {
 
-	public void addSpareEntitiesToEquivalenceSetGraph(EquivalenceSetGraph esg, HDT hdt);
+	public void addSpareEntitiesToEquivalenceSetGraph(RocksDBBackedEquivalenceSetGraph esg, Dataset hdt);
 
-	public void addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(EquivalenceSetGraph esg,
-			EquivalenceSetGraph esg_properties, HDT hdt);
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(RocksDBBackedEquivalenceSetGraph esg,
+			RocksDBBackedEquivalenceSetGraph esg_properties, Dataset hdt);
 
-	public void addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(EquivalenceSetGraph esg,
-			EquivalenceSetGraph esg_classes, HDT hdt);
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(RocksDBBackedEquivalenceSetGraph esg,
+			RocksDBBackedEquivalenceSetGraph esg_classes, Dataset hdt);
 
 }

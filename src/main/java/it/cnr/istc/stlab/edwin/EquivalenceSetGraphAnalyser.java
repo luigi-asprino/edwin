@@ -20,9 +20,9 @@ import it.cnr.istc.stlab.rocksmap.RocksMultiMap;
 
 public class EquivalenceSetGraphAnalyser {
 
-	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilder.class);
+	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilderImpl.class);
 
-	public static void countBlankNodes(EquivalenceSetGraph esg) throws IOException {
+	public static void countBlankNodes(RocksDBBackedEquivalenceSetGraph esg) throws IOException {
 
 		logger.info("Counting number of BlankNodes");
 		int processed = 0;
@@ -49,7 +49,7 @@ public class EquivalenceSetGraphAnalyser {
 
 	}
 
-	public static void countObservedEntitiesWithEmptyExtesion(EquivalenceSetGraph esg) {
+	public static void countObservedEntitiesWithEmptyExtesion(RocksDBBackedEquivalenceSetGraph esg) {
 		logger.info("Counting Number of Observed Entities With Empty Extension");
 		long result = 0;
 		long result_without_bn = 0;
@@ -68,7 +68,7 @@ public class EquivalenceSetGraphAnalyser {
 		esg.getStats().oe0_bns = result_without_bn;
 	}
 
-	public static void computeDistributionOfExtensionalSizeOfEquivalenceSets(EquivalenceSetGraph esg) {
+	public static void computeDistributionOfExtensionalSizeOfEquivalenceSets(RocksDBBackedEquivalenceSetGraph esg) {
 
 		logger.info("Computing Statistics on Extensional Size of Equivalence Sets");
 		Map<Long, Long> result = new HashMap<>();
@@ -98,7 +98,7 @@ public class EquivalenceSetGraphAnalyser {
 
 	}
 
-	public static void countEquivalenceSetsWithEmptyExtension(EquivalenceSetGraph esg) {
+	public static void countEquivalenceSetsWithEmptyExtension(RocksDBBackedEquivalenceSetGraph esg) {
 
 		logger.info("Count Equivalence Sets With Empty Extension");
 		long result = 0;
@@ -120,7 +120,7 @@ public class EquivalenceSetGraphAnalyser {
 
 	}
 
-	public static void exportIESDistributionAsTSV(EquivalenceSetGraph esg, String filepathTSV, double untilPercentage)
+	public static void exportIESDistributionAsTSV(RocksDBBackedEquivalenceSetGraph esg, String filepathTSV, double untilPercentage)
 			throws IOException {
 		logger.info("Exporting IES distribution as TSV {}", filepathTSV);
 
@@ -161,7 +161,7 @@ public class EquivalenceSetGraphAnalyser {
 		logger.info("IES distribution exported");
 	}
 
-	public static void countEdges(EquivalenceSetGraph esg) throws IOException {
+	public static void countEdges(RocksDBBackedEquivalenceSetGraph esg) throws IOException {
 
 		logger.info("Counting number of edges");
 
@@ -175,7 +175,7 @@ public class EquivalenceSetGraphAnalyser {
 
 	}
 
-	public static void computeHeight(EquivalenceSetGraph esg) throws IOException {
+	public static void computeHeight(RocksDBBackedEquivalenceSetGraph esg) throws IOException {
 		logger.info("Computing maximum height");
 
 		int processed = 0;
@@ -325,7 +325,7 @@ public class EquivalenceSetGraphAnalyser {
 		return true;
 	}
 
-	public static void countIsoltatedEquivalenceSets(EquivalenceSetGraph esg) throws IOException {
+	public static void countIsoltatedEquivalenceSets(RocksDBBackedEquivalenceSetGraph esg) throws IOException {
 		logger.info("Counting isolated Equivalence Sets");
 
 		int processed = 0;
@@ -360,7 +360,7 @@ public class EquivalenceSetGraphAnalyser {
 
 	}
 
-	public static void countTopLevelEquivalenceSetsAndAssessEmptyNodes(EquivalenceSetGraph esg) throws IOException {
+	public static void countTopLevelEquivalenceSetsAndAssessEmptyNodes(RocksDBBackedEquivalenceSetGraph esg) throws IOException {
 		logger.info("Counting Top Level Equivalence Sets And Assess Empty Nodes");
 
 		int processed = 0;
@@ -438,7 +438,7 @@ public class EquivalenceSetGraphAnalyser {
 
 	}
 
-	public static void countObservedEntitiesInTopLevelEquivalenceSetsWithEmptyExtesion(EquivalenceSetGraph esg)
+	public static void countObservedEntitiesInTopLevelEquivalenceSetsWithEmptyExtesion(RocksDBBackedEquivalenceSetGraph esg)
 			throws IOException {
 
 		logger.info("Counting Observed Entities In Top Level Equivalence Sets With Empty Extesion");

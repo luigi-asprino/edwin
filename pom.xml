@@ -15,95 +15,74 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5.1</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>11</source>
+					<target>11</target>
 				</configuration>
 			</plugin>
 		</plugins>
 
 	</build>
 
-	<properties>
-		<apachecommons.version>2.1.1</apachecommons.version>
-		<apachejena.version>3.16.0</apachejena.version>
-		<commons-beanutils.version>1.9.3</commons-beanutils.version>
-		<orgjson.version>20190722</orgjson.version>
-		<rocksmap.version>0.0.1</rocksmap.version>
-		<rdfhdtapi.version>2.1-SNAPSHOT</rdfhdtapi.version>
-		<sl4j.version>1.7.7</sl4j.version>
-		<lgu.commons.version>0.0.4</lgu.commons.version>
-	</properties>
 
 	<dependencies>
+
+		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>it.cnr.istc.stlab</groupId>
+			<artifactId>lgu.commons.semanticweb</artifactId>
+			<version>0.0.8</version>
+		</dependency>
 
 		<!-- Commons configuration -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-configuration2</artifactId>
-			<version>${apachecommons.version}</version>
+			<version>2.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
-			<version>${commons-beanutils.version}</version>
+			<version>1.9.3</version>
 		</dependency>
 
 		<!-- Logging LOG4J - SLF4J -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${sl4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-			<version>${sl4j.version}</version>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.7</version>
 		</dependency>
 
 		<!-- ROCKS MAP -->
 		<dependency>
 			<groupId>it.cnr.istc.stlab</groupId>
 			<artifactId>rocksmap</artifactId>
-			<version>${rocksmap.version}</version>
+			<version>0.0.3</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-jdk14</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.json/json -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>${orgjson.version}</version>
+			<version>20190722</version>
 		</dependency>
 
-
-		<!-- RDF-HDT API -->
-		<dependency>
-			<groupId>org.rdfhdt</groupId>
-			<artifactId>hdt-java-core</artifactId>
-			<version>${rdfhdtapi.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.jena</groupId>
-					<artifactId>jena-arq</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.jena</groupId>
-					<artifactId>jena-base</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.jena</groupId>
-					<artifactId>jena-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-
-		<!-- Apache Jena -->
-		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>apache-jena-libs</artifactId>
-			<type>pom</type>
-			<version>${apachejena.version}</version>
-		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-api -->
 		<dependency>
@@ -133,11 +112,13 @@
 			<version>3.0.0</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
 		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>jena-fuseki-main</artifactId>
-			<version>3.16.0</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+			<version>4.4</version>
 		</dependency>
+
 
 
 	</dependencies>

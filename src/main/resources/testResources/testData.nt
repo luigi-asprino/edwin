@@ -1,0 +1,10 @@
+### {a,c,d,e} {f,f1} {f2,f3}
+
+<http://example.org/a> <http://example.org/equal> <http://example.org/c> .
+<http://example.org/a> <http://example.org/equal> <http://example.org/d> .
+<http://example.org/e> <http://example.org/equal> <http://example.org/a> .
+<http://example.org/e> <http://example.org/equal> <http://example.org/c> .
+<http://example.org/f> <http://example.org/equal> <http://example.org/f1> .
+<http://example.org/equal2> <http://example.org/subProperty> <http://example.org/equal> .
+<http://example.org/f2> <http://example.org/equal2> <http://example.org/f3> .
+<http://example.org/f2> <http://example.org/equal2> <http://example.org/f3> .

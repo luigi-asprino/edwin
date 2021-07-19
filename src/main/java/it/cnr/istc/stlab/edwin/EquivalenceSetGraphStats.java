@@ -75,21 +75,24 @@ public class EquivalenceSetGraphStats {
 		stats.put(r_label, transformDouble((double) ((double) es / (double) oe)));
 		stats.put(r_bn_label, transformDouble((double) ((double) (es - es_with_bns) / (double) (oe - bns))));
 		stats.put(edges_label, e);
-		stats.put(density, ((double) e / ((double) (es * (es - 1)))));
+		if (e > 0)
+			stats.put(density, ((double) e / ((double) (es * (es - 1)))));
 		stats.put(h_max_label, h_max);
 		stats.put(heightDistribution_label, heightDistribution);
 		// hd
-		long max = Collections.max(heightDistribution.keySet());
-		JSONArray hd = new JSONArray();
-		for (long i = 0; i <= max; i++) {
-			JSONObject point = new JSONObject();
-			if (heightDistribution.containsKey(i)) {
-				point.put("x", i);
-				point.put("y", ((double) heightDistribution.get(i) / (double) es));
-				hd.put(point);
+		if (heightDistribution.size() > 0) {
+			long max = Collections.max(heightDistribution.keySet());
+			JSONArray hd = new JSONArray();
+			for (long i = 0; i <= max; i++) {
+				JSONObject point = new JSONObject();
+				if (heightDistribution.containsKey(i)) {
+					point.put("x", i);
+					point.put("y", ((double) heightDistribution.get(i) / (double) es));
+					hd.put(point);
+				}
 			}
+			stats.put(hd_label, hd);
 		}
-		stats.put(hd_label, hd);
 		stats.put(in_label, in);
 		stats.put(tl_label, tl);
 		stats.put(tlWithoutBNs_label, tlWithoutBNs);
@@ -115,12 +118,12 @@ public class EquivalenceSetGraphStats {
 	public void toTSVFile(String path) throws IOException {
 		FileOutputStream fos = new FileOutputStream(new File(path));
 
-//		fos.write(String.format("%s\t%d\n", neq_label, numberOfEquivalenceTriples).getBytes());
-//		fos.write(String.format("%s\t%d\n", nsub_label, numberOfSpecializationTriples).getBytes());
-//		fos.write(String.format("%s\t%d\n", neqp_label, equivalencePropertiesUsed.size()).getBytes());
-//		fos.write(String.format("%s\t%s\n", eqp_label, equivalencePropertiesUsed.toString()).getBytes());
-//		fos.write(String.format("%s\t%d\n", nsubp_label, specializationPropertiesUsed.size()).getBytes());
-//		fos.write(String.format("%s\t%s\n", subp_label, specializationPropertiesUsed.toString()).getBytes());
+		fos.write(String.format("%s\t%d\n", neq_label, numberOfEquivalenceTriples).getBytes());
+		fos.write(String.format("%s\t%d\n", nsub_label, numberOfSpecializationTriples).getBytes());
+		fos.write(String.format("%s\t%d\n", neqp_label, equivalencePropertiesUsed.size()).getBytes());
+		fos.write(String.format("%s\t%s\n", eqp_label, equivalencePropertiesUsed.toString()).getBytes());
+		fos.write(String.format("%s\t%d\n", nsubp_label, specializationPropertiesUsed.size()).getBytes());
+		fos.write(String.format("%s\t%s\n", subp_label, specializationPropertiesUsed.toString()).getBytes());
 		fos.write(String.format("%s\t%d\n", oe_label, oe).getBytes());
 		fos.write(String.format("%s\t%d\n", oe_bn_label, (oe - bns)).getBytes());
 		fos.write(String.format("%s\t%d\n", bns_label, bns).getBytes());

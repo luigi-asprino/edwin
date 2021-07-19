@@ -4,20 +4,22 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import org.rdfhdt.hdt.hdt.HDT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
+
 
 public interface ExtensionalSizeEstimator {
 
 	public final static Logger logger = LoggerFactory.getLogger(PropertySizeEstimator.class);
 
-	public void estimateObservedEntitiesSize(EquivalenceSetGraph esg, HDT hdt);
+	public void estimateObservedEntitiesSize(RocksDBBackedEquivalenceSetGraph esg, Dataset dataset);
 
-	public void estimateObservedEntitiesSizeUsingESGForProperties(EquivalenceSetGraph esg,
-			EquivalenceSetGraph esg_properties, HDT hdt);
+	public void estimateObservedEntitiesSizeUsingESGForProperties(RocksDBBackedEquivalenceSetGraph esg,
+			RocksDBBackedEquivalenceSetGraph esg_properties, Dataset hdt);
 
-	public default void estimateEquivalenceSetDirectExtensionalSize(EquivalenceSetGraph esg) {
+	public default void estimateEquivalenceSetDirectExtensionalSize(RocksDBBackedEquivalenceSetGraph esg) {
 
 		logger.info("Computing Direct Extensional Size for Equivalence Set Graph");
 
@@ -35,7 +37,7 @@ public interface ExtensionalSizeEstimator {
 
 	}
 
-	public default void estimateEquivalenceSetIndirectExtensionalSize(EquivalenceSetGraph esg) {
+	public default void estimateEquivalenceSetIndirectExtensionalSize(RocksDBBackedEquivalenceSetGraph esg) {
 
 		logger.info("Computing Indirect Extensional Size for Equivalence Set Graph");
 
