@@ -971,7 +971,14 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 
 	@Override
 	public void addSpecialization(CharSequence s, CharSequence o) {
-		// TODO Auto-generated method stub
+
+		Long sId = ID.get(s);
+		Long oId = ID.get(o);
+
+		if (sId != null && oId != null) {
+			H.put(sId, oId);
+			H_inverse.put(oId, sId);
+		}
 
 	}
 
@@ -994,6 +1001,61 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 			return null;
 		}
 		return IS.get(equivalenceSetId);
+	}
+
+	@Override
+	public Set<String> getSuperEquivalenceSets(String iri) {
+		Long equivalenceSetId = ID.get(iri);
+		if (equivalenceSetId == null) {
+			return null;
+		}
+		Set<Long> superEquivalenceSets = Sets.newHashSet(H.get(equivalenceSetId));
+		Set<String> result = new HashSet<>();
+
+		for (Long superEquivalenceSet : superEquivalenceSets) {
+			result.addAll(IS.get(superEquivalenceSet));
+		}
+
+		return result;
+
+	}
+
+	@Override
+	public Set<String> getEntities() {
+		return ID.keySet();
+	}
+
+	@Override
+	public Long getEntityDirectExtensionalSize(String entityURI) {
+		return oe_size.get(entityURI);
+	}
+
+	@Override
+	public Long getEntityIndirectExtensionalSize(String entityURI) {
+		return IES.get(getEquivalenceSetIdOfIRI(entityURI));
+	}
+
+	@Override
+	public Long getEquivalenceSetDirectSize(Long equivalenceSetId) {
+		return DES.get(equivalenceSetId);
+	}
+
+	@Override
+	public Long getEquivalenceSetIndirectSize(Long equivalenceSetId) {
+		return IES.get(equivalenceSetId);
+	}
+
+	@Override
+	public Set<Long> getEmptyEquivalenceSets() {
+		Set<Long> result = new HashSet<>();
+		Iterator<Entry<Long, Long>> it = IES.iterator();
+		while (it.hasNext()) {
+			Entry<Long, Long> entry = it.next();
+			if (entry.getValue() == 0) {
+				result.add(entry.getKey());
+			}
+		}
+		return result;
 	}
 
 }

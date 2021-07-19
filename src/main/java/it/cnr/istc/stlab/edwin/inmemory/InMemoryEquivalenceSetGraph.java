@@ -198,4 +198,45 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public Set<String> getSuperEquivalenceSets(String subCat) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<String> getEntities() {
+		return null;
+	}
+
+	@Override
+	public Long getEntityDirectExtensionalSize(String entityURI) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long getEntityIndirectExtensionalSize(String entityURI) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long getEquivalenceSetDirectSize(Long equivalenceSetId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long getEquivalenceSetIndirectSize(Long equivalenceSetId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Long> getEmptyEquivalenceSets() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

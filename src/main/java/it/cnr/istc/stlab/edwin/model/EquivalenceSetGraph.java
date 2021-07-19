@@ -11,8 +11,16 @@ public interface EquivalenceSetGraph {
 
 	static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraph.class);
 
-	public Collection<String> getEquivalenceSet(Long visitedSetId);
+	public Long getEntityDirectExtensionalSize(String entityURI);
 	
+	public Long getEntityIndirectExtensionalSize(String entityURI);
+
+	public Long getEquivalenceSetDirectSize(Long equivalenceSetId);
+
+	public Long getEquivalenceSetIndirectSize(Long equivalenceSetId);
+
+	public Collection<String> getEquivalenceSet(Long visitedSetId);
+
 	public Collection<String> getEquivalenceSet(String iri);
 
 	public Long getEquivalenceSetIdOfIRI(CharSequence iri);
@@ -37,6 +45,8 @@ public interface EquivalenceSetGraph {
 
 	public CharSequence getEquivalencePropertyToObserve();
 
+	public Set<String> getEntities();
+
 	public CharSequence getSpecializationPropertyToObserve();
 
 	public CharSequence getEquivalencePropertyForProperties();
@@ -46,15 +56,17 @@ public interface EquivalenceSetGraph {
 	public void addSpecialization(CharSequence s, CharSequence o);
 
 	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure);
-	
+
 	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure, int maxDepth);
 
 	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity);
 
 	public Collection<Long> getEquivalenceSetIds();
+	
+	public Set<Long> getEmptyEquivalenceSets();
 
 	public int getNumberOfObservedEntities();
-	
+
 	public int getNumberOfEquivalenceSets();
 
 	public default Set<CharSequence> getEquivalentOrSubsumedEntities(CharSequence entity) {
@@ -111,7 +123,9 @@ public interface EquivalenceSetGraph {
 		}
 		System.out.println("---------");
 	}
-	
+
 	public void close();
+
+	public Set<String> getSuperEquivalenceSets(String subCat);
 
 }
