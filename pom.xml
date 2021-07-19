@@ -34,6 +34,7 @@
 			<scope>test</scope>
 		</dependency>
 
+
 		<dependency>
 			<groupId>it.cnr.istc.stlab</groupId>
 			<artifactId>lgu.commons.semanticweb</artifactId>
