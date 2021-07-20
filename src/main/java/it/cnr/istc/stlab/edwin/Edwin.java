@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
+import it.cnr.istc.stlab.edwin.rocksdb.RocksDBEquivalenceSetGraphBuilderImpl;
+import it.cnr.istc.stlab.edwin.rocksdb.RocksDBBackedEquivalenceSetGraph;
 
 public class Edwin {
 
@@ -72,7 +74,7 @@ public class Edwin {
 
 		logger.info(parameters.toString());
 
-		EquivalenceSetGraphBuilderImpl esgb = new EquivalenceSetGraphBuilderImpl(parameters.getDatasetPaths());
+		RocksDBEquivalenceSetGraphBuilderImpl esgb = new RocksDBEquivalenceSetGraphBuilderImpl(parameters.getDatasetPaths());
 		RocksDBBackedEquivalenceSetGraph esg = esgb.build(parameters);
 
 		esg.printSimpleStats();

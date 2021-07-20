@@ -10,15 +10,15 @@ import org.rdfhdt.hdt.triples.TripleString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
-
 
 public class ClassSelector implements ObservedEntitiesSelector {
 
 	private static Logger logger = LoggerFactory.getLogger(ClassSelector.class);
 
-	public void addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(RocksDBBackedEquivalenceSetGraph esg,
-			RocksDBBackedEquivalenceSetGraph esg_properties, Dataset dataset) {
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(EquivalenceSetGraph esg,
+			EquivalenceSetGraph esg_properties, Dataset dataset) {
 
 		logger.info("Adding spare entities to ESG using ESG for properties.");
 
@@ -52,9 +52,11 @@ public class ClassSelector implements ObservedEntitiesSelector {
 					processedTriples++;
 					TripleString ts = its_type.next();
 					if (!ts.getObject().toString().equals(lastClass)) {
-						if (!esg.ID.containsKey(ts.getObject().toString())) {
-							esg.ID.put(ts.getObject().toString(), ++id);
-							esg.IS.put(id, ts.getObject().toString());
+//						if (!esg.ID.containsKey(ts.getObject().toString())) {
+						if (!esg.containsEntity(ts.getObject().toString())) {
+//							esg.ID.put(ts.getObject().toString(), ++id);
+//							esg.IS.put(id, ts.getObject().toString());
+							esg.createSingleEntityEquivalenceSet(ts.getObject().toString(), ++id);
 							spareEntitiesAdded++;
 						}
 						lastClass = ts.getObject().toString();
@@ -77,13 +79,13 @@ public class ClassSelector implements ObservedEntitiesSelector {
 	}
 
 	@Override
-	public void addSpareEntitiesToEquivalenceSetGraph(RocksDBBackedEquivalenceSetGraph esg_classes, Dataset d) {
+	public void addSpareEntitiesToEquivalenceSetGraph(EquivalenceSetGraph esg_classes, Dataset d) {
 
 	}
 
 	@Override
-	public void addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(RocksDBBackedEquivalenceSetGraph esg,
-			RocksDBBackedEquivalenceSetGraph esg_classes, Dataset hdt) {
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(EquivalenceSetGraph esg,
+			EquivalenceSetGraph esg_classes, Dataset hdt) {
 
 	}
 

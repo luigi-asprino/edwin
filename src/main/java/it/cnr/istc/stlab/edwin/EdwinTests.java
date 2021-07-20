@@ -12,6 +12,9 @@ import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
+import it.cnr.istc.stlab.edwin.rocksdb.RocksDBBackedEquivalenceSetGraph;
+
 public class EdwinTests {
 
 	private static Logger logger = LoggerFactory.getLogger(Edwin.class);
@@ -86,11 +89,13 @@ public class EdwinTests {
 
 	private static void testStats(Configuration config) throws RocksDBException, IOException {
 
-		RocksDBBackedEquivalenceSetGraph esg = EquivalenceSetGraphLoader
+		EquivalenceSetGraph esg = EquivalenceSetGraphLoader
 				.loadEquivalenceSetGraphFromFolder(config.getString("esgFolder"));
 //
-		esg.getStats().oe = esg.ID.keySet().size();
-		esg.getStats().es = esg.IS.keySet().size();
+//		esg.getStats().oe = esg.ID.keySet().size();
+		esg.getStats().oe = esg.getNumberOfObservedEntities();
+//		esg.getStats().es = esg.IS.keySet().size();
+		esg.getStats().es = esg.getNumberOfEquivalenceSets();
 
 		EquivalenceSetGraphAnalyser.countBlankNodes(esg);
 		EquivalenceSetGraphAnalyser.countEdges(esg);
@@ -125,8 +130,11 @@ public class EdwinTests {
 
 		RocksDBBackedEquivalenceSetGraph esg = EquivalenceSetGraphLoader.loadEquivalenceSetGraphFromFolder(esgFolder);
 
-		esg.getStats().oe = esg.ID.keySet().size();
-		esg.getStats().es = esg.IS.keySet().size();
+//		esg.getStats().oe = esg.ID.keySet().size();
+//		esg.getStats().es = esg.IS.keySet().size();
+
+		esg.getStats().oe = esg.getNumberOfObservedEntities();
+		esg.getStats().es = esg.getNumberOfEquivalenceSets();
 
 		EquivalenceSetGraphAnalyser.countBlankNodes(esg);
 		EquivalenceSetGraphAnalyser.countEdges(esg);
@@ -197,10 +205,11 @@ public class EdwinTests {
 		System.out.println("http://www.w3.org/2008/05/skos#broaderTransitive");
 		System.out.println(esg.getSizeOfEntity("http://www.w3.org/2008/05/skos#broaderTransitive"));
 
-		esg.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/2008/05/skos#broaderTransitive").forEach(i -> {
-			System.out.println(i);
-			System.out.println(esg.getSizeOfEntity(i));
-		});
+		esg.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/2008/05/skos#broaderTransitive")
+				.forEach(i -> {
+					System.out.println(i);
+					System.out.println(esg.getSizeOfEntity(i));
+				});
 
 	}
 }

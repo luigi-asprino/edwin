@@ -10,20 +10,21 @@ import org.rdfhdt.hdt.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
-
 
 public class PropertySizeEstimator implements ExtensionalSizeEstimator {
 
 	private static Logger logger = LoggerFactory.getLogger(PropertySizeEstimator.class);
 
 	@Override
-	public void estimateObservedEntitiesSize(RocksDBBackedEquivalenceSetGraph esg, Dataset dataset) {
+	public void estimateObservedEntitiesSize(EquivalenceSetGraph esg, Dataset dataset) {
 		logger.info("Computing extensional size of observed properties");
 
 		long processed = 0;
 		long toProcess = esg.getNumberOfObservedEntities();
-		Iterator<Entry<String, Long>> it = esg.ID.iterator();
+//		Iterator<Entry<String, Long>> it = esg.ID.iterator();
+		Iterator<Entry<String, Long>> it = esg.entityIterator();
 		long start = System.currentTimeMillis();
 		long current = System.currentTimeMillis();
 		long elapsed = 0L;
@@ -48,15 +49,16 @@ public class PropertySizeEstimator implements ExtensionalSizeEstimator {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			esg.oe_size.put(entry.getKey(), size);
+//			esg.oe_size.put(entry.getKey(), size);
+			esg.setObservedEntitySize(entry.getKey(), size);
 		}
 
 		logger.info("Extensional size of observed properties computed!");
 
 	}
 
-	public void estimateObservedEntitiesSizeUsingESGForProperties(RocksDBBackedEquivalenceSetGraph esg,
-			RocksDBBackedEquivalenceSetGraph esg_properties, Dataset hdt) {
+	public void estimateObservedEntitiesSizeUsingESGForProperties(EquivalenceSetGraph esg,
+			EquivalenceSetGraph esg_properties, Dataset hdt) {
 
 	}
 

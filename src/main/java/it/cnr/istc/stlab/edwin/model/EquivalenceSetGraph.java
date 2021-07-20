@@ -2,14 +2,38 @@ package it.cnr.istc.stlab.edwin.model;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.cnr.istc.stlab.edwin.EquivalenceSetGraphStats;
+
 public interface EquivalenceSetGraph {
 
 	static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraph.class);
+	
+	public Long getMaxId();
+	
+	public boolean containsEntity(String uri);
+	
+	public void createSingleEntityEquivalenceSet(String uri, Long id);
+	/*
+	 * esg.ID.put(ts.getSubject().toString(), ++id);
+								esg.IS.put(id, ts.getSubject().toString());
+	 */
+
+	public Collection<Long> getIndirectlySubsumedEquivalenceSets(Long es);
+	
+	public void setEquivalenceSetIndirectSize(Long esId, Long size);
+
+	public void setEquivalenceSetDirectSize(Long esId, Long size);
+	
+	public Long getOESize(String entityURI);
+	
+	public Iterator<Entry<Long, Collection<String>>> equivalenceSetsIterator();
 
 	public Long getEntityDirectExtensionalSize(String entityURI);
 	
@@ -25,7 +49,7 @@ public interface EquivalenceSetGraph {
 
 	public Long getEquivalenceSetIdOfIRI(CharSequence iri);
 
-	public Collection<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID);
+	public Set<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID);
 
 	public Collection<Long> getSuperEquivalenceSets(Long equivalenceSetID);
 
@@ -61,7 +85,7 @@ public interface EquivalenceSetGraph {
 
 	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity);
 
-	public Collection<Long> getEquivalenceSetIds();
+	public Set<Long> getEquivalenceSetIds();
 	
 	public Set<Long> getEmptyEquivalenceSets();
 
@@ -127,5 +151,31 @@ public interface EquivalenceSetGraph {
 	public void close();
 
 	public Set<String> getSuperEquivalenceSets(String subCat);
+
+	public Iterator<Entry<String, Long>> entityIterator();
+
+	public void setObservedEntitySize(String key, long size);
+
+	public EquivalenceSetGraphStats getStats();
+
+	public Iterator<Entry<String, Long>> observedEntitySizeIterator();
+
+	public Iterator<Entry<Long, Long>> indirectESGSizeIterator();
+
+	public Iterator<Entry<Long, Collection<Long>>> subOfRelationsIterator();
+
+	public Set<Long> getHInverseKeys();
+
+	public Set<Long> getDirectlySubsumedEquivalenceSets(Long key);
+
+	public boolean hasSuperEquivalenceSets(Long key);
+
+	public boolean hasSubEquivalenceSets(Long key);
+
+	public boolean hasIndirectEquivalenceSetSize(Long key);
+
+	public boolean hasObservedEntitySize(String uri);
+
+	public Long getObservedEntitySize(String uri);
 
 }

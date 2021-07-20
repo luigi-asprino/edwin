@@ -1,4 +1,4 @@
-package it.cnr.istc.stlab.edwin;
+package it.cnr.istc.stlab.edwin.rocksdb;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,11 +16,14 @@ import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.cnr.istc.stlab.edwin.EquivalenceSetGraphAnalyser;
+import it.cnr.istc.stlab.edwin.EquivalenceSetGraphBuilderParameters;
+import it.cnr.istc.stlab.edwin.Utils;
 import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
 
-public class EquivalenceSetGraphBuilderImpl {
+public class RocksDBEquivalenceSetGraphBuilderImpl {
 
-	private static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraphBuilderImpl.class);
+	private static Logger logger = LoggerFactory.getLogger(RocksDBEquivalenceSetGraphBuilderImpl.class);
 	private long lastIdentitySetId = 0;
 	private long numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples = 0L;
 	protected Set<String> equivalencePropertiesToProcess = new HashSet<>(),
@@ -32,11 +35,11 @@ public class EquivalenceSetGraphBuilderImpl {
 	private boolean updatePropertySetsUsingGraph;
 	private RocksDBBackedEquivalenceSetGraph esgProperties;
 
-	public EquivalenceSetGraphBuilderImpl(String[] filelist) throws IOException {
+	public RocksDBEquivalenceSetGraphBuilderImpl(String[] filelist) throws IOException {
 		dataset = Dataset.getInstanceFromFileList(Lists.newArrayList(filelist));
 	}
 
-	public EquivalenceSetGraphBuilderImpl(List<String> filelist) throws IOException {
+	public RocksDBEquivalenceSetGraphBuilderImpl(List<String> filelist) throws IOException {
 		dataset = Dataset.getInstanceFromFileList(filelist);
 	}
 
@@ -89,7 +92,7 @@ public class EquivalenceSetGraphBuilderImpl {
 			esgbp.setComputeEstimation(false);
 			esgbp.setExportInRDFFormat(false);
 			esgbp.setComputeStats(false);
-			EquivalenceSetGraphBuilderImpl builder = new EquivalenceSetGraphBuilderImpl(this.dataset.getFiles());
+			RocksDBEquivalenceSetGraphBuilderImpl builder = new RocksDBEquivalenceSetGraphBuilderImpl(this.dataset.getFiles());
 			esgProperties = builder.build(esgbp);
 			logger.trace("ESG for properties computed");
 		}

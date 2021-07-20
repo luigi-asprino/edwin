@@ -14,15 +14,15 @@ import org.rdfhdt.hdt.triples.TripleString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
 import it.cnr.istc.stlab.lgu.commons.semanticweb.streams.StreamRDFUtils;
-
 
 public class PropertiesSelector implements ObservedEntitiesSelector {
 
 	private static Logger logger = LoggerFactory.getLogger(PropertiesSelector.class);
 
-	public void addSpareEntitiesToEquivalenceSetGraph(RocksDBBackedEquivalenceSetGraph esg_properties, Dataset dataset) {
+	public void addSpareEntitiesToEquivalenceSetGraph(EquivalenceSetGraph esg_properties, Dataset dataset) {
 
 		logger.info("Adding spare properties");
 
@@ -41,9 +41,13 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 					logger.info("Number of predicates processed: {}/{}", predicatesProcessed, numberOfPredicates);
 				}
 
-				if (!esg_properties.ID.containsKey(predicate)) {
-					esg_properties.ID.put(predicate.toString(), ++id);
-					esg_properties.IS.put(id, predicate.toString());
+//				if (!esg_properties.ID.containsKey(predicate)) {
+//					esg_properties.ID.put(predicate.toString(), ++id);
+//					esg_properties.IS.put(id, predicate.toString());
+//				}
+
+				if (!esg_properties.containsEntity(predicate.toString())) {
+					esg_properties.createSingleEntityEquivalenceSet(predicate.toString(), ++id);
 				}
 				predicatesProcessed++;
 			}
@@ -54,9 +58,13 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 					Iterator<Triple> itsw = StreamRDFUtils.createIteratorTripleFromFile(f);
 					while (it.hasNext()) {
 						String predicate = itsw.next().toString();
-						if (!esg_properties.ID.containsKey(predicate)) {
-							esg_properties.ID.put(predicate.toString(), ++id);
-							esg_properties.IS.put(id, predicate.toString());
+//						if (!esg_properties.ID.containsKey(predicate)) {
+//							esg_properties.ID.put(predicate.toString(), ++id);
+//							esg_properties.IS.put(id, predicate.toString());
+//						}
+
+						if (!esg_properties.containsEntity(predicate.toString())) {
+							esg_properties.createSingleEntityEquivalenceSet(predicate.toLowerCase(), ++id);
 						}
 						predicatesProcessed++;
 
@@ -70,8 +78,8 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 
 	}
 
-	public void addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(RocksDBBackedEquivalenceSetGraph esg_properties,
-			RocksDBBackedEquivalenceSetGraph esg_classes, Dataset dataset) {
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForClasses(EquivalenceSetGraph esg_properties,
+			EquivalenceSetGraph esg_classes, Dataset dataset) {
 
 		long id = esg_properties.getMaxId();
 
@@ -81,8 +89,8 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 		Set<String> propertyClasses = new HashSet<>();
 		propertyClasses.add("http://www.w3.org/1999/02/22-rdf-syntax-ns#Property");
 		if (esg_classes != null) {
-			propertyClasses.addAll(
-					esg_classes.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"));
+			propertyClasses.addAll(esg_classes.getEntitiesImplicityEquivalentToOrSubsumedBy(
+					"http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"));
 		}
 		for (String typePredicate : typePredicates) {
 			for (String property : propertyClasses) {
@@ -90,9 +98,13 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 					Iterator<TripleString> its = dataset.search("", typePredicate, property);
 					while (its.hasNext()) {
 						TripleString ts = its.next();
-						if (!esg_properties.ID.containsKey(ts.getSubject().toString())) {
-							esg_properties.ID.put(ts.getSubject().toString(), ++id);
-							esg_properties.IS.put(id, ts.getSubject().toString());
+//						if (!esg_properties.ID.containsKey(ts.getSubject().toString())) {
+//							esg_properties.ID.put(ts.getSubject().toString(), ++id);
+//							esg_properties.IS.put(id, ts.getSubject().toString());
+//						}
+
+						if (!esg_properties.containsEntity(ts.getSubject().toString())) {
+							esg_properties.createSingleEntityEquivalenceSet(ts.getSubject().toString(), ++id);
 						}
 					}
 				} catch (NotFoundException e) {
@@ -117,17 +129,24 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 					Iterator<TripleString> its = dataset.search("", domainPredicate, property);
 					while (its.hasNext()) {
 						TripleString ts = its.next();
-						if (!esg_properties.ID.containsKey(ts.getSubject().toString())) {
-							esg_properties.ID.put(ts.getSubject().toString(), ++id);
-							esg_properties.IS.put(id, ts.getSubject().toString());
+//						if (!esg_properties.ID.containsKey(ts.getSubject().toString())) {
+//							esg_properties.ID.put(ts.getSubject().toString(), ++id);
+//							esg_properties.IS.put(id, ts.getSubject().toString());
+//						}
+
+						if (!esg_properties.containsEntity(ts.getSubject().toString())) {
+							esg_properties.createSingleEntityEquivalenceSet(ts.getSubject().toString(), ++id);
 						}
 
 						Iterator<TripleString> its2 = dataset.search("", ts.getSubject(), "");
 						while (its2.hasNext()) {
 							TripleString ts2 = its2.next();
-							if (!esg_properties.ID.containsKey(ts2.getSubject().toString())) {
-								esg_properties.ID.put(ts2.getSubject().toString(), ++id);
-								esg_properties.IS.put(id, ts2.getSubject().toString());
+//							if (!esg_properties.ID.containsKey(ts2.getSubject().toString())) {
+//								esg_properties.ID.put(ts2.getSubject().toString(), ++id);
+//								esg_properties.IS.put(id, ts2.getSubject().toString());
+//							}
+							if (!esg_properties.containsEntity(ts2.getSubject().toString())) {
+								esg_properties.createSingleEntityEquivalenceSet(ts2.getSubject().toString(), ++id);
 							}
 						}
 					}
@@ -152,17 +171,27 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 					Iterator<TripleString> its = dataset.search("", rangePredicate, property);
 					while (its.hasNext()) {
 						TripleString ts = its.next();
-						if (!esg_properties.ID.containsKey(ts.getSubject().toString())) {
-							esg_properties.ID.put(ts.getSubject().toString(), ++id);
-							esg_properties.IS.put(id, ts.getSubject().toString());
+//						if (!esg_properties.ID.containsKey(ts.getSubject().toString())) {
+//							esg_properties.ID.put(ts.getSubject().toString(), ++id);
+//							esg_properties.IS.put(id, ts.getSubject().toString());
+//						}
+
+						if (!esg_properties.containsEntity(ts.getSubject().toString())) {
+							esg_properties.createSingleEntityEquivalenceSet(ts.getSubject().toString(), ++id);
 						}
 
 						Iterator<TripleString> its2 = dataset.search("", ts.getSubject(), "");
 						while (its2.hasNext()) {
 							TripleString ts2 = its2.next();
-							if (!esg_properties.ID.containsKey(ts2.getObject().toString())) {
-								esg_properties.ID.put(ts2.getObject().toString(), ++id);
-								esg_properties.IS.put(id, ts2.getObject().toString());
+//							if (!esg_properties.ID.containsKey(ts2.getObject().toString())) {
+//								esg_properties.ID.put(ts2.getObject().toString(), ++id);
+//								esg_properties.IS.put(id, ts2.getObject().toString());
+//							}
+
+							if (!esg_properties.containsEntity(ts2.getObject().toString())) {
+//								esg_properties.ID.put(ts2.getObject().toString(), ++id);
+//								esg_properties.IS.put(id, ts2.getObject().toString());
+								esg_properties.createSingleEntityEquivalenceSet(ts2.getObject().toString(), ++id);
 							}
 						}
 					}
@@ -178,8 +207,8 @@ public class PropertiesSelector implements ObservedEntitiesSelector {
 	}
 
 	@Override
-	public void addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(RocksDBBackedEquivalenceSetGraph esg,
-			RocksDBBackedEquivalenceSetGraph esg_properties, Dataset hdt) {
+	public void addSpareEntitiesToEquivalentSetGraphUsignESGForProperties(EquivalenceSetGraph esg,
+			EquivalenceSetGraph esg_properties, Dataset hdt) {
 		// TODO Auto-generated method stub
 
 	}

@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.apache.commons.configuration2.Configuration;
 
+import it.cnr.istc.stlab.edwin.rocksdb.RocksDBBackedEquivalenceSetGraph;
+
 public class EquivalenceSetGraphBuilderParameters {
 
 	private String esgFolder, esgName, esgBaseURI;

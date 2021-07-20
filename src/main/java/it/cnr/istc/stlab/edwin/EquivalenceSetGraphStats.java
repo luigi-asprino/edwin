@@ -14,14 +14,14 @@ import org.json.JSONObject;
 
 public class EquivalenceSetGraphStats {
 
-	long numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples = 0L, oe = 0L, es = 0L, bns = 0L,
+	public long numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples = 0L, oe = 0L, es = 0L, bns = 0L,
 			es_with_bns = 0L, e = 0L, h_max = 0L, in = 0L, tl = 0L, tlWithoutBNs = 0L, oeInTL = 0L,
 			oeInTLWithoutBNs = 0L, oe0 = 0L, oe0_bns = 0L, es0 = 0L, es0bns = 0L, tl0 = 0, tl0WithoutBNs = 0L,
 			oeInTL0 = 0, oeInTl0WithoutBN = 0;
-	Set<String> equivalencePropertiesUsed = new HashSet<>(), specializationPropertiesUsed = new HashSet<>();
-	Map<Long, Long> heightDistribution = new HashMap<>();
-	Map<Long, Long> indirectExtensionalSizeDistribution = new HashMap<>();
-	Map<Long, Long> iesPerThreshold = new HashMap<>();
+	public Set<String> equivalencePropertiesUsed = new HashSet<>(), specializationPropertiesUsed = new HashSet<>();
+	public Map<Long, Long> heightDistribution = new HashMap<>();
+	public Map<Long, Long> indirectExtensionalSizeDistribution = new HashMap<>();
+	public Map<Long, Long> iesPerThreshold = new HashMap<>();
 	private final String neq_label = "Number of Equivalence Triples", nsub_label = "Number of Specialization Triples",
 			eqp_label = "Equivalence Properties Used", subp_label = "Specialization Properties Used",
 			neqp_label = "Number of Equivalence Properties Used",
@@ -48,11 +48,11 @@ public class EquivalenceSetGraphStats {
 			tl0WithoutBNs_label = "Number of Observed Entities Without BNs in TL0", ies_n = "IES(n)",
 			density = "Density";
 
-	EquivalenceSetGraphStats() {
+	public EquivalenceSetGraphStats() {
 
 	}
 
-	String getTextualFileFormat() {
+	public String getTextualFileFormat() {
 
 		return getJSONObject().toString();
 

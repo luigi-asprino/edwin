@@ -2,7 +2,9 @@ package it.cnr.istc.stlab.edwin.inmemory;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -11,6 +13,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 
+import it.cnr.istc.stlab.edwin.EquivalenceSetGraphStats;
 import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 
 public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
@@ -123,24 +126,12 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 		return null;
 	}
 
-	@Override
-	public Collection<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	Long getNewEquivalenceSetID() {
 		return nextESIDToAssing.getAndIncrement();
 	}
 
 	@Override
 	public Collection<Long> getSuperEquivalenceSets(Long equivalenceSetID) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Collection<Long> getEquivalenceSetIds() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -196,7 +187,7 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -236,6 +227,144 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 
 	@Override
 	public Set<Long> getEmptyEquivalenceSets() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long getMaxId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean containsEntity(String uri) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void createSingleEntityEquivalenceSet(String uri, Long id) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Collection<Long> getIndirectlySubsumedEquivalenceSets(Long es) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setEquivalenceSetIndirectSize(Long esId, Long size) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setEquivalenceSetDirectSize(Long esId, Long size) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Long getOESize(String entityURI) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<Entry<Long, Collection<String>>> equivalenceSetsIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Long> getEquivalenceSetIds() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<Entry<String, Long>> entityIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setObservedEntitySize(String key, long size) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public EquivalenceSetGraphStats getStats() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<Entry<String, Long>> observedEntitySizeIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<Entry<Long, Long>> indirectESGSizeIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<Entry<Long, Collection<Long>>> subOfRelationsIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Long> getHInverseKeys() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Long> getDirectlySubsumedEquivalenceSets(Long key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasSuperEquivalenceSets(Long key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasSubEquivalenceSets(Long key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasIndirectEquivalenceSetSize(Long key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasObservedEntitySize(String uri) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Long getObservedEntitySize(String uri) {
 		// TODO Auto-generated method stub
 		return null;
 	}

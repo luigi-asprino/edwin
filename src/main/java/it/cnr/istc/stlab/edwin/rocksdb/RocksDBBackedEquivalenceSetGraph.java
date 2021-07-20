@@ -1,4 +1,4 @@
-package it.cnr.istc.stlab.edwin;
+package it.cnr.istc.stlab.edwin.rocksdb;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,12 +41,15 @@ import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.cnr.istc.stlab.edwin.EquivalenceSetGraphOntology;
+import it.cnr.istc.stlab.edwin.EquivalenceSetGraphStats;
+import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 import it.cnr.istc.stlab.rocksmap.RocksMap;
 import it.cnr.istc.stlab.rocksmap.RocksMultiMap;
 import it.cnr.istc.stlab.rocksmap.transformer.LongRocksTransformer;
 import it.cnr.istc.stlab.rocksmap.transformer.StringRocksTransformer;
 
-public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph {
+public final class RocksDBBackedEquivalenceSetGraph implements EquivalenceSetGraph {
 
 	RocksMap<String, Long> ID;
 	RocksMultiMap<Long, String> IS;
@@ -65,7 +68,7 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 
 	private EquivalenceSetGraphStats stats = new EquivalenceSetGraphStats();
 
-	RocksDBBackedEquivalenceSetGraph(String esgFolder) throws RocksDBException {
+	public RocksDBBackedEquivalenceSetGraph(String esgFolder) throws RocksDBException {
 		this.esgFolder = esgFolder;
 
 		ID = new RocksMap<>(esgFolder + "/ID", new StringRocksTransformer(), new LongRocksTransformer());
@@ -261,7 +264,8 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 		return IS.keySet().size();
 	}
 
-	public long getMaxId() {
+	@Override
+	public Long getMaxId() {
 		long max = 0;
 		for (Long l : IS.keySet()) {
 			if (l > max) {
@@ -936,8 +940,8 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 	}
 
 	@Override
-	public Collection<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID) {
-		return H_inverse.get(equivalenceSetID);
+	public Set<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID) {
+		return new HashSet<>(H_inverse.get(equivalenceSetID));
 	}
 
 	@Override
@@ -983,7 +987,7 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 	}
 
 	@Override
-	public Collection<Long> getEquivalenceSetIds() {
+	public Set<Long> getEquivalenceSetIds() {
 		return IS.keySet();
 	}
 
@@ -1056,6 +1060,120 @@ public final class RocksDBBackedEquivalenceSetGraph implements it.cnr.istc.stlab
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public boolean containsEntity(String uri) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void createSingleEntityEquivalenceSet(String uri, Long id) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Collection<Long> getIndirectlySubsumedEquivalenceSets(Long es) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setEquivalenceSetIndirectSize(Long esId, Long size) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setEquivalenceSetDirectSize(Long esId, Long size) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Long getOESize(String entityURI) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<Entry<Long, Collection<String>>> equivalenceSetsIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<Entry<String, Long>> entityIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setObservedEntitySize(String key, long size) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Iterator<Entry<String, Long>> observedEntitySizeIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<Entry<Long, Long>> indirectESGSizeIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterator<Entry<Long, Collection<Long>>> subOfRelationsIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Long> getHInverseKeys() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Long> getDirectlySubsumedEquivalenceSets(Long key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasSuperEquivalenceSets(Long key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasSubEquivalenceSets(Long key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasIndirectEquivalenceSetSize(Long key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean hasObservedEntitySize(String uri) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Long getObservedEntitySize(String uri) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

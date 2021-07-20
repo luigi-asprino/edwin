@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.compress.compressors.CompressorException;
@@ -11,6 +12,7 @@ import org.rdfhdt.hdt.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
 
 
@@ -19,11 +21,11 @@ public class ClassSizeEstimator implements ExtensionalSizeEstimator {
 	private static Logger logger = LoggerFactory.getLogger(ClassSizeEstimator.class);
 
 	@Override
-	public void estimateObservedEntitiesSize(RocksDBBackedEquivalenceSetGraph esg, Dataset dataset) {
+	public void estimateObservedEntitiesSize(EquivalenceSetGraph esg, Dataset dataset) {
 
 	}
 
-	public void estimateObservedEntitiesSizeUsingESGForProperties(RocksDBBackedEquivalenceSetGraph esg_classes, RocksDBBackedEquivalenceSetGraph esg_properties,
+	public void estimateObservedEntitiesSizeUsingESGForProperties(EquivalenceSetGraph esg_classes, EquivalenceSetGraph esg_properties,
 			Dataset dataset) {
 
 		logger.info("Computing extensional size of classes");
@@ -31,7 +33,8 @@ public class ClassSizeEstimator implements ExtensionalSizeEstimator {
 		Set<String> typePredicates = esg_properties
 				.getEntitiesImplicityEquivalentToOrSubsumedBy("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 
-		Iterator<Map.Entry<String, Long>> it = esg_classes.ID.iterator();
+//		Iterator<Entry<String, Long>> it = esg_classes.ID.iterator();
+		Iterator<Entry<String, Long>> it = esg_classes.entityIterator();
 
 		long processed = 0;
 		long toProcess = esg_classes.getNumberOfObservedEntities();
@@ -62,7 +65,9 @@ public class ClassSizeEstimator implements ExtensionalSizeEstimator {
 				}
 			}
 
-			esg_classes.oe_size.put(entry.getKey(), size);
+//			esg_classes.oe_size.put(entry.getKey(), size);
+			esg_classes.setObservedEntitySize(entry.getKey(), size);
+			
 			processed++;
 		}
 
