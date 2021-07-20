@@ -20,12 +20,9 @@ public interface EquivalenceSetGraph {
 	public boolean containsEntity(String uri);
 	
 	public void createSingleEntityEquivalenceSet(String uri, Long id);
-	/*
-	 * esg.ID.put(ts.getSubject().toString(), ++id);
-								esg.IS.put(id, ts.getSubject().toString());
-	 */
+	
 
-	public Collection<Long> getIndirectlySubsumedEquivalenceSets(Long es);
+	public Set<Long> getIndirectlySubsumedEquivalenceSets(Long es);
 	
 	public void setEquivalenceSetIndirectSize(Long esId, Long size);
 
@@ -43,41 +40,41 @@ public interface EquivalenceSetGraph {
 
 	public Long getEquivalenceSetIndirectSize(Long equivalenceSetId);
 
-	public Collection<String> getEquivalenceSet(Long visitedSetId);
+	public Set<String> getEquivalenceSet(Long visitedSetId);
 
-	public Collection<String> getEquivalenceSet(String iri);
+	public Set<String> getEquivalenceSet(String iri);
 
 	public Long getEquivalenceSetIdOfIRI(CharSequence iri);
 
 	public Set<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID);
 
-	public Collection<Long> getSuperEquivalenceSets(Long equivalenceSetID);
+	public Set<Long> getSuperEquivalenceSets(Long equivalenceSetID);
 
 	public Set<String> getEquivalentEntities(String iri);
 
-	public boolean hasEquivalenceSet(CharSequence iri);
+	public boolean hasEquivalenceSet(String iri);
 
-	public void setEquivalencePropertyToObserve(CharSequence iri);
+	public void setEquivalencePropertyToObserve(String iri);
 
-	public void setSpecializationPropertyToObserve(CharSequence iri);
+	public void setSpecializationPropertyToObserve(String iri);
 
-	public void setEquivalencePropertyForProperties(CharSequence iri);
+	public void setEquivalencePropertyForProperties(String iri);
 
-	public void setSpecializationPropertyForProperties(CharSequence iri);
+	public void setSpecializationPropertyForProperties(String iri);
 
-	public Collection<Long> getTopLevelEquivalenceSets();
+	public Set<Long> getTopLevelEquivalenceSets();
 
-	public CharSequence getEquivalencePropertyToObserve();
+	public String getEquivalencePropertyToObserve();
 
 	public Set<String> getEntities();
 
-	public CharSequence getSpecializationPropertyToObserve();
+	public String getSpecializationPropertyToObserve();
 
-	public CharSequence getEquivalencePropertyForProperties();
+	public String getEquivalencePropertyForProperties();
 
-	public CharSequence getSpecializationPropertyForProperties();
+	public String getSpecializationPropertyForProperties();
 
-	public void addSpecialization(CharSequence s, CharSequence o);
+	public void addSpecialization(String s, String o);
 
 	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure);
 
@@ -89,11 +86,11 @@ public interface EquivalenceSetGraph {
 	
 	public Set<Long> getEmptyEquivalenceSets();
 
-	public int getNumberOfObservedEntities();
+	public Long getNumberOfObservedEntities();
 
-	public int getNumberOfEquivalenceSets();
+	public Long getNumberOfEquivalenceSets();
 
-	public default Set<CharSequence> getEquivalentOrSubsumedEntities(CharSequence entity) {
+	public default Set<CharSequence> getEquivalentOrSubsumedEntities(String entity) {
 		if (entity == null) {
 			return new HashSet<>();
 		}

@@ -30,7 +30,7 @@ public class EquivalenceSetGraphAnalyser {
 
 		int numberOfBlankNodes = 0;
 //		int toProcess = esg.ID.keySet().size();
-		int toProcess = esg.getNumberOfObservedEntities();
+		long toProcess = esg.getNumberOfObservedEntities();
 
 		Set<Long> es_with_bn = new HashSet<>();
 
@@ -192,7 +192,7 @@ public class EquivalenceSetGraphAnalyser {
 		long maxHeigh = 0;
 		int cycleNumber = 0;
 
-		int toProcess = esg.getNumberOfEquivalenceSets();
+		long toProcess = esg.getNumberOfEquivalenceSets();
 
 		Map<Long, Long> heightMap = new HashMap<>();
 
@@ -347,7 +347,7 @@ public class EquivalenceSetGraphAnalyser {
 		int processed = 0;
 		int isolatedIS = 0;
 //		int toProcess = esg.IS.keySet().size();
-		int toProcess = esg.getNumberOfEquivalenceSets();
+		long toProcess = esg.getNumberOfEquivalenceSets();
 
 		Iterator<Entry<Long, Collection<String>>> iterator = esg.equivalenceSetsIterator();
 
@@ -396,7 +396,7 @@ public class EquivalenceSetGraphAnalyser {
 		long oeInTL0 = 0;
 		long oeInTL0WithoutBNs = 0;
 //		int toProcess = esg.IS.keySet().size();
-		int toProcess = esg.getNumberOfEquivalenceSets();
+		long toProcess = esg.getNumberOfEquivalenceSets();
 
 //		Iterator<Entry<Long, Collection<String>>> iterator = esg.IS.iterator();
 		Iterator<Entry<Long, Collection<String>>> iterator = esg.equivalenceSetsIterator();
@@ -480,7 +480,7 @@ public class EquivalenceSetGraphAnalyser {
 		long oeInTL = 0;
 		long bnInTL = 0;
 //		int toProcess = esg.IS.keySet().size();
-		int toProcess = esg.getNumberOfEquivalenceSets();
+		long toProcess = esg.getNumberOfEquivalenceSets();
 
 //		Iterator<Entry<Long, Collection<String>>> iterator = esg.IS.iterator();
 		Iterator<Entry<Long, Collection<String>>> iterator = esg.equivalenceSetsIterator();

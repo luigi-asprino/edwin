@@ -256,12 +256,12 @@ public final class RocksDBBackedEquivalenceSetGraph implements EquivalenceSetGra
 		System.out.println("Number of equivalence sets: " + IS.keySet().size());
 	}
 
-	public int getNumberOfObservedEntities() {
-		return ID.keySet().size();
+	public Long getNumberOfObservedEntities() {
+		return (long) ID.keySet().size();
 	}
 
-	public int getNumberOfEquivalenceSets() {
-		return IS.keySet().size();
+	public Long getNumberOfEquivalenceSets() {
+		return (long) IS.keySet().size();
 	}
 
 	@Override
@@ -925,13 +925,13 @@ public final class RocksDBBackedEquivalenceSetGraph implements EquivalenceSetGra
 	}
 
 	@Override
-	public boolean hasEquivalenceSet(CharSequence iri) {
+	public boolean hasEquivalenceSet(String iri) {
 		return ID.containsKey(iri);
 	}
 
 	@Override
-	public Collection<String> getEquivalenceSet(Long visitedSetId) {
-		return IS.get(visitedSetId);
+	public Set<String> getEquivalenceSet(Long visitedSetId) {
+		return new HashSet<>(IS.get(visitedSetId));
 	}
 
 	@Override
@@ -945,36 +945,12 @@ public final class RocksDBBackedEquivalenceSetGraph implements EquivalenceSetGra
 	}
 
 	@Override
-	public Collection<Long> getSuperEquivalenceSets(Long equivalenceSetID) {
-		return H.get(equivalenceSetID);
+	public Set<Long> getSuperEquivalenceSets(Long equivalenceSetID) {
+		return new HashSet<>(H.get(equivalenceSetID));
 	}
 
 	@Override
-	public void setEquivalencePropertyToObserve(CharSequence iri) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setSpecializationPropertyToObserve(CharSequence iri) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setEquivalencePropertyForProperties(CharSequence iri) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setSpecializationPropertyForProperties(CharSequence iri) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void addSpecialization(CharSequence s, CharSequence o) {
+	public void addSpecialization(String s, String o) {
 
 		Long sId = ID.get(s);
 		Long oId = ID.get(o);
@@ -992,19 +968,19 @@ public final class RocksDBBackedEquivalenceSetGraph implements EquivalenceSetGra
 	}
 
 	@Override
-	public Collection<Long> getTopLevelEquivalenceSets() {
+	public Set<Long> getTopLevelEquivalenceSets() {
 		Set<Long> result = new HashSet<Long>(IS.keySet());
 		result.removeAll(H.keySet());
 		return result;
 	}
 
 	@Override
-	public Collection<String> getEquivalenceSet(String iri) {
+	public Set<String> getEquivalenceSet(String iri) {
 		Long equivalenceSetId = ID.get(iri);
 		if (equivalenceSetId == null) {
 			return null;
 		}
-		return IS.get(equivalenceSetId);
+		return new HashSet<>(IS.get(equivalenceSetId));
 	}
 
 	@Override
@@ -1064,116 +1040,98 @@ public final class RocksDBBackedEquivalenceSetGraph implements EquivalenceSetGra
 
 	@Override
 	public boolean containsEntity(String uri) {
-		// TODO Auto-generated method stub
-		return false;
+		return ID.containsKey(uri);
 	}
 
 	@Override
 	public void createSingleEntityEquivalenceSet(String uri, Long id) {
-		// TODO Auto-generated method stub
-
+		ID.put(uri, id);
+		IS.put(id, uri);
 	}
 
 	@Override
-	public Collection<Long> getIndirectlySubsumedEquivalenceSets(Long es) {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<Long> getIndirectlySubsumedEquivalenceSets(Long es) {
+		return new HashSet<>(C_inverse.get(es));
 	}
 
 	@Override
 	public void setEquivalenceSetIndirectSize(Long esId, Long size) {
-		// TODO Auto-generated method stub
-
+		IES.put(esId, size);
 	}
 
 	@Override
 	public void setEquivalenceSetDirectSize(Long esId, Long size) {
-		// TODO Auto-generated method stub
-
+		DES.put(esId, size);
 	}
 
 	@Override
 	public Long getOESize(String entityURI) {
-		// TODO Auto-generated method stub
-		return null;
+		return oe_size.get(entityURI);
 	}
 
 	@Override
 	public Iterator<Entry<Long, Collection<String>>> equivalenceSetsIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return IS.iterator();
 	}
 
 	@Override
 	public Iterator<Entry<String, Long>> entityIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return ID.entryIterator();
 	}
 
 	@Override
 	public void setObservedEntitySize(String key, long size) {
-		// TODO Auto-generated method stub
-
+		this.oe_size.put(key, size);
 	}
 
 	@Override
 	public Iterator<Entry<String, Long>> observedEntitySizeIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return oe_size.iterator();
 	}
 
 	@Override
 	public Iterator<Entry<Long, Long>> indirectESGSizeIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return IES.iterator();
 	}
 
 	@Override
 	public Iterator<Entry<Long, Collection<Long>>> subOfRelationsIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return H.iterator();
 	}
 
 	@Override
 	public Set<Long> getHInverseKeys() {
-		// TODO Auto-generated method stub
-		return null;
+		return H_inverse.keySet();
 	}
 
 	@Override
 	public Set<Long> getDirectlySubsumedEquivalenceSets(Long key) {
-		// TODO Auto-generated method stub
-		return null;
+		return new HashSet<>(H_inverse.get(key));
 	}
 
 	@Override
 	public boolean hasSuperEquivalenceSets(Long key) {
-		// TODO Auto-generated method stub
-		return false;
+		return H.containsKey(key);
 	}
 
 	@Override
 	public boolean hasSubEquivalenceSets(Long key) {
-		// TODO Auto-generated method stub
-		return false;
+		return H_inverse.containsKey(key);
 	}
 
 	@Override
 	public boolean hasIndirectEquivalenceSetSize(Long key) {
-		// TODO Auto-generated method stub
-		return false;
+		return IES.containsKey(key);
 	}
 
 	@Override
 	public boolean hasObservedEntitySize(String uri) {
-		// TODO Auto-generated method stub
-		return false;
+		return oe_size.containsKey(uri);
 	}
 
 	@Override
 	public Long getObservedEntitySize(String uri) {
-		// TODO Auto-generated method stub
-		return null;
+		return oe_size.get(uri);
 	}
 
 }

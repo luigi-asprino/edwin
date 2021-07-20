@@ -16,12 +16,14 @@ import com.google.common.collect.MultimapBuilder;
 import it.cnr.istc.stlab.edwin.EquivalenceSetGraphStats;
 import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 
+@SuppressWarnings("unused")
 public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 
 	private AtomicLong nextESIDToAssing = new AtomicLong(0L);
 	private AtomicLong nextIRIIDToAssing = new AtomicLong(0L);
 	private BiMap<CharSequence, Long> entityID = HashBiMap.create();
 	Map<Long, Long> es = new HashMap<>();
+
 	private Multimap<Long, Long> h = MultimapBuilder.treeKeys().treeSetValues().build();
 	private Multimap<Long, Long> h_inverse = MultimapBuilder.treeKeys().treeSetValues().build();
 	private CharSequence equivalencePropertyToObserve;
@@ -33,57 +35,57 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 
 	}
 
-	@Override
-	public boolean hasEquivalenceSet(CharSequence iri) {
-		return es.containsKey(getOrCreateEntityID(iri));
-	}
-
-	@Override
-	public void setEquivalencePropertyToObserve(CharSequence iri) {
-		this.equivalencePropertyToObserve = iri;
-	}
-
-	@Override
-	public void setSpecializationPropertyToObserve(CharSequence iri) {
-		this.specializationPropertyToObserve = iri;
-
-	}
-
-	@Override
-	public void setEquivalencePropertyForProperties(CharSequence iri) {
-		this.equivalencePropertyForProperties = iri;
-	}
-
-	@Override
-	public void setSpecializationPropertyForProperties(CharSequence iri) {
-		this.specializationPropertyForProperties = iri;
-	}
-
-	@Override
-	public CharSequence getEquivalencePropertyToObserve() {
-		return this.equivalencePropertyToObserve;
-	}
-
-	@Override
-	public CharSequence getSpecializationPropertyToObserve() {
-		return this.specializationPropertyToObserve;
-	}
-
-	@Override
-	public CharSequence getEquivalencePropertyForProperties() {
-		return this.equivalencePropertyForProperties;
-	}
-
-	@Override
-	public CharSequence getSpecializationPropertyForProperties() {
-		return this.specializationPropertyForProperties;
-	}
-
-	@Override
-	public void addSpecialization(CharSequence s, CharSequence o) {
-		h.put(getOrCreateEquivalenceSetOfURI(s), getOrCreateEquivalenceSetOfURI(o));
-		h_inverse.put(getOrCreateEquivalenceSetOfURI(o), getOrCreateEquivalenceSetOfURI(s));
-	}
+//	@Override
+//	public boolean hasEquivalenceSet(String iri) {
+//		return es.containsKey(getOrCreateEntityID(iri));
+//	}
+//
+//	@Override
+//	public void setEquivalencePropertyToObserve(CharSequence iri) {
+//		this.equivalencePropertyToObserve = iri;
+//	}
+//
+//	@Override
+//	public void setSpecializationPropertyToObserve(CharSequence iri) {
+//		this.specializationPropertyToObserve = iri;
+//
+//	}
+//
+//	@Override
+//	public void setEquivalencePropertyForProperties(CharSequence iri) {
+//		this.equivalencePropertyForProperties = iri;
+//	}
+//
+//	@Override
+//	public void setSpecializationPropertyForProperties(CharSequence iri) {
+//		this.specializationPropertyForProperties = iri;
+//	}
+//
+//	@Override
+//	public CharSequence getEquivalencePropertyToObserve() {
+//		return this.equivalencePropertyToObserve;
+//	}
+//
+//	@Override
+//	public CharSequence getSpecializationPropertyToObserve() {
+//		return this.specializationPropertyToObserve;
+//	}
+//
+//	@Override
+//	public CharSequence getEquivalencePropertyForProperties() {
+//		return this.equivalencePropertyForProperties;
+//	}
+//
+//	@Override
+//	public CharSequence getSpecializationPropertyForProperties() {
+//		return this.specializationPropertyForProperties;
+//	}
+//
+//	@Override
+//	public void addSpecialization(CharSequence s, CharSequence o) {
+//		h.put(getOrCreateEquivalenceSetOfURI(s), getOrCreateEquivalenceSetOfURI(o));
+//		h_inverse.put(getOrCreateEquivalenceSetOfURI(o), getOrCreateEquivalenceSetOfURI(s));
+//	}
 
 	Long getOrCreateEntityID(CharSequence iri) {
 		Long result = entityID.get(iri);
@@ -115,11 +117,11 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 		}
 	}
 
-	@Override
-	public Collection<String> getEquivalenceSet(Long equivalenceSetID) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Collection<String> getEquivalenceSet(Long equivalenceSetID) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
 	public Long getEquivalenceSetIdOfIRI(CharSequence iri) {
@@ -131,13 +133,13 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 	}
 
 	@Override
-	public Collection<Long> getSuperEquivalenceSets(Long equivalenceSetID) {
+	public Set<Long> getSuperEquivalenceSets(Long equivalenceSetID) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<Long> getTopLevelEquivalenceSets() {
+	public Set<Long> getTopLevelEquivalenceSets() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -154,23 +156,23 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 		return null;
 	}
 
-	@Override
-	public int getNumberOfObservedEntities() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getNumberOfEquivalenceSets() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public Collection<String> getEquivalenceSet(String iri) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public int getNumberOfObservedEntities() {
+//		// TODO Auto-generated method stub
+//		return 0;
+//	}
+//
+//	@Override
+//	public int getNumberOfEquivalenceSets() {
+//		// TODO Auto-generated method stub
+//		return 0;
+//	}
+//
+//	@Override
+//	public Collection<String> getEquivalenceSet(String iri) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
 	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure, int maxDepth) {
@@ -249,11 +251,11 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 
 	}
 
-	@Override
-	public Collection<Long> getIndirectlySubsumedEquivalenceSets(Long es) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Collection<Long> getIndirectlySubsumedEquivalenceSets(Long es) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
 	public void setEquivalenceSetIndirectSize(Long esId, Long size) {
@@ -365,6 +367,96 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 
 	@Override
 	public Long getObservedEntitySize(String uri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Long> getIndirectlySubsumedEquivalenceSets(Long es) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<String> getEquivalenceSet(Long visitedSetId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<String> getEquivalenceSet(String iri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasEquivalenceSet(String iri) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setEquivalencePropertyToObserve(String iri) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setSpecializationPropertyToObserve(String iri) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setEquivalencePropertyForProperties(String iri) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setSpecializationPropertyForProperties(String iri) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public String getEquivalencePropertyToObserve() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getSpecializationPropertyToObserve() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getEquivalencePropertyForProperties() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getSpecializationPropertyForProperties() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addSpecialization(String s, String o) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Long getNumberOfObservedEntities() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long getNumberOfEquivalenceSets() {
 		// TODO Auto-generated method stub
 		return null;
 	}
