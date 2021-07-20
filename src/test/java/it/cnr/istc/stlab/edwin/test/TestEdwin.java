@@ -201,4 +201,29 @@ public class TestEdwin {
 
 	}
 
+	@Test
+	public void t7() {
+
+		System.out.println("\n\n\n\nTEST 7\n\n\n\n");
+
+		File f = new File("src/main/resources/testResources/t7.properties");
+
+		clean();
+
+		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
+		assertEquals(Long.valueOf(3L), esg.getNumberOfEquivalenceSets());
+		assertEquals(Long.valueOf(8L), esg.getNumberOfObservedEntities());
+
+		try {
+			EquivalenceSetGraphAnalyser.countEquivalenceSetsHavingHeterogeneousEntities(esg);
+			assertEquals(1L, esg.getStats().hetES);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		esg.close();
+		clean();
+
+	}
+
 }

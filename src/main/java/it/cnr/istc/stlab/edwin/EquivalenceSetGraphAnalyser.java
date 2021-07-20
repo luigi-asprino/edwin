@@ -3,6 +3,8 @@ package it.cnr.istc.stlab.edwin;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -517,6 +519,42 @@ public class EquivalenceSetGraphAnalyser {
 		esg.getStats().oeInTL = oeInTL;
 		esg.getStats().oeInTLWithoutBNs = oeInTL - bnInTL;
 
+	}
+
+	public static void countEquivalenceSetsHavingHeterogeneousEntities(EquivalenceSetGraph esg) throws IOException {
+
+		logger.info("Counting Equivalence Sets Having Heterogeneous Entities");
+
+		int processed = 0;
+		long toProcess = esg.getNumberOfEquivalenceSets();
+		long hetES = 0;
+
+		Iterator<Entry<Long, Collection<String>>> iterator = esg.equivalenceSetsIterator();
+
+		while (iterator.hasNext()) {
+			if (processed % 10000 == 0) {
+				logger.info("Processed {}/{}:{}", processed, toProcess, ((double) processed / (double) toProcess));
+			}
+			Entry<Long, Collection<String>> entry = iterator.next();
+			if (getHosts(new HashSet<>(entry.getValue())).size() > 1) {
+				hetES++;
+			}
+		}
+
+		esg.getStats().hetES = hetES;
+
+	}
+
+	private static Set<String> getHosts(Set<String> equivalenceSet) {
+		Set<String> result = new HashSet<>();
+		equivalenceSet.forEach(e -> {
+			try {
+				result.add(new URL(e).getHost());
+			} catch (MalformedURLException e1) {
+				e1.printStackTrace();
+			}
+		});
+		return result;
 	}
 
 	private static boolean isBlankNode(String uri) {

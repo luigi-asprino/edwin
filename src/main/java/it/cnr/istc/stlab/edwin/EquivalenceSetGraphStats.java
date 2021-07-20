@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 public class EquivalenceSetGraphStats {
 
+	public long hetES = 0L;
 	public long numberOfEquivalenceTriples = 0L, numberOfSpecializationTriples = 0L, oe = 0L, es = 0L, bns = 0L,
 			es_with_bns = 0L, e = 0L, h_max = 0L, in = 0L, tl = 0L, tlWithoutBNs = 0L, oeInTL = 0L,
 			oeInTLWithoutBNs = 0L, oe0 = 0L, oe0_bns = 0L, es0 = 0L, es0bns = 0L, tl0 = 0, tl0WithoutBNs = 0L,
@@ -46,7 +47,7 @@ public class EquivalenceSetGraphStats {
 			tl0bns_label = "Top Level Equivalence Sets With Empty Extension Without Blank Nodes",
 			oeInTl0_label = "Number of Observed Entities in TL0",
 			tl0WithoutBNs_label = "Number of Observed Entities Without BNs in TL0", ies_n = "IES(n)",
-			density = "Density";
+			density = "Density", hetES_label = "Heterogeneous Equivalence Sets";
 
 	public EquivalenceSetGraphStats() {
 
@@ -71,6 +72,7 @@ public class EquivalenceSetGraphStats {
 		stats.put(oe_bn_label, (oe - bns));
 		stats.put(bns_label, bns);
 		stats.put(es_label, es);
+		stats.put(hetES_label, hetES);
 		stats.put(es_bn, (es - es_with_bns));
 		stats.put(r_label, transformDouble((double) ((double) es / (double) oe)));
 		stats.put(r_bn_label, transformDouble((double) ((double) (es - es_with_bns) / (double) (oe - bns))));
@@ -157,6 +159,7 @@ public class EquivalenceSetGraphStats {
 		fos.write(String.format("%s\t%d\n", tl0WithoutBNs_label, oeInTl0WithoutBN).getBytes());
 		fos.write(String.format("%s\t%d\n", tl0_label, tl0).getBytes());
 		fos.write(String.format("%s\t%d\n", tl0bns_label, tl0WithoutBNs).getBytes());
+		fos.write(String.format("%s\t%d\n", hetES_label, hetES).getBytes());
 
 		fos.flush();
 		fos.close();
