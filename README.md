@@ -99,7 +99,7 @@ The labels of the entities are retrieved from a RocksDB instance storing a map (
 The virtual documents can be generated using maven as follows:
 
 ```
-mvn exec:java  -Dexec.cleanupDaemonThreads=false -Dexec.mainClass="it.cnr.istc.stlab.edwin.analysis.ESGVirtualDocumentGenerator"  -Dexec.args="-i path -o path -l path [-l int] [-b]"
+mvn exec:java  -Dexec.cleanupDaemonThreads=false -Dexec.mainClass="it.cnr.istc.stlab.edwin.analysis.ESGVirtualDocumentGenerator"  -Dexec.args="-i path -o path -l path [-m int] [-b]"
 
  -b,--blank-nodes                           Include skolemization of the
                                             blank nodes in the

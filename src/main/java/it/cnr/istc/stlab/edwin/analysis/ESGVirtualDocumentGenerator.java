@@ -170,7 +170,7 @@ public class ESGVirtualDocumentGenerator {
 
 		} catch (ParseException e) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("-i path -o path -l path [-l int] [-b]", options);
+			formatter.printHelp("-i path -o path -l path [-m int] [-b]", options);
 		}
 
 //		String esgClasses = "/Users/lgu/Desktop/NOTime/EKR/ESGs/classes";
