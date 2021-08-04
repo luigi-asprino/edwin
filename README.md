@@ -89,6 +89,37 @@ EquivalenceSetGraph esg = EquivalenceSetGraphLoader.loadEquivalenceSetGraphFromF
 
 A number of Computed Equivalence Set Graphs are available for download from this [page](ComputedESGs.md). 
 
+## Tools for analysis
+
+Besides the ESG construction and analysis, Edwin includes a series of side tools for supporting and performing empirical analysis on the modeling style of large RDF datasets.
+
+### Label Map generation
+
+Edwin allows you to create a so-called *LabelMap*, a dictionary mapping each URI onto a String containing its label.
+The map is created by retrieving from the input datasets triples of this kind:
+
+```
+<uri> <labelProperty> "label" .
+```
+
+Such triple generates an entry ``(uri, label)`` that will be stored in the database.
+A list of ``labelProperty``s to consider can be passed to Edwin in a text file like [this one](propertiesForLabels).
+The LabelMap is stored in a RocksDB instance.
+
+The LabelMap can be generated using maven as follows:
+
+```
+mvn exec:java  -Dexec.cleanupDaemonThreads=false -Dexec.mainClass="it.cnr.istc.stlab.edwin.analysis.LabelMapCreator"  -Dexec.args="-i path -o path -p path"
+
+ -i,--input <input>         The path to the input dataset from which the
+                            label map is to be extracted.
+ -o,--output <output>       The path to the folder storing the RocksDB
+                            instance that will be created.
+ -p,--output <properties>   The path to the file containing a list of
+                            properties to be used to retrieve labels.
+
+```
+
 ### Virtual Documents Generation for Equivalence Set Graphs
 
 Edwin allows you to generate a virtual document for each equivalence set of a graph.

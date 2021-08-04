@@ -60,4 +60,59 @@ public class Utils {
 
 	}
 
+	public static int lastIndexOf(CharSequence cs, int ch) {
+		for (int i = cs.length() - 1; i >= 0; i--) {
+			if (cs.charAt(i) == ch) {
+				return i;
+			}
+		}
+		return 0;
+	}
+
+	public static String cleanDatatype(final CharSequence obj, final String separator) {
+		final StringBuilder sb = new StringBuilder(obj.length());
+		sb.append(separator);
+		sb.append('"');
+
+		final int li = Utils.lastIndexOf(obj, '"');
+		for (int i = 1; i < li; i++) {
+			final char c = obj.charAt(i);
+			if (c == '@' || c == '"') {
+				sb.append(' ');
+			} else {
+				sb.append(c);
+			}
+		}
+		sb.append('"');
+
+		int at = 0;
+		for (int i = li; i < obj.length(); i++) {
+			if (obj.charAt(i) == '@') {
+				at = i;
+				break;
+			}
+		}
+
+		if (at > 0) {
+			int ap = 0;
+			for (int i = li; i < obj.length(); i++) {
+				if (obj.charAt(i) == '^') {
+					ap = i;
+					break;
+				}
+			}
+			if (ap > 0) {
+				if (at < ap) {
+					sb.append(obj.subSequence(at, ap));
+				} else {
+					sb.append(obj.subSequence(at, obj.length()));
+				}
+			} else {
+				sb.append(obj.subSequence(at, obj.length()));
+			}
+		}
+		return sb.toString();
+
+	}
+
 }
