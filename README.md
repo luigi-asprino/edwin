@@ -19,12 +19,12 @@ Once installed, you can add Edwin as a dependency of your maven project.
 <dependency>
   <groupId>it.cnr.istc.stlab</groupId>
   <artifactId>edwin</artifactId>
-  <version>0.0.1</version>
+  <version>0.1.0</version>
 </dependency>
 ```
 ### Docker
 
-* todo
+* TODO
 
 #### Usage
 
@@ -89,6 +89,38 @@ EquivalenceSetGraph esg = EquivalenceSetGraphLoader.loadEquivalenceSetGraphFromF
 
 A number of Computed Equivalence Set Graphs are available for download from this [page](ComputedESGs.md). 
 
+### Virtual Documents Generation for Equivalence Set Graphs
+
+Edwin allows you to generate a virtual document for each equivalence set of a graph.
+The documents will be stored in a RocksDB instance.
+Each virtual document will be the concatenation of the labels of the entities within the equivalence set.
+If a label is not available for an entity, the local name (ID) of the entity will be used instead.
+The labels of the entities are retrieved from a RocksDB instance storing a map (u,l) where u is the URI of the entity and l is its label.
+The virtual documents can be generated using maven as follows:
+
+```
+mvn exec:java  -Dexec.cleanupDaemonThreads=false -Dexec.mainClass="it.cnr.istc.stlab.edwin.analysis.ESGVirtualDocumentGenerator"  -Dexec.args="-i path -o path -l path [-l int] [-b]"
+
+ -b,--blank-nodes                           Include skolemization of the
+                                            blank nodes in the
+                                            verbalisation.
+ -i,--esg-input-folder <esg-input-folder>   The path of the folder storing
+                                            the Equivalence Set Graph to
+                                            verbalise.
+ -l,--label-map-folder <label-map-folder>   The path of the folder storing
+                                            the labels of the entities.
+ -m,--max <max>                             The maximum number of virtual
+                                            documents to generate.
+ -o,--output-folder <output-folder>         The path of the folder where
+                                            the virtual documents will be
+                                            stored.
+```
+
+
+
+
+
+
 ### Publications
 
 For citing Edwin in academic papers please use:
@@ -97,9 +129,6 @@ For citing Edwin in academic papers please use:
 
 [2] Luigi Asprino, Wouter Beek, Paolo Ciancarini, Frank van Harmelen and Valentina Presutti. Triplifying Equivalence Set Graphs. In: Proceedings of the ISWC 2019 Posters & Demonstrations, Industry, and Outrageous Ideas Tracks co-located with 18th International Semantic Web Conference (ISWC 2019) 
 
-# Author
-
-* [Luigi Asprino](http://luigiasprino.it)
 
 # License 
 

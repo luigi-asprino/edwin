@@ -14,26 +14,25 @@ import it.cnr.istc.stlab.edwin.EquivalenceSetGraphStats;
 public interface EquivalenceSetGraph {
 
 	static Logger logger = LoggerFactory.getLogger(EquivalenceSetGraph.class);
-	
+
 	public Long getMaxId();
-	
+
 	public boolean containsEntity(String uri);
-	
+
 	public void createSingleEntityEquivalenceSet(String uri, Long id);
-	
 
 	public Set<Long> getIndirectlySubsumedEquivalenceSets(Long es);
-	
+
 	public void setEquivalenceSetIndirectSize(Long esId, Long size);
 
 	public void setEquivalenceSetDirectSize(Long esId, Long size);
-	
+
 	public Long getOESize(String entityURI);
-	
+
 	public Iterator<Entry<Long, Collection<String>>> equivalenceSetsIterator();
 
 	public Long getEntityDirectExtensionalSize(String entityURI);
-	
+
 	public Long getEntityIndirectExtensionalSize(String entityURI);
 
 	public Long getEquivalenceSetDirectSize(Long equivalenceSetId);
@@ -44,7 +43,7 @@ public interface EquivalenceSetGraph {
 
 	public Set<String> getEquivalenceSet(String iri);
 
-	public Long getEquivalenceSetIdOfIRI(CharSequence iri);
+	public Long getEquivalenceSetIdOfIRI(String iri);
 
 	public Set<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID);
 
@@ -76,6 +75,8 @@ public interface EquivalenceSetGraph {
 
 	public void addSpecialization(String s, String o);
 
+	public void mergeEquivalenceSets(Long... idsToMerge);
+
 	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure);
 
 	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure, int maxDepth);
@@ -83,7 +84,7 @@ public interface EquivalenceSetGraph {
 	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity);
 
 	public Set<Long> getEquivalenceSetIds();
-	
+
 	public Set<Long> getEmptyEquivalenceSets();
 
 	public Long getNumberOfObservedEntities();
@@ -162,8 +163,6 @@ public interface EquivalenceSetGraph {
 	public Iterator<Entry<Long, Collection<Long>>> subOfRelationsIterator();
 
 	public Set<Long> getHInverseKeys();
-
-	public Set<Long> getDirectlySubsumedEquivalenceSets(Long key);
 
 	public boolean hasSuperEquivalenceSets(Long key);
 

@@ -935,18 +935,26 @@ public final class RocksDBBackedEquivalenceSetGraph implements EquivalenceSetGra
 	}
 
 	@Override
-	public Long getEquivalenceSetIdOfIRI(CharSequence iri) {
+	public Long getEquivalenceSetIdOfIRI(String iri) {
 		return ID.get(iri);
 	}
 
 	@Override
 	public Set<Long> getEquivalenceSetsSubsumedBy(Long equivalenceSetID) {
-		return new HashSet<>(H_inverse.get(equivalenceSetID));
+		Collection<Long> subIds = H_inverse.get(equivalenceSetID);
+		if (subIds != null)
+			return new HashSet<>(subIds);
+		return new HashSet<>();
+
 	}
 
 	@Override
 	public Set<Long> getSuperEquivalenceSets(Long equivalenceSetID) {
-		return new HashSet<>(H.get(equivalenceSetID));
+		Collection<Long> superIds = H.get(equivalenceSetID);
+		if (superIds != null)
+			return new HashSet<>(superIds);
+		else
+			return new HashSet<>();
 	}
 
 	@Override
@@ -1105,11 +1113,6 @@ public final class RocksDBBackedEquivalenceSetGraph implements EquivalenceSetGra
 	}
 
 	@Override
-	public Set<Long> getDirectlySubsumedEquivalenceSets(Long key) {
-		return new HashSet<>(H_inverse.get(key));
-	}
-
-	@Override
 	public boolean hasSuperEquivalenceSets(Long key) {
 		return H.containsKey(key);
 	}
@@ -1132,6 +1135,71 @@ public final class RocksDBBackedEquivalenceSetGraph implements EquivalenceSetGra
 	@Override
 	public Long getObservedEntitySize(String uri) {
 		return oe_size.get(uri);
+	}
+
+	@Override
+	public synchronized void mergeEquivalenceSets(Long... idsToMerge) {
+
+		if (idsToMerge.length < 2)
+			return;
+
+		Long newId = getMaxId() + 1;
+
+		Set<String> newEquivalenceSet = new HashSet<>();
+		Set<Long> superEquivanceSets = new HashSet<>();
+		Set<Long> subEquivanceSets = new HashSet<>();
+
+		for (Long id : idsToMerge) {
+			newEquivalenceSet.addAll(this.getEquivalenceSet(id));
+			IS.removeAll(id);
+			Collection<Long> superIds = H.get(id);
+			if (superIds != null) {
+				superEquivanceSets.addAll(superIds);
+				superIds.forEach(h -> {
+					Collection<Long> hSubIds = H_inverse.get(h);
+					if (hSubIds != null) {
+						hSubIds.add(newId);
+						hSubIds.remove(id);
+						H_inverse.putAll(h, hSubIds);
+					}
+				});
+				H.removeAll(id);
+			}
+
+			Collection<Long> subIds = H_inverse.get(id);
+			if (subIds != null) {
+				subEquivanceSets.addAll(subIds);
+				subIds.forEach(h_1 -> {
+					Collection<Long> hSuperIds = H.get(h_1);
+					if (hSuperIds != null) {
+						hSuperIds.add(newId);
+						hSuperIds.remove(id);
+						H.putAll(h_1, hSuperIds);
+					}
+				});
+				H_inverse.removeAll(id);
+			}
+
+			if (superEquivanceSets.contains(id)) {
+				superEquivanceSets.remove(id);
+				superEquivanceSets.add(newId);
+			}
+
+			if (subEquivanceSets.contains(id)) {
+				subEquivanceSets.remove(id);
+				subEquivanceSets.add(id);
+			}
+		}
+
+		for (String e : newEquivalenceSet) {
+			ID.put(e, newId);
+		}
+
+		IS.putAll(newId, newEquivalenceSet);
+
+		H.putAll(newId, superEquivanceSets);
+		H_inverse.putAll(newId, subEquivanceSets);
+
 	}
 
 }

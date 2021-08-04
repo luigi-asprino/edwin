@@ -15,7 +15,7 @@ import it.cnr.istc.stlab.edwin.Edwin;
 import it.cnr.istc.stlab.edwin.EquivalenceSetGraphAnalyser;
 import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 
-public class TestEdwin {
+public class TestRocksDBBuilder {
 
 	private static void clean() {
 		try {
@@ -220,6 +220,49 @@ public class TestEdwin {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		esg.close();
+		clean();
+
+	}
+
+	@Test
+	public void t8() {
+
+		System.out.println("\n\n\n\nTEST 7\n\n\n\n");
+
+		File f = new File("src/main/resources/testResources/t8.properties");
+
+		clean();
+
+		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
+		assertEquals(Long.valueOf(6L), esg.getNumberOfEquivalenceSets());
+		assertEquals(Long.valueOf(14L), esg.getNumberOfObservedEntities());
+
+		esg.print();
+
+		System.out.println("\n\nMerge\n\n");
+
+		esg.mergeEquivalenceSets(esg.getEquivalenceSetIdOfIRI("http://example.org/f"),
+				esg.getEquivalenceSetIdOfIRI("http://example.org/f2"),
+				esg.getEquivalenceSetIdOfIRI("http://example.org/f6"));
+
+		assertEquals(Long.valueOf(4L), esg.getNumberOfEquivalenceSets());
+		assertEquals(Long.valueOf(14L), esg.getNumberOfObservedEntities());
+
+		esg.print();
+
+		assertEquals(
+				Sets.newHashSet(esg.getEquivalenceSetIdOfIRI("http://example1.org/a"),
+						esg.getEquivalenceSetIdOfIRI("http://example.org/f4"),
+						esg.getEquivalenceSetIdOfIRI("http://example.org/f")),
+				esg.getEquivalenceSetsSubsumedBy(esg.getEquivalenceSetIdOfIRI("http://example.org/f")));
+		
+		assertEquals(
+				Sets.newHashSet(esg.getEquivalenceSetIdOfIRI("http://example1.org/a"),
+						esg.getEquivalenceSetIdOfIRI("http://example.org/f8"),
+						esg.getEquivalenceSetIdOfIRI("http://example.org/f")),
+				esg.getSuperEquivalenceSets(esg.getEquivalenceSetIdOfIRI("http://example.org/f")));
 
 		esg.close();
 		clean();

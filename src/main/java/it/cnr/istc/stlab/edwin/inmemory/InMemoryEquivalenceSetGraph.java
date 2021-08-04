@@ -124,7 +124,7 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 //	}
 
 	@Override
-	public Long getEquivalenceSetIdOfIRI(CharSequence iri) {
+	public Long getEquivalenceSetIdOfIRI(String iri) {
 		return null;
 	}
 
@@ -336,12 +336,6 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 	}
 
 	@Override
-	public Set<Long> getDirectlySubsumedEquivalenceSets(Long key) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean hasSuperEquivalenceSets(Long key) {
 		// TODO Auto-generated method stub
 		return false;
@@ -459,5 +453,11 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 	public Long getNumberOfEquivalenceSets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void mergeEquivalenceSets(Long... idsToMerge) {
+		// TODO Auto-generated method stub
+
 	}
 }

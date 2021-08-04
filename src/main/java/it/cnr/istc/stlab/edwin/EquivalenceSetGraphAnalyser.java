@@ -278,7 +278,7 @@ public class EquivalenceSetGraphAnalyser {
 			long key = iterator.next();
 
 //			Collection<Long> subs = esg.H_inverse.get(key);
-			Set<Long> subs = esg.getDirectlySubsumedEquivalenceSets(key);
+			Set<Long> subs = esg.getEquivalenceSetsSubsumedBy(key);
 			long max = 0L;
 			long without = 0;
 			for (long sub : subs) {
@@ -371,7 +371,7 @@ public class EquivalenceSetGraphAnalyser {
 //			if (esg.H_inverse.containsKey(entry.getKey())) {
 			if (esg.hasSubEquivalenceSets(entry.getKey())) {
 //				subSup.addAll(esg.H_inverse.get(entry.getKey()));
-				subSup.addAll(esg.getDirectlySubsumedEquivalenceSets(entry.getKey()));
+				subSup.addAll(esg.getEquivalenceSetsSubsumedBy(entry.getKey()));
 			}
 
 			subSup.remove(entry.getKey());
