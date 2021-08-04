@@ -106,6 +106,8 @@ Such triple generates an entry ``(uri, label)`` that will be stored in the datab
 A list of ``labelProperty``s to consider can be passed to Edwin in a text file like [this one](propertiesForLabels).
 The LabelMap is stored in a RocksDB instance.
 
+**NOTE** By now the input can only be an RDF-HDT file.
+
 The LabelMap can be generated using maven as follows:
 
 ```
