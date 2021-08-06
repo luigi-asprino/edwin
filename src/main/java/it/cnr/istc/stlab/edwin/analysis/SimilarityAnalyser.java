@@ -110,6 +110,7 @@ public class SimilarityAnalyser {
 			esg.mergeEquivalenceSets(esOfEs.toArray(new Long[esOfEs.size()]));
 			ESsInvolved.addAll(esOfEs);
 			logger.info("Processed {} ES of ESs", c);
+			c++;
 		}
 
 		logger.info("Number of ES involved {}", ESsInvolved.size());
