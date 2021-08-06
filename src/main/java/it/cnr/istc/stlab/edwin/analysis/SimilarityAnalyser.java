@@ -122,11 +122,11 @@ public class SimilarityAnalyser {
 	public static void main(String[] args) throws RocksDBException {
 //		String sim = "/Users/lgu/Desktop/out_7/similarities_esg";
 //		String esgFilepath = "/Users/lgu/Desktop/NOTime/EKR/ESGs/classes_1";
-		EquivalenceSetGraph esg = EquivalenceSetGraphLoader.loadEquivalenceSetGraphFromFolder(args[1]);
+		EquivalenceSetGraph esg = EquivalenceSetGraphLoader.loadEquivalenceSetGraphFromFolder(args[0]);
 
 //		EquivalenceSetGraph esg1 = esg.cloneInto(esgFilepath + "_1");
 
-		SimilarityAnalyser sa = new SimilarityAnalyser(args[2], esg, Double.parseDouble(args[3]));
+		SimilarityAnalyser sa = new SimilarityAnalyser(args[1], esg, Double.parseDouble(args[2]));
 		try {
 			sa.analyse();
 		} catch (IOException e) {
