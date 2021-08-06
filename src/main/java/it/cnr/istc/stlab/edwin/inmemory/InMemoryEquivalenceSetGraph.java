@@ -460,4 +460,16 @@ public class InMemoryEquivalenceSetGraph implements EquivalenceSetGraph {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public EquivalenceSetGraph cloneInto(String path) {
+		return null;
+
+	}
+
+	@Override
+	public void recomputeSpecializationClosure() {
+		// TODO Auto-generated method stub
+		
+	}
 }

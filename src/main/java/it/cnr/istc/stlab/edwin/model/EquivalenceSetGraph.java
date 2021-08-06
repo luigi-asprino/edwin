@@ -76,6 +76,8 @@ public interface EquivalenceSetGraph {
 	public void addSpecialization(String s, String o);
 
 	public void mergeEquivalenceSets(Long... idsToMerge);
+	
+	public void recomputeSpecializationClosure();
 
 	public Set<String> getEntitiesImplicityEquivalentToOrSubsumedBy(String entity, boolean useClosure);
 
@@ -173,5 +175,7 @@ public interface EquivalenceSetGraph {
 	public boolean hasObservedEntitySize(String uri);
 
 	public Long getObservedEntitySize(String uri);
+
+	public EquivalenceSetGraph cloneInto(String path);
 
 }

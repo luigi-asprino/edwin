@@ -64,27 +64,26 @@ public final class RocksDBBackedEquivalenceSetGraph implements EquivalenceSetGra
 			equivalencePropertyForPropertiesFile = "equivalencePropertyForProperties",
 			specializationPropertyForPropertiesFile = "specializationPropertyForProperties";
 
+	private String C_path, C_inversePath;
+
 	private static final long PROGRESS_COUNT = 10000;
 
 	private EquivalenceSetGraphStats stats = new EquivalenceSetGraphStats();
 
 	public RocksDBBackedEquivalenceSetGraph(String esgFolder) throws RocksDBException {
 		this.esgFolder = esgFolder;
-
 		ID = new RocksMap<>(esgFolder + "/ID", new StringRocksTransformer(), new LongRocksTransformer());
 		IS = new RocksMultiMap<>(esgFolder + "/IS", new LongRocksTransformer(), new StringRocksTransformer());
 		H = new RocksMultiMap<>(esgFolder + "/H", new LongRocksTransformer(), new LongRocksTransformer());
 		H_inverse = new RocksMultiMap<>(esgFolder + "/H_inverse", new LongRocksTransformer(),
 				new LongRocksTransformer());
-
-		C = new RocksMultiMap<>(esgFolder + "/C", new LongRocksTransformer(), new LongRocksTransformer());
-		C_inverse = new RocksMultiMap<>(esgFolder + "/C_inverse", new LongRocksTransformer(),
-				new LongRocksTransformer());
+		C_path = esgFolder + "/C";
+		C = new RocksMultiMap<>(C_path, new LongRocksTransformer(), new LongRocksTransformer());
+		C_inversePath = esgFolder + "/C_inverse";
+		C_inverse = new RocksMultiMap<>(C_inversePath, new LongRocksTransformer(), new LongRocksTransformer());
 		oe_size = new RocksMap<>(esgFolder + "/OE_size", new StringRocksTransformer(), new LongRocksTransformer());
-
 		DES = new RocksMap<>(esgFolder + "/DES", new LongRocksTransformer(), new LongRocksTransformer());
 		IES = new RocksMap<>(esgFolder + "/IES", new LongRocksTransformer(), new LongRocksTransformer());
-
 	}
 
 	private void setPropertyFile(String property, String file) {
@@ -1059,7 +1058,10 @@ public final class RocksDBBackedEquivalenceSetGraph implements EquivalenceSetGra
 
 	@Override
 	public Set<Long> getIndirectlySubsumedEquivalenceSets(Long es) {
-		return new HashSet<>(C_inverse.get(es));
+		Collection<Long> r = C_inverse.get(es);
+		if (r != null)
+			return new HashSet<>(r);
+		return new HashSet<>();
 	}
 
 	@Override
@@ -1199,6 +1201,57 @@ public final class RocksDBBackedEquivalenceSetGraph implements EquivalenceSetGra
 
 		H.putAll(newId, superEquivanceSets);
 		H_inverse.putAll(newId, subEquivanceSets);
+
+	}
+
+	@Override
+	public EquivalenceSetGraph cloneInto(String path) {
+		try {
+			RocksDBBackedEquivalenceSetGraph result = new RocksDBBackedEquivalenceSetGraph(path);
+			logger.info("Copying ID map");
+			this.ID.iterator().forEachRemaining(e -> result.ID.put(e.getKey(), e.getValue()));
+			logger.info("Copying ES map");
+			this.IS.iterator().forEachRemaining(e -> result.IS.putAll(e.getKey(), e.getValue()));
+			logger.info("Copying H map");
+			this.H.iterator().forEachRemaining(e -> result.H.putAll(e.getKey(), e.getValue()));
+			logger.info("Copying H_inverse map");
+			this.H_inverse.iterator().forEachRemaining(e -> result.H_inverse.putAll(e.getKey(), e.getValue()));
+			logger.info("Copying C map");
+			this.C.iterator().forEachRemaining(e -> result.C.putAll(e.getKey(), e.getValue()));
+			logger.info("Copying C_inverse map");
+			this.C_inverse.iterator().forEachRemaining(e -> result.C_inverse.putAll(e.getKey(), e.getValue()));
+			logger.info("Copying OE Size map");
+			this.oe_size.iterator().forEachRemaining(e -> result.oe_size.put(e.getKey(), e.getValue()));
+			logger.info("Copying DES map");
+			this.DES.iterator().forEachRemaining(e -> result.DES.put(e.getKey(), e.getValue()));
+			logger.info("Copying IES map");
+			this.DES.iterator().forEachRemaining(e -> result.DES.put(e.getKey(), e.getValue()));
+
+			result.setEquivalencePropertyForProperties(this.getEquivalencePropertyForProperties());
+			result.setSpecializationPropertyForProperties(this.getSpecializationPropertyForProperties());
+			result.setEquivalencePropertyToObserve(this.getEquivalencePropertyToObserve());
+			result.setSpecializationPropertyToObserve(result.getSpecializationPropertyToObserve());
+
+			logger.info("Cloned");
+
+		} catch (RocksDBException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+
+	}
+
+	@Override
+	public void recomputeSpecializationClosure() {
+		logger.info("Recompute specialization closure");
+		try {
+			org.apache.commons.io.FileUtils.deleteDirectory(new File(C_path));
+			org.apache.commons.io.FileUtils.deleteDirectory(new File(C_inversePath));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		computeSpecializationClosure();
 
 	}
 
