@@ -53,7 +53,8 @@ public class DatasetDistributionAnalyser {
 					return true;
 				}
 			} catch (MalformedURLException e1) {
-				e1.printStackTrace();
+//				e1.printStackTrace();
+				logger.trace("Malformed URL {}", e);
 			}
 		}
 
