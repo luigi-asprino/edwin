@@ -17,15 +17,6 @@ import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 
 public class TestRocksDBBuilder {
 
-	private static void clean() {
-		try {
-			System.out.println("\n\n\n\nCLEAN Test Resource Folder\n\n\n\n");
-			org.apache.commons.io.FileUtils.deleteDirectory(new File("src/main/resources/testResources/ESGs"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private static String p(String id) {
 		return "http://example.org/" + id;
 	}
@@ -34,7 +25,7 @@ public class TestRocksDBBuilder {
 	public void t1() {
 		File f = new File("src/main/resources/testResources/t1.properties");
 
-		clean();
+		TestUtils.clean();
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 
 //		System.out.println(esg.getEquivalentEntities("http://example.org/a"));
@@ -65,14 +56,14 @@ public class TestRocksDBBuilder {
 
 		esg.close();
 
-		clean();
+		TestUtils.clean();
 	}
 
 	@Test
 	public void t2() {
 		File f = new File("src/main/resources/testResources/t2.properties");
 
-		clean();
+		TestUtils.clean();
 		EquivalenceSetGraph esgProperties = Edwin.computeESG(f.getAbsolutePath());
 
 		assertEquals(esgProperties.getNumberOfEquivalenceSets(), Long.valueOf(2L));
@@ -84,7 +75,7 @@ public class TestRocksDBBuilder {
 				esgProperties.getEntitiesImplicityEquivalentToOrSubsumedBy("http://example.org/equal"));
 
 		esgProperties.close();
-		clean();
+		TestUtils.clean();
 
 	}
 
@@ -92,7 +83,7 @@ public class TestRocksDBBuilder {
 	public void t3() {
 		File f = new File("src/main/resources/testResources/t3.properties");
 
-		clean();
+		TestUtils.clean();
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(Long.valueOf(3L), esg.getNumberOfEquivalenceSets());
 		assertEquals(Long.valueOf(8L), esg.getNumberOfObservedEntities());
@@ -112,7 +103,7 @@ public class TestRocksDBBuilder {
 		assertEquals(esg.getEquivalentEntities("http://example.org/e"), Sets.newHashSet("http://example.org/a",
 				"http://example.org/c", "http://example.org/d", "http://example.org/e"));
 		esg.close();
-		clean();
+		TestUtils.clean();
 
 	}
 
@@ -123,7 +114,7 @@ public class TestRocksDBBuilder {
 
 		File f = new File("src/main/resources/testResources/t4.properties");
 
-		clean();
+		TestUtils.clean();
 
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(Long.valueOf(3L), esg.getNumberOfEquivalenceSets());
@@ -146,7 +137,7 @@ public class TestRocksDBBuilder {
 				esg.getEntitiesImplicityEquivalentToOrSubsumedBy("http://example.org/e"));
 
 		esg.close();
-		clean();
+		TestUtils.clean();
 
 	}
 
@@ -157,7 +148,7 @@ public class TestRocksDBBuilder {
 
 		File f = new File("src/main/resources/testResources/t5.properties");
 
-		clean();
+		TestUtils.clean();
 
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(Long.valueOf(3L), esg.getNumberOfEquivalenceSets());
@@ -173,7 +164,7 @@ public class TestRocksDBBuilder {
 		}
 
 		esg.close();
-		clean();
+		TestUtils.clean();
 
 	}
 
@@ -184,7 +175,7 @@ public class TestRocksDBBuilder {
 
 		File f = new File("src/main/resources/testResources/t6.properties");
 
-		clean();
+		TestUtils.clean();
 
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 
@@ -197,7 +188,7 @@ public class TestRocksDBBuilder {
 		}
 
 		esg.close();
-		clean();
+		TestUtils.clean();
 
 	}
 
@@ -208,7 +199,7 @@ public class TestRocksDBBuilder {
 
 		File f = new File("src/main/resources/testResources/t7.properties");
 
-		clean();
+		TestUtils.clean();
 
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(Long.valueOf(3L), esg.getNumberOfEquivalenceSets());
@@ -222,7 +213,7 @@ public class TestRocksDBBuilder {
 		}
 
 		esg.close();
-		clean();
+		TestUtils.clean();
 
 	}
 
@@ -233,7 +224,7 @@ public class TestRocksDBBuilder {
 
 		File f = new File("src/main/resources/testResources/t8.properties");
 
-		clean();
+		TestUtils.clean();
 
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 		assertEquals(Long.valueOf(6L), esg.getNumberOfEquivalenceSets());
@@ -257,7 +248,7 @@ public class TestRocksDBBuilder {
 						esg.getEquivalenceSetIdOfIRI("http://example.org/f4"),
 						esg.getEquivalenceSetIdOfIRI("http://example.org/f")),
 				esg.getEquivalenceSetsSubsumedBy(esg.getEquivalenceSetIdOfIRI("http://example.org/f")));
-		
+
 		assertEquals(
 				Sets.newHashSet(esg.getEquivalenceSetIdOfIRI("http://example1.org/a"),
 						esg.getEquivalenceSetIdOfIRI("http://example.org/f8"),
@@ -265,7 +256,7 @@ public class TestRocksDBBuilder {
 				esg.getSuperEquivalenceSets(esg.getEquivalenceSetIdOfIRI("http://example.org/f")));
 
 		esg.close();
-		clean();
+		TestUtils.clean();
 
 	}
 
