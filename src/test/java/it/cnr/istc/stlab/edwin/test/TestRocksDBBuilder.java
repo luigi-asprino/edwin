@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.google.common.collect.Sets;
 
 import it.cnr.istc.stlab.edwin.Edwin;
-import it.cnr.istc.stlab.edwin.EquivalenceSetGraphAnalyser;
+import it.cnr.istc.stlab.edwin.analysis.EquivalenceSetGraphAnalyser;
 import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 
 public class TestRocksDBBuilder {
@@ -193,34 +193,9 @@ public class TestRocksDBBuilder {
 	}
 
 	@Test
-	public void t7() {
-
-		System.out.println("\n\n\n\nTEST 7\n\n\n\n");
-
-		File f = new File("src/main/resources/testResources/t7.properties");
-
-		TestUtils.clean();
-
-		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
-		assertEquals(Long.valueOf(3L), esg.getNumberOfEquivalenceSets());
-		assertEquals(Long.valueOf(8L), esg.getNumberOfObservedEntities());
-
-		try {
-			EquivalenceSetGraphAnalyser.countEquivalenceSetsHavingHeterogeneousEntities(esg);
-			assertEquals(1L, esg.getStats().hetES);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		esg.close();
-		TestUtils.clean();
-
-	}
-
-	@Test
 	public void t8() {
 
-		System.out.println("\n\n\n\nTEST 7\n\n\n\n");
+		System.out.println("\n\n\n\nTEST 8\n\n\n\n");
 
 		File f = new File("src/main/resources/testResources/t8.properties");
 

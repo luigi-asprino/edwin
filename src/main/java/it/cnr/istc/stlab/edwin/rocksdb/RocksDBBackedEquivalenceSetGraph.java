@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.cnr.istc.stlab.edwin.EquivalenceSetGraphOntology;
-import it.cnr.istc.stlab.edwin.EquivalenceSetGraphStats;
+import it.cnr.istc.stlab.edwin.analysis.EquivalenceSetGraphStats;
 import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 import it.cnr.istc.stlab.rocksmap.RocksMap;
 import it.cnr.istc.stlab.rocksmap.RocksMultiMap;

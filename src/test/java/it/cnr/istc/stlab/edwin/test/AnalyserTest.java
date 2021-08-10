@@ -7,7 +7,7 @@ import java.io.File;
 import org.junit.Test;
 
 import it.cnr.istc.stlab.edwin.Edwin;
-import it.cnr.istc.stlab.edwin.analysis.DatasetDistributionAnalyser;
+import it.cnr.istc.stlab.edwin.analysis.EquivalenceSetGraphAnalyser;
 import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 
 public class AnalyserTest {
@@ -22,9 +22,7 @@ public class AnalyserTest {
 
 		EquivalenceSetGraph esg = Edwin.computeESG(f.getAbsolutePath());
 		
-		DatasetDistributionAnalyser dda = new DatasetDistributionAnalyser(esg);
-		
-		assertEquals(1, dda.getNumberOfHeterogeneousNamespaces());
+		assertEquals(1, EquivalenceSetGraphAnalyser.countNumberOfHeterogeneousNamespaces(esg));
 
 		esg.close();
 		TestUtils.clean();

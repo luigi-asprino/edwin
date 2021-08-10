@@ -12,6 +12,7 @@ import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.cnr.istc.stlab.edwin.analysis.EquivalenceSetGraphAnalyser;
 import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 import it.cnr.istc.stlab.edwin.rocksdb.RocksDBBackedEquivalenceSetGraph;
 

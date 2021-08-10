@@ -13,7 +13,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 
-import it.cnr.istc.stlab.edwin.EquivalenceSetGraphStats;
+import it.cnr.istc.stlab.edwin.analysis.EquivalenceSetGraphStats;
 import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 
 @SuppressWarnings("unused")

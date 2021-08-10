@@ -1,4 +1,4 @@
-package it.cnr.istc.stlab.edwin;
+package it.cnr.istc.stlab.edwin.analysis;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -1,4 +1,4 @@
-package it.cnr.istc.stlab.edwin;
+package it.cnr.istc.stlab.edwin.analysis;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import it.cnr.istc.stlab.edwin.model.EquivalenceSetGraph;
 import it.cnr.istc.stlab.edwin.rocksdb.RocksDBEquivalenceSetGraphBuilderImpl;
+import it.cnr.istc.stlab.lgu.commons.misc.ProgressCounter;
 
 public class EquivalenceSetGraphAnalyser {
 
@@ -52,6 +53,45 @@ public class EquivalenceSetGraphAnalyser {
 		esg.getStats().bns = numberOfBlankNodes;
 		esg.getStats().es_with_bns = es_with_bn.size();
 
+	}
+
+	public static int countNumberOfHeterogeneousNamespaces(EquivalenceSetGraph esg) {
+		Iterator<Entry<Long, Collection<String>>> esIt = esg.equivalenceSetsIterator();
+		int count = 0;
+		logger.info("Number of equivalence sets {}", esg.getNumberOfEquivalenceSets());
+		ProgressCounter pc = new ProgressCounter(esg.getNumberOfEquivalenceSets());
+		pc.setSLF4jLogger(logger);
+		while (esIt.hasNext()) {
+			Entry<Long, Collection<String>> entry = esIt.next();
+			if (isFromHeterogeneousNamespace(entry.getValue())) {
+				count++;
+			}
+			pc.increase();
+		}
+		logger.info("Number of heterogeneous namespace {}", count);
+		esg.getStats().hetES = count;
+		return count;
+	}
+
+	private static boolean isFromHeterogeneousNamespace(Collection<String> value) {
+		String lastns = null;
+		String ns = null;
+
+		for (String e : value) {
+			try {
+				ns = new URL(e).getHost();
+				if (lastns == null) {
+					lastns = ns;
+				} else if (!lastns.equals(ns)) {
+					return true;
+				}
+			} catch (MalformedURLException e1) {
+//				e1.printStackTrace();
+				logger.trace("Malformed URL {}", e);
+			}
+		}
+
+		return false;
 	}
 
 	public static void countObservedEntitiesWithEmptyExtesion(EquivalenceSetGraph esg) {
@@ -521,41 +561,41 @@ public class EquivalenceSetGraphAnalyser {
 
 	}
 
-	public static void countEquivalenceSetsHavingHeterogeneousEntities(EquivalenceSetGraph esg) throws IOException {
+//	public static void countEquivalenceSetsHavingHeterogeneousEntities(EquivalenceSetGraph esg) throws IOException {
+//
+//		logger.info("Counting Equivalence Sets Having Heterogeneous Entities");
+//
+//		int processed = 0;
+//		long toProcess = esg.getNumberOfEquivalenceSets();
+//		long hetES = 0;
+//
+//		Iterator<Entry<Long, Collection<String>>> iterator = esg.equivalenceSetsIterator();
+//
+//		while (iterator.hasNext()) {
+//			if (processed % 10000 == 0) {
+//				logger.info("Processed {}/{}:{}", processed, toProcess, ((double) processed / (double) toProcess));
+//			}
+//			Entry<Long, Collection<String>> entry = iterator.next();
+//			if (getHosts(new HashSet<>(entry.getValue())).size() > 1) {
+//				hetES++;
+//			}
+//		}
+//
+//		esg.getStats().hetES = hetES;
+//
+//	}
 
-		logger.info("Counting Equivalence Sets Having Heterogeneous Entities");
-
-		int processed = 0;
-		long toProcess = esg.getNumberOfEquivalenceSets();
-		long hetES = 0;
-
-		Iterator<Entry<Long, Collection<String>>> iterator = esg.equivalenceSetsIterator();
-
-		while (iterator.hasNext()) {
-			if (processed % 10000 == 0) {
-				logger.info("Processed {}/{}:{}", processed, toProcess, ((double) processed / (double) toProcess));
-			}
-			Entry<Long, Collection<String>> entry = iterator.next();
-			if (getHosts(new HashSet<>(entry.getValue())).size() > 1) {
-				hetES++;
-			}
-		}
-
-		esg.getStats().hetES = hetES;
-
-	}
-
-	private static Set<String> getHosts(Set<String> equivalenceSet) {
-		Set<String> result = new HashSet<>();
-		equivalenceSet.forEach(e -> {
-			try {
-				result.add(new URL(e).getHost());
-			} catch (MalformedURLException e1) {
-				e1.printStackTrace();
-			}
-		});
-		return result;
-	}
+//	private static Set<String> getHosts(Set<String> equivalenceSet) {
+//		Set<String> result = new HashSet<>();
+//		equivalenceSet.forEach(e -> {
+//			try {
+//				result.add(new URL(e).getHost());
+//			} catch (MalformedURLException e1) {
+//				e1.printStackTrace();
+//			}
+//		});
+//		return result;
+//	}
 
 	private static boolean isBlankNode(String uri) {
 		// Exploit skolemization of the blank nodes carried out by LOD Laundromat

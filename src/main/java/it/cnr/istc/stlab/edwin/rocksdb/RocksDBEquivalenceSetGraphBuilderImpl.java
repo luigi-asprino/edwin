@@ -16,9 +16,9 @@ import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.cnr.istc.stlab.edwin.EquivalenceSetGraphAnalyser;
 import it.cnr.istc.stlab.edwin.EquivalenceSetGraphBuilderParameters;
 import it.cnr.istc.stlab.edwin.Utils;
+import it.cnr.istc.stlab.edwin.analysis.EquivalenceSetGraphAnalyser;
 import it.cnr.istc.stlab.lgu.commons.semanticweb.datasets.Dataset;
 
 public class RocksDBEquivalenceSetGraphBuilderImpl {
