@@ -22,6 +22,7 @@ public class SimilarityAnalyser {
 	private String esSimilarities;
 	private EquivalenceSetGraph esg;
 	private double threshold;
+	private boolean performMerge = true;
 
 	private static final Logger logger = LoggerFactory.getLogger(SimilarityAnalyser.class);
 
@@ -105,19 +106,30 @@ public class SimilarityAnalyser {
 
 		Set<Long> ESsInvolved = new HashSet<>();
 
-		int c = 0;
-		for (Set<Long> esOfEs : esOfEss.values()) {
-			esg.mergeEquivalenceSets(esOfEs.toArray(new Long[esOfEs.size()]));
-			ESsInvolved.addAll(esOfEs);
-			logger.info("Processed {} ES of ESs", c);
-			c++;
+		if (performMerge) {
+			int c = 0;
+			for (Set<Long> esOfEs : esOfEss.values()) {
+				esg.mergeEquivalenceSets(esOfEs.toArray(new Long[esOfEs.size()]));
+				ESsInvolved.addAll(esOfEs);
+				logger.info("Processed {} ES of ESs", c);
+				c++;
+			}
+
+			logger.info("Number of ES involved {}", ESsInvolved.size());
+			logger.info("Number of ES before merge {}", esg.getNumberOfEquivalenceSets());
+
+			esg.recomputeSpecializationClosure();
+
 		}
 
-		logger.info("Number of ES involved {}", ESsInvolved.size());
-		logger.info("Number of ES before merge {}", esg.getNumberOfEquivalenceSets());
+	}
 
-		esg.recomputeSpecializationClosure();
+	public boolean isPerformMerge() {
+		return performMerge;
+	}
 
+	public void setPerformMerge(boolean performMerge) {
+		this.performMerge = performMerge;
 	}
 
 	public static void main(String[] args) throws RocksDBException {
@@ -127,7 +139,13 @@ public class SimilarityAnalyser {
 
 //		EquivalenceSetGraph esg1 = esg.cloneInto(esgFilepath + "_1");
 
+		boolean performMerge = true;
 		SimilarityAnalyser sa = new SimilarityAnalyser(args[1], esg, Double.parseDouble(args[2]));
+		if (args.length > 3) {
+			performMerge = Boolean.parseBoolean(args[3]);
+			sa.setPerformMerge(performMerge);
+		}
+
 		try {
 			sa.analyse();
 		} catch (IOException e) {
