@@ -95,6 +95,7 @@ public class LabelMapCreator {
 	}
 
 	public void buildMap() throws IOException, NotFoundException, RocksDBException {
+		logger.info("Strategy {}", strategy.toString());
 
 		BufferedReader br = new BufferedReader(new FileReader(new File(pathLabelProperties)));
 
