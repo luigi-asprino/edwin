@@ -223,6 +223,7 @@ public class LabelMapCreator {
 			String strategy = commandLine.getOptionValue(STRATEGY);
 			Strategy s = Strategy.MERGE_ALL_LABELS;
 			if (strategy != null && strategy.equalsIgnoreCase("keep_the_longest")) {
+				logger.info("Setting strategy keep the longest.");
 				s = Strategy.KEEP_THE_LONGEST;
 			}
 
