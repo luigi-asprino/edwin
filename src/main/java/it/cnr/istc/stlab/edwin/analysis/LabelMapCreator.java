@@ -42,6 +42,11 @@ public class LabelMapCreator {
 	private HDTImpl hdt;
 	private final String SEPARATOR = " ";
 	private long CHECKPOINT = 1000000;
+	private Strategy strategy = Strategy.MERGE_ALL_LABELS;
+
+	private enum Strategy {
+		MERGE_ALL_LABELS, KEEP_THE_LONGEST
+	}
 
 	public LabelMapCreator(HDT hdt, String pathDB, String pathLabelProperties, int gbCache) throws RocksDBException {
 		super();
@@ -81,6 +86,12 @@ public class LabelMapCreator {
 		this.pathLabelProperties = pathLabelProperties;
 		this.hdt = (HDTImpl) hdt;
 //		this.pathDB = pathDB;
+	}
+
+	public void setStrategy(Strategy s) {
+		if (s != null) {
+			this.strategy = s;
+		}
 	}
 
 	public void buildMap() throws IOException, NotFoundException, RocksDBException {
@@ -141,8 +152,21 @@ public class LabelMapCreator {
 					}
 
 					try {
-						db.merge(ts1.getSubject().toString().getBytes(),
-								Utils.cleanDatatype(ts1.getObject(), SEPARATOR).toString().getBytes());
+						switch (strategy) {
+						case KEEP_THE_LONGEST:
+							byte[] newLabel = Utils.cleanDatatype(ts1.getObject(), SEPARATOR).toString().getBytes();
+							byte[] v = db.get(ts1.getSubject().toString().getBytes());
+							if (v == null || newLabel.length > v.length) {
+								db.put(ts1.getSubject().toString().getBytes(), newLabel);
+							}
+							break;
+						case MERGE_ALL_LABELS:
+							db.merge(ts1.getSubject().toString().getBytes(),
+									Utils.cleanDatatype(ts1.getObject(), SEPARATOR).toString().getBytes());
+							break;
+
+						}
+
 					} catch (RocksDBException e) {
 						e.printStackTrace();
 					}
@@ -161,6 +185,7 @@ public class LabelMapCreator {
 	private static final String HDT = "i";
 	private static final String OUT = "o";
 	private static final String PROPERTIES = "p";
+	private static final String STRATEGY = "s";
 
 	public static void main(String[] args) {
 
@@ -177,7 +202,12 @@ public class LabelMapCreator {
 		options.addOption(
 				org.apache.commons.cli.Option.builder(PROPERTIES).argName("properties").hasArg().required(true)
 						.desc("The path to the file containing a list of properties to be used to retrieve labels.")
-						.longOpt("output").build());
+						.longOpt("properties").build());
+
+		options.addOption(org.apache.commons.cli.Option.builder(STRATEGY).argName("strategy").hasArg().required(false)
+				.desc("The strategy of how to build the labels. Possible arguments: merge_all_labels (in this case multiple labels of an entity are merged together to form a unique label); "
+						+ "keep_the_longest (in this case only the longest label will be keeped) [Default: merge_all_labels]")
+				.longOpt("output").build());
 
 		CommandLine commandLine = null;
 
@@ -189,15 +219,21 @@ public class LabelMapCreator {
 			String hdtPath = commandLine.getOptionValue(HDT);
 			String labelMap = commandLine.getOptionValue(OUT);
 			String properties = commandLine.getOptionValue(PROPERTIES);
+			String strategy = commandLine.getOptionValue(STRATEGY);
+			Strategy s = Strategy.MERGE_ALL_LABELS;
+			if (strategy != null && strategy.equalsIgnoreCase("keep_the_longest")) {
+				s = Strategy.KEEP_THE_LONGEST;
+			}
 
 			HDT hdt = HDTManager.mapIndexedHDT(hdtPath, null);
 
 			LabelMapCreator lm = new LabelMapCreator(hdt, labelMap, properties, 2);
+			lm.setStrategy(s);
 			lm.buildMap();
 
 		} catch (ParseException e) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("-i path -o path -p path", options);
+			formatter.printHelp("-i path -o path -p path [-s (keep_the_longest|merge_all_labels)]", options);
 		} catch (RocksDBException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
