@@ -16,7 +16,7 @@ public class AnalyserTest {
 	public void testDatasetDistribution() {
 		System.out.println("\n\n\n\nTEST 7\n\n\n\n");
 
-		File f = new File("src/main/resources/testResources/t8.properties");
+		File f = new File("src/main/resources/testResources/t9.properties");
 
 		TestUtils.clean();
 
